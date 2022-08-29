@@ -1,0 +1,281 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//--- Asobo Studio DXX "Big Files" v1.06.63.0X
+//------------------------------------------------
+
+//------------------------------------------------
+//--- Color Implementation taken from JPG.bt
+
+local int colorSelect = 0;
+local int colorId = 0;
+local DWORD clr = 0;
+local DWORD jetMap[6*3] = {
+	0x0000cc,0x0000ff,0x0033ff,0x0066ff,0x0099ff,0x00ccff,
+	0x00cccc,0x33ffcc,0x66ff99,0x99ff66,0xccff33,0xffff00,
+	0xffcc00,0xff9900,0xff6600,0xff3300,0xff0000,0xcc0000
+};
+
+void ChangeColor(byte bChangeColor) {
+	if(bChangeColor == 1) {colorSelect++; colorId = 0;}
+	clr = jetMap[(colorSelect%3)*6+(colorId%6)];
+	SetBackColor(clr);
+	colorId++;
+}
+
+//------------------------------------------------
+
+//------------------------------------------------
+//--- Defining if we should use Big Endian or Little Endian
+
+local char fileName[260] = GetFileName();
+local int lastDot = 0;
+local int pos;
+local char nullChar = 0x00;
+local char dot = 0x2E;
+for (pos = 0; pos < 256; pos++) {
+    if (fileName[pos] == nullChar) {
+        break;
+    }
+    if (fileName[pos] == dot) {
+        lastDot = pos;
+    }
+}
+
+local char extension[3] = SubStr(fileName, lastDot+1);
+switch (extension) {
+    case "DPC":
+    case "DXB":
+    case "DPS":
+        LittleEndian();
+        break;
+    case "DGC":
+    case "DRV":
+        BigEndian();
+        break;
+}
+
+//------------------------------------------------
+
+local uint32 totalObjectCount = 0;
+local uint32 compressedObjectCount;
+
+struct BlockDescription {
+    ChangeColor(1);
+    uint32 objectCount;
+    uint32 blockPaddedSize;
+    uint32 blockSize;
+    uint32 workingBufferOffset;
+    uint32 firstObjectCrc32;
+    uint32 unkOtherCrc32;
+};
+
+struct DGCHeader {
+    char versionString[256];
+    ChangeColor(1);
+    uint32 useCommonWorkingBuffer;
+    ChangeColor(1);
+    uint32 blockCount;
+    ChangeColor(1);
+    uint32 workingBufferCapacityEven;
+    ChangeColor(1);
+    uint32 workingBufferCapacityOdd;
+    ChangeColor(1);
+    uint32 paddedSize;
+    ChangeColor(1);
+    uint32 versionPatch;
+    ChangeColor(1);
+    uint32 versionMinor;
+    ChangeColor(1);
+    uint32 unk1;
+    BlockDescription blockDescriptions[64] <optimize=false>;
+    ChangeColor(1);
+    byte padding[224];
+};
+
+struct LinkInfo (local uint32 linkSize) {
+    uint32 linkCrc32;
+    uint32 linkCount;
+    uint32 linkedCrc32[linkCount];
+    // I haven't checked what the extra data is for yet, just added this so it would parse ok
+    local uint32 extraLinkDataSize = linkSize - (8+linkCount*4);
+    byte extraData[extraLinkDataSize]; 
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 linkSize;
+    uint32 decompressedSize;
+    uint32 compressedSize;
+    uint32 classCrc32<read=getClassCrc32Str,optimize=false>;
+    uint32 nameCrc32;
+    LinkInfo linkInfo(linkSize);
+};
+
+struct Object {
+    ChangeColor(1);
+    ObjectHeader objHeader;
+    local uint32 size;
+    if (objHeader.compressedSize != 0) {
+        size = objHeader.compressedSize;
+        compressedObjectCount++;
+    } else {
+        size = objHeader.decompressedSize;
+    }
+    ChangeColor(1);
+    byte data[size];
+};
+
+struct Block (local uint32 objectCount, local uint32 padding) {
+    Object objects[objectCount] <optimize=false>;
+    ChangeColor(1);
+    byte padding[padding];
+};
+
+struct DXX {
+    SetBackColor(jetMap[0]);
+    DGCHeader header;
+    local uint32 i;
+    ChangeColor(1);
+    for (i = 0; i < header.blockCount; i++) {
+        totalObjectCount += header.blockDescriptions[i].objectCount;
+        Block block(header.blockDescriptions[i].objectCount, header.blockDescriptions[i].blockPaddedSize - header.blockDescriptions[i].blockSize);
+    }
+    Printf("-- Info -- #blocks: %d\n",header.blockCount);
+    Printf("-- Info -- #objects: %d\n",totalObjectCount);
+    Printf("-- Info -- #compressed objects: %d\n",compressedObjectCount);
+} file;
+
+string getClassCrc32Str(uint32& value )
+{
+    local string className = "";
+    switch (value) {
+        case 549480509:
+            className = "Omni_Z";
+            break;
+        case 705810152: 
+            className = "Rtc_Z";
+            break;
+        case 838505646:
+            className = "GenWorld_Z";
+            break;
+        case 848525546:
+            className = "LightData_Z";
+            break;
+        case 849267944:
+            className = "Sound_Z";
+            break;
+        case 849861735:
+            className = "MaterialObj_Z";
+            break;
+        case 866453734:
+            className = "RotShape_Z";
+            break;
+        case 954499543:
+            className = "ParticlesData_Z";
+            break;
+        case 968261323:
+            className = "World_Z";
+            break;
+        case 1114947943:
+            className = "Warp_Z";
+            break;
+        case 1135194223:
+            className = "Spline_Z";
+            break;
+        case 1175485833:
+            className = "Animation_Z";
+            break;
+        case 1387343541:
+            className = "Mesh_Z";
+            break;
+        case 1391959958:
+            className = "UserDefine_Z";
+            break;
+        case 1396791303:
+            className = "Skin_Z";
+            break;
+        case 1471281566:
+            className = "Bitmap_Z";
+            break;
+        case 1536002910:
+            className = "Fonts_Z";
+            break;
+        case 1625945536:
+            className = "RotShapeData_Z";
+            break;
+        case 1706265229:
+            className = "Surface_Z";
+            break;
+        case 1910554652:
+            className = "SplineGraph_Z";
+            break;
+        case 1943824915:
+            className = "Lod_Z";
+            break;
+        case 2204276779:
+            className = "Material_Z";
+            break;
+        case 2245010728:
+            className = "Node_Z";
+            break;
+        case 2259852416:
+            className = "Binary_Z";
+            break;
+        case 2398393906:
+            className = "CollisionVol_Z";
+            break;
+        case 2906362741:
+            className = "WorldRef_Z";
+            break;
+        case 3312018398:
+            className = "Particles_Z";
+            break;
+        case 3412401859:
+            className = "LodData_Z";
+            break;
+        case 3611002348:
+            className = "Skel_Z";
+            break;
+        case 3626109572:
+            className = "MeshData_Z";
+            break;
+        case 3747817665:
+            className = "SurfaceDatas_Z";
+            break;
+        case 3834418854:
+            className = "MaterialAnim_Z";
+            break;
+        case 4096629181:
+            className = "GameObj_Z";
+            break;
+        case 4240844041:
+            className = "Camera_Z";
+            break;
+        case 4117606081:
+            className = "AnimFrame_Z";
+            break;
+        case 3979333606:
+            className = "CameraZone_Z";
+            break;
+        case 72309972:
+            className = "Occluder_Z";
+            break;
+        case 1390918523:
+            className = "Graph_Z";
+            break;
+        case 1918499807:
+            className = "Light_Z";
+            break;
+        case 3210467954:
+            className = "HFogData_Z";
+            break;
+        case 2735949084:
+            className = "HFog_Z";
+            break;
+        default:
+            className = "unknown";
+            break;
+    }
+
+    return className;
+}

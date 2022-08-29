@@ -1,0 +1,126 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//--- Asobo Studio Lod_Z v1.06.63.0X
+//------------------------------------------------
+
+//------------------------------------------------
+//--- Color Implementation taken from JPG.bt
+
+LittleEndian();
+
+local int colorSelect = 0;
+local int colorId = 0;
+local DWORD clr = 0;
+local DWORD jetMap[6*3] = {
+	0x0000cc,0x0000ff,0x0033ff,0x0066ff,0x0099ff,0x00ccff,
+	0x00cccc,0x33ffcc,0x66ff99,0x99ff66,0xccff33,0xffff00,
+	0xffcc00,0xff9900,0xff6600,0xff3300,0xff0000,0xcc0000
+};
+
+void ChangeColor(byte bChangeColor) {
+	if(bChangeColor == 1) {colorSelect++; colorId = 0;}
+	clr = jetMap[(colorSelect%3)*6+(colorId%6)];
+	SetBackColor(clr);
+	colorId++;
+}
+
+//------------------------------------------------
+
+struct Quat {
+    float x;
+    float y;
+    float z;
+    float w;
+};
+
+struct Mat4f {
+    float mat[16];
+};
+
+struct Vec3f {
+    float x;
+    float y;
+    float z;
+};
+
+
+struct Sphere_Z {
+    Mat4f transform;
+    float radius;
+};
+
+struct LinkInfo {
+    uint32 linkCrc32;
+    uint32 linkCount;
+    uint32 linkedCrc32[linkCount];
+    uint32 lodDataCrc32;
+    Quat rotation;
+    Sphere_Z bSphere;
+    uint32 flags;
+    uint16 type;
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 linkSize;
+    uint32 decompressedSize;
+    uint32 compressedSize;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    LinkInfo linkInfo;
+};
+
+struct ClassRes {
+    uint32 unk1;
+    uint32 crc32;
+};
+
+struct SphereColNode {
+    byte data[28];
+};
+
+struct SphereCol {
+    Vec3f center;
+    float radius;
+    uint32 flags;
+    uint32 someCrc32;
+};
+
+struct BoxCol
+{
+    Mat4f transformation;
+    uint32 flags;
+    uint32 someNameCRC321;
+};
+
+struct CylindreCol
+{
+};
+
+struct Lod_Z {
+    ObjectHeader objectHeader;
+    uint32 bSphereColNode;
+    if (bSphereColNode != 0) {
+        SphereColNode sphereColNode;
+    }
+    uint32 sphereColCount;
+    SphereCol spheresCols[sphereColCount];
+    uint32 boxColCount;
+    BoxCol boxCols[boxColCount];
+    uint32 cylindreColCount;
+    CylindreCol cylindreCols[cylindreColCount];
+    float closeX;
+    float closeY;
+    float closeZ;
+    uint32 crc32Count;
+    uint32 crc32s[crc32Count];
+    uint32 lastCrc32;
+    uint32 classRes1Count;
+    ClassRes classRes1s[classRes1Count];
+    if (objectHeader.linkInfo.flags & 1048576) {
+        uint32 classRes2Count;
+        ClassRes classRes2s[classRes2Count];
+    }
+    uint32 userDefineCrc32;
+} lod;
+

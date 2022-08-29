@@ -1,0 +1,73 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+struct LinkInfo {
+    uint32 linkCrc32;
+    uint32 linkCount;
+    uint32 linkedCrc32[linkCount];
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 linkSize;
+    uint32 decompressedSize;
+    uint32 compressedSize;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    LinkInfo linkInfo;
+};
+struct mat {
+    float yes[16];
+};
+struct color {
+    float R<read=floatToByte>;
+    float G<read=floatToByte>;
+    float B<read=floatToByte>;
+    float A<read=floatToByte>;
+};
+struct Node_Z
+{
+    ObjectHeader objHeader;
+    uint32 parentCRC32;
+    uint32 childNodeCRC320;
+    uint32 childNodeCRC321;
+    uint32 childNodeCRC322;
+    uint32 lodCRC32;
+    uint32 lodDataCRC32;
+    uint32 crc32[2];
+    byte unk1[208];
+    float scale;
+    float unk[3];
+    color colors<optimize=false>;
+    byte unk2[32];
+    mat mat1;
+    uint32 unknown2;
+    uint32 unknown3;
+    uint16 unknown4;
+    uint32 unknown5;
+    uint32 unknown6;
+} node;
+
+string floatToByte(float& value )
+{
+    local string str = "";
+    local float colorFloatToByte = ((value*255.0));
+    SPrintf(str, "%i",colorFloatToByte);
+
+    return str;
+}
+// doesnt work
+local int byteToFloat(float, string str) { 
+    local int f = (Atof(str)/255.0);
+    return (local int)f;
+}

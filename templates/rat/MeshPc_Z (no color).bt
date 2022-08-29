@@ -1,0 +1,353 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//--- Asobo Studio Mesh_Z v1.06.63.0X
+//------------------------------------------------
+
+//------------------------------------------------
+//---Vector struct taken for tge
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+} TVector3 <read=TVector3ToString>;
+
+string TVector3ToString( TVector3& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
+
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+} TVector2 <read=TVector2ToString>;
+
+string TVector2ToString( TVector2& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f]", value.X, value.Y );
+
+    return buffer;
+}
+
+typedef struct
+{
+    ubyte X<read=byteToFloat,optimize=false>;
+    ubyte Y<read=byteToFloat,optimize=false>;
+    ubyte Z<read=byteToFloat,optimize=false>;
+} TVector3Byte <read=TVector3ByteToString>;
+
+string TVector3ByteToString( TVector3Byte& value )
+{
+    local char buffer[255];
+    local float normalByteToD3DColorComponentX = ((value.X/255.0));
+    local float normalByteToFloatX = ((normalByteToD3DColorComponentX * 2) - 1);
+    local float normalByteToD3DColorComponentY = ((value.Y/255.0));
+    local float normalByteToFloatY = ((normalByteToD3DColorComponentY * 2) - 1);
+    local float normalByteToD3DColorComponentZ = ((value.Z/255.0));
+    local float normalByteToFloatZ = ((normalByteToD3DColorComponentZ * 2) - 1);
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", normalByteToFloatX, normalByteToFloatY, normalByteToFloatZ );
+
+    return buffer;
+}
+
+//------------------------------------------------
+
+struct Quat {
+    float x;
+    float y;
+    float z;
+    float w;
+};
+
+struct Mat4f {
+    float mat[16];
+};
+
+struct LinkInfo {
+    uint32 linkCrc32;
+    uint32 linkCount;
+    uint32 linkedCrc32[linkCount];
+    uint32 meshDataCrc32;
+    Quat rotation;
+    Mat4f transform;
+    float radius;
+    uint32 flags;
+    uint16 type;
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 linkSize;
+    uint32 decompressedSize;
+    uint32 compressedSize;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    LinkInfo linkInfo;
+};
+
+struct PointsRelated0 {
+    byte data[12];
+};
+
+struct PointsRelated1 {
+    byte data[16];
+};
+
+struct MorpherRelated {
+    byte data[16];
+};
+
+struct MorphTargetDescRelated {
+    byte data[16];
+};
+
+struct MorphTargetDesc_Z {
+    uint32 name;
+    uint32 MorphTargetDescRelatedCount;
+    MorphTargetDescRelated MorphTargetDescRelateds[MorphTargetDescRelatedCount];
+};
+
+struct Morpher_Z {
+    uint32 MorpherRelatedCount;
+    MorpherRelated MorpherRelateds[MorpherRelatedCount];
+    uint32 morphTargetDescCount;
+    MorphTargetDesc_Z morphTargetDescs[morphTargetDescCount];
+};
+
+struct SphereCol {
+    byte data[20];
+    uint32 nameCrc32;
+};
+
+struct BoxCol {
+    float unk1;
+    float unk2;
+    float unk3;
+    float unk4;
+    float unk5;
+    float unk6;
+    float unk7;
+    float unk8;
+    float unk9;
+    float unk10;
+    float unk11;
+    float unk12;
+    float unk13;
+    float unk14;
+    float unk15;
+    float unk16;
+    uint32 unk17;
+    uint32 nameCrc32;
+};
+
+struct CylindreCol {
+    byte data[40];
+    uint32 nameCrc32;
+};
+
+struct AABBColRelated {
+    int16 unk1;
+    int16 unk2; 
+    int16 unk3;
+    int16 zero;
+};
+
+struct AABBCol {
+    float unk1;
+    float unk2;
+    float unk3;
+    int16 unk4;
+    int16 unk5;
+    float unk6;
+    float unk7;
+    float unk8;
+    int16 unk9;
+    int16 unk10;
+};
+
+struct Vertex {
+    int16 x;
+    int16 y;
+    int16 z;
+};
+
+struct vertexGroup {
+    uint32 zero0;
+    uint32 zero1;
+    uint32 zero2;
+    uint32 maybePrimitive;
+    uint16 cdcd;
+    uint16 vertexBufferOffset;
+    uint16 vertexCount;
+    uint16 indexBufferOffsetInShorts;
+    uint32 faceCount;
+    uint16 unk1;
+    uint16 vertexSize;
+    uint32 cdcdcdcd;
+};
+
+struct Triangle {
+    int16 index1;
+    int16 index2;
+    int16 index3;
+};
+
+struct Points_Z {
+    ObjectHeader header;
+    uint32 PointsRelated0Count;
+    PointsRelated0 PointsRelateds0[PointsRelated0Count];
+    uint32 PointsRelated1Count;
+    PointsRelated1 PointsRelateds1[PointsRelated1Count];
+    Morpher_Z morpher;
+};
+
+struct Mesh_Z {
+    Points_Z points;
+    uint32 unk1Count;
+    byte unk1s[8*unk1Count];
+    uint32 unk2Count;
+    byte unk2s[12*unk2Count];
+    uint32 unk3Count;
+    struct unk3 {
+        uint32 unk4Count;
+        byte unk4s[2*unk4Count];
+        byte unk5[8];
+    } unk3s[unk3Count];
+    if (points.header.linkInfo.flags & 2) {
+        byte unk6[4*unk3Count];
+    }
+    uint32 unk7Count;
+    struct unk7 {
+        uint32 unk8Count;
+        byte unk8s[8*unk8Count];
+    } unk7s[unk7Count];
+    uint32 materialCrc32Count;
+    uint32 materialCrc32s[materialCrc32Count]; 
+    byte stuffRelatedToCounts[24];
+    uint32 sphereColCount;
+    SphereCol sphereCols[sphereColCount];
+    uint32 boxColCount;
+    BoxCol boxCols[boxColCount];
+    uint32 cylindreColCount;
+    CylindreCol cylindreCols[cylindreColCount];
+    uint32 AABBColRelatedCount;
+    AABBColRelated AABBColRelateds[AABBColRelatedCount]; 
+    uint32 AABBColCount;
+    AABBCol AABBCols[AABBColCount];
+    uint32 vertexCount;
+    Vertex vertices[vertexCount];
+};
+
+struct VertexStruct60 {
+    TVector3 coordinates;
+    TVector3Byte tangent;
+    ubyte tangentPadding;
+    TVector3Byte normals;
+    ubyte normalPadding;
+    TVector2 UV;
+    float blendIndices[4];
+    float blends[4];  
+};
+
+struct VertexStruct48 {
+    TVector3 coordinates;
+    TVector3Byte tangent;
+    ubyte tangentPadding;
+    TVector3Byte normals;
+    ubyte normalPadding;
+    TVector2 UV;
+    float unk[5];
+};
+
+struct VertexStruct36 {
+    TVector3 coordinates;
+    TVector3Byte tangent;
+    ubyte tangentPadding;
+    TVector3Byte normals;
+    ubyte normalPadding;
+    TVector2 UV;
+    float luvX; // lightUVX? related to radiosity
+    float luvY; // lightUVY? related to radiosity 
+};
+
+struct VertexStruct24 {
+    TVector3 coordinates;
+    float unk;
+    TVector2 UV;
+};
+
+struct VertexStructUnk (uint32 bytes) {
+    byte data[bytes];
+};
+
+struct MeshPc_Z {
+    Mesh_Z mesh;
+    uint32 unk1Count;
+    byte unk1s[16*unk1Count];
+    uint32 unk2Count;
+    byte unk2s[4*unk2Count];
+    uint32 vertexBufferCount;
+    struct VertexBuffer {
+        uint16 vertexStructCount;
+        uint16 vertexStructLength;
+        switch (vertexStructLength) {
+            case 60:
+                VertexStruct60 vertexStructs[vertexStructCount] <optimize=false>;
+                break;
+            case 48:        
+                VertexStruct48 vertexStructs[vertexStructCount] <optimize=false>;
+                break;
+            case 36:        
+                VertexStruct36 vertexStructs[vertexStructCount] <optimize=false>;
+                break;
+            case 24:
+                VertexStruct24 vertexStructs[vertexStructCount] <optimize=false>;
+                break;
+            default:
+                VertexStructUnk vertexStructs(vertexStructLength)[vertexStructCount] <optimize=false>;
+                break;
+        };
+    } vertexBuffers[vertexBufferCount]<optimize=false>;
+    uint32 indexBufferCount;
+    struct IndexBuffer {
+        uint16 indexCount;
+        local uint16 faceCount = indexCount / 3;
+        Triangle tris[faceCount];
+    } indexBuffers[indexBufferCount];
+    uint32 vertexGroupCount;
+    vertexGroup vertexGroups[vertexGroupCount];
+    PrintInfo();
+} meshPc;
+
+void PrintInfo() {
+    local uint32 i;
+    Printf("-- Info -- #materials: %d\n", meshPc.mesh.materialCrc32Count);
+    Printf("-- Info -- #short-vertices: %d\n", meshPc.mesh.vertexCount);
+    for (i = 0; i < meshPc.vertexBufferCount; i++) {
+        Printf("-- Info -- #vertex-structs in VB #%d: %d\n", i, meshPc.vertexBuffers[i].vertexStructCount);
+    }
+    for (i = 0; i < meshPc.indexBufferCount; i++) {
+        Printf("-- Info -- #faces in IB #%d: %d\n", i, meshPc.indexBuffers[i].faceCount);
+    }
+    Printf("-- Info -- #vertexGroups: %d\n", meshPc.vertexGroupCount);
+    for (i = 0; i < meshPc.vertexGroupCount; i++) {
+        Printf("-- Info -- indexBufferOffsetBytes of VertexGroup #%d: %x\n", i, meshPc.vertexGroups[i].indexBufferOffsetInShorts*2);
+        Printf("-- Info -- #faces in VertexGroup #%d: %d\n", i, meshPc.vertexGroups[i].faceCount);
+    }
+}
+
+string byteToFloat(ubyte& value )
+{
+    local string str = "";
+    local float normalByteToD3DColorComponent = ((value/255.0));
+    local float normalByteToFloat = ((normalByteToD3DColorComponent * 2) - 1);
+    SPrintf(str, "%f",normalByteToFloat);
+
+    return str;
+}
