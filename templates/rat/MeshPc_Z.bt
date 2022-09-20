@@ -27,7 +27,7 @@ void ChangeColor(byte bChangeColor) {
 //------------------------------------------------
 
 //------------------------------------------------
-//---Vector struct taken for tge
+//---Vector struct taken from tge
 
 typedef struct
 {
