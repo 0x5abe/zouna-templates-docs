@@ -72,6 +72,13 @@ struct color {
     float A<read=floatToByte>;
 };
 
+struct Rect {
+    uint16 x1;
+    uint16 y1;
+    uint16 x2;
+    uint16 y2;
+};
+
 struct Node_Z
 {
     ObjectHeader objHeader;
@@ -88,7 +95,9 @@ struct Node_Z
     float scale;
     float unk[3];
     color colors<optimize=false>;
-    byte unk3[32];
+    byte unk3[16];
+    Rect displaySeadsRect;
+    Rect collideSeadsRect;
     Mat4x4 worldTransform; // (row major)
     uint32 unknown2;
     uint32 unknown3;
