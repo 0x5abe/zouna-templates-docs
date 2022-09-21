@@ -11,6 +11,27 @@
 //   History: 
 //------------------------------------------------
 
+//------------------------------------------------
+//--- Vector struct taken from tge
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+    float W;
+} TVector4 <read=TVector4ToString>;
+
+string TVector4ToString( TVector4& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f, %.6f]", value.X, value.Y, value.Z, value.W );
+
+    return buffer;
+}
+
+//------------------------------------------------
+
 struct LinkInfo {
     uint32 linkCrc32;
     uint32 linkCount;
@@ -26,15 +47,31 @@ struct ObjectHeader {
     uint32 nameCrc32;
     LinkInfo linkInfo;
 };
-struct mat {
-    float yes[16];
+
+struct Mat4x4 {
+    TVector4 rows[4];
 };
+
+string Mat4x4ToString( Mat4x4& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, 
+             "[%.6f, %.6f, %.6f, %.6f]\n[%.6f, %.6f, %.6f, %.6f]\n[%.6f, %.6f, %.6f, %.6f]\n[%.6f, %.6f, %.6f, %.6f]", 
+             value.rows[0].X, value.rows[0].Y, value.rows[0].Z, value.rows[0].W,
+             value.rows[1].X, value.rows[1].Y, value.rows[1].Z, value.rows[1].W,
+             value.rows[2].X, value.rows[2].Y, value.rows[2].Z, value.rows[2].W,
+             value.rows[3].X, value.rows[3].Y, value.rows[3].Z, value.rows[3].W
+           );
+    return buffer;
+}
+
 struct color {
     float R<read=floatToByte>;
     float G<read=floatToByte>;
     float B<read=floatToByte>;
     float A<read=floatToByte>;
 };
+
 struct Node_Z
 {
     ObjectHeader objHeader;
@@ -45,18 +82,25 @@ struct Node_Z
     uint32 lodCRC32;
     uint32 lodDataCRC32;
     uint32 crc32[2];
-    byte unk1[208];
+    byte unk1[92];
+    uint32 flags;
+    byte unk2[112];
     float scale;
     float unk[3];
     color colors<optimize=false>;
-    byte unk2[32];
-    mat mat1;
+    byte unk3[32];
+    Mat4x4 worldTransform; // (row major)
     uint32 unknown2;
     uint32 unknown3;
     uint16 unknown4;
     uint32 unknown5;
     uint32 unknown6;
+    PrintInfo();
 } node;
+
+void PrintInfo() {
+    Printf("-- Info -- World Transform: \n%s\n", Mat4x4ToString(worldTransform));
+}
 
 string floatToByte(float& value )
 {
