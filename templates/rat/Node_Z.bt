@@ -1,14 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//
-//      File: 
-//   Authors: 
-//   Version: 
-//   Purpose: 
-//  Category: 
-// File Mask: 
-//  ID Bytes: 
-//   History: 
+//--- Asobo Studio Node_Z v1.06.63.0X
 //------------------------------------------------
 
 //------------------------------------------------
@@ -107,6 +99,11 @@ struct Sphere_Z {
     float radius;
 };
 
+struct Quat {
+    TVector3 v;
+    float w;
+};
+
 struct Node_Z
 {
     ChangeColor(1);
@@ -126,27 +123,30 @@ struct Node_Z
     ChangeColor(1);
     uint32 crc32[2];
     ChangeColor(1);
-    byte unk1[76];
+    Mat4x4 inverseWorldTransform; // (row major)
+    TVector3 unkVec3f;
     ChangeColor(1);
     uint32 collideSeadsId1;
     ChangeColor(1);
-    uint32 unk1Crc32;
-    float unkFloat1;
-    uint32 unk2Crc32;
+    TVector3 unkVec3f2;
     ChangeColor(1);
-    uint32 flags;
+    uint32 placeholderWorldMatrixPtr;
     ChangeColor(1);
-    uint32 unk3Crc32;
-    uint32 unk4Crc32;
-    float unkFloat2;
+    TVector3 unkVec3f3;
     ChangeColor(1);
     uint32 displaySeadsId1;
     ChangeColor(1);
-    byte unk2[96];
+    Mat4x4 unkMat;
     ChangeColor(1);
+    TVector3 translation;
+    ChangeColor(1);
+    uint32 flags;
+    ChangeColor(1);
+    Quat rotation;
     float scale;
-    ChangeColor(1);
-    float unk[3];
+    float otherScale;
+    float oneOverScale;
+    float unkFloat1;
     ChangeColor(1);
     color colors<optimize=false>;
     ChangeColor(1);

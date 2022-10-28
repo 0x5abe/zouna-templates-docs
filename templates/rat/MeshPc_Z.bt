@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio Mesh_Z v1.06.63.0X
+//--- Asobo Studio MeshPc_Z v1.06.63.0X
 //------------------------------------------------
 
 //------------------------------------------------
@@ -28,6 +28,21 @@ void ChangeColor(byte bChangeColor) {
 
 //------------------------------------------------
 //--- Vector struct taken from tge
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+    float W;
+} TVector4 <read=TVector4ToString>;
+
+string TVector4ToString( TVector4& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f, %.6f]", value.X, value.Y, value.Z, value.W );
+    return buffer;
+}
 
 typedef struct
 {
@@ -82,14 +97,17 @@ string TVector3ByteToString( TVector3Byte& value )
 //------------------------------------------------
 
 struct Quat {
-    float x;
-    float y;
-    float z;
+    TVector3 v;
     float w;
 };
 
-struct Mat4f {
-    float mat[16];
+struct Mat4x4 {
+    TVector4 rows[4];
+};
+
+struct Sphere_Z {
+    TVector3 Center;
+    float radius;
 };
 
 struct LinkInfo {
@@ -97,9 +115,9 @@ struct LinkInfo {
     uint32 linkCount;
     uint32 linkedCrc32[linkCount];
     uint32 meshDataCrc32;
-    Quat rotation;
-    Mat4f transform;
-    float radius;
+    Sphere_Z bSphereLocal;
+    Mat4x4 unkMatrix;
+    float unkFloat;
     uint32 flags;
     uint16 type;
 };

@@ -26,6 +26,40 @@ void ChangeColor(byte bChangeColor) {
 
 //------------------------------------------------
 
+//------------------------------------------------
+//--- Vector struct taken from tge
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+    float W;
+} TVector4 <read=TVector4ToString>;
+
+string TVector4ToString( TVector4& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f, %.6f]", value.X, value.Y, value.Z, value.W );
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+} TVector3 <read=TVector3ToString>;
+
+string TVector3ToString( TVector3& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
+    return buffer;
+}
+
+//------------------------------------------------
+
 struct Quat {
     float x;
     float y;
@@ -33,8 +67,8 @@ struct Quat {
     float w;
 };
 
-struct Mat4f {
-    float mat[16];
+struct Mat4x4 {
+    TVector4 rows[4];
 };
 
 struct Vec3f {
@@ -43,9 +77,8 @@ struct Vec3f {
     float z;
 };
 
-
 struct Sphere_Z {
-    Mat4f transform;
+    TVector3 Center;
     float radius;
 };
 
@@ -54,8 +87,9 @@ struct LinkInfo {
     uint32 linkCount;
     uint32 linkedCrc32[linkCount];
     uint32 lodDataCrc32;
-    Quat rotation;
-    Sphere_Z bSphere;
+    Sphere_Z bSphereLocal;
+    Mat4x4 unkMatrix;
+    float unkFloat;
     uint32 flags;
     uint16 type;
 };
@@ -79,18 +113,17 @@ struct SphereColNode {
     byte data[28];
 };
 
-struct SphereCol {
-    Vec3f center;
-    float radius;
-    uint32 flags;
-    uint32 someCrc32;
+struct SphereCol_Z {
+    Sphere_Z sphere;
+    uint32 flag;
+    uint32 nameCrc32;
 };
 
-struct BoxCol
+struct BoxCol_Z
 {
-    Mat4f transformation;
-    uint32 flags;
-    uint32 someNameCRC321;
+    Mat4x4 transformation;
+    uint32 flag;
+    uint32 nameCrc32;
 };
 
 struct CylindreCol
@@ -104,9 +137,9 @@ struct Lod_Z {
         SphereColNode sphereColNode;
     }
     uint32 sphereColCount;
-    SphereCol spheresCols[sphereColCount];
+    SphereCol_Z spheresCols[sphereColCount];
     uint32 boxColCount;
-    BoxCol boxCols[boxColCount];
+    BoxCol_Z boxCols[boxColCount];
     uint32 cylindreColCount;
     CylindreCol cylindreCols[cylindreColCount];
     float closeX;
