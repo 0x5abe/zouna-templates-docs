@@ -90,39 +90,30 @@ struct ObjectDatas_Z {
     Sphere_Z bSphereLocal;   
 };
 
+struct Quat {
+    float x;
+    float y;
+    float z;
+    float w;
+};
+
 struct BoneNode_Z {
     ChangeColor(1);
     uint32 userDefineCrc32;
     ChangeColor(1);
-    float unkFloat1;
-    float unkFloat2;
-    float unkFloat3;
-    float unkFloat4;
-    float unkFloat5;
-    float unkFloat6;
-    float unkFloat7;
-    uint32 unkUint;
-    float unkFloat8;
-    float unkFloat9;
-    float unkFloat10;
+    Quat rotationInverse0;
+    TVector3 scale;
+    uint32 flags;
+    TVector3 unkMatRow0;
     uint32 placeHolderChildPtr;
-    float unkFloat11;
-    float unkFloat12;
-    float unkFloat13;
+    TVector3 unkMatRow1;
     short worldMatrixId;
     short inverseWorldMatrixId;
-    float unkFloat14;
-    float unkFloat15;
-    float unkFloat16;
+    TVector3 unkMatRow2;
     uint32 placeholderWorldMatrixPtr;
-    float unkFloat17;
-    float unkFloat18;
-    float unkFloat19;
+    TVector3 unkMatRow3;
     uint32 placeholderInverseWorldMatrixPtr;
-    float unkFloat20;
-    float unkFloat21;
-    float unkFloat22;
-    float unkFloat23;
+    Quat rotationInverse1;
     uint32 unkPtr1;
     uint32 unkPtr2;
     uint32 unkPtr3;
@@ -183,7 +174,7 @@ struct Skel_Z {
     ChangeColor(1);
     ObjectDatas_Z objectDatas;
     ChangeColor(1);
-    float unkFloats[4]; 
+    Quat maybeRot;
     ChangeColor(1);
     uint32 boneNodeCount;
     BoneNode_Z boneNodes[boneNodeCount] <optimize=false>;
@@ -196,7 +187,7 @@ struct Skel_Z {
     ChangeColor(1);
     uint32 meshDataCrc32s[meshDataCrc32Count];
     ChangeColor(1);
-    uint32 boneNodeGroupsCount;
+    uint32 boneNodeGroupsCount; //One boneGroup per mesh generally
     BoneNodeGroup boneNodeGroups[boneNodeGroupsCount]<optimize=false>;
     ChangeColor(1);
     uint32 unkCrc32Count;

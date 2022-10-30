@@ -3,10 +3,10 @@
 //--- Asobo Studio Lod_Z v1.06.63.0X
 //------------------------------------------------
 
+LittleEndian();
+
 //------------------------------------------------
 //--- Color Implementation taken from JPG.bt
-
-LittleEndian();
 
 local int colorSelect = 0;
 local int colorId = 0;
@@ -105,6 +105,7 @@ struct ObjectHeader {
 };
 
 struct ClassRes {
+    ChangeColor(1);
     uint32 unk1;
     uint32 crc32;
 };
@@ -114,6 +115,7 @@ struct SphereColNode {
 };
 
 struct SphereCol_Z {
+    ChangeColor(1);
     Sphere_Z sphere;
     uint32 flag;
     uint32 nameCrc32;
@@ -121,6 +123,7 @@ struct SphereCol_Z {
 
 struct BoxCol_Z
 {
+    ChangeColor(1);
     Mat4x4 transformation;
     uint32 flag;
     uint32 nameCrc32;
@@ -131,29 +134,41 @@ struct CylindreCol
 };
 
 struct Lod_Z {
+    ChangeColor(1);
     ObjectHeader objectHeader;
+    ChangeColor(1);
     uint32 bSphereColNode;
+    ChangeColor(1);
     if (bSphereColNode != 0) {
         SphereColNode sphereColNode;
     }
+    ChangeColor(1);
     uint32 sphereColCount;
     SphereCol_Z spheresCols[sphereColCount];
+    ChangeColor(1);
     uint32 boxColCount;
     BoxCol_Z boxCols[boxColCount];
+    ChangeColor(1);
     uint32 cylindreColCount;
     CylindreCol cylindreCols[cylindreColCount];
+    ChangeColor(1);
     float closeX;
     float closeY;
     float closeZ;
+    ChangeColor(1);
     uint32 crc32Count;
     uint32 crc32s[crc32Count];
+    ChangeColor(1);
     uint32 lastCrc32;
+    ChangeColor(1);
     uint32 classRes1Count;
     ClassRes classRes1s[classRes1Count];
     if (objectHeader.linkInfo.flags & 1048576) {
+        ChangeColor(1);
         uint32 classRes2Count;
         ClassRes classRes2s[classRes2Count];
     }
+    ChangeColor(1);
     uint32 userDefineCrc32;
 } lod;
 

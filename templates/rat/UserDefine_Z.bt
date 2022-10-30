@@ -3,10 +3,10 @@
 //--- Asobo Studio UserDefine_Z v1.06.63.0X
 //------------------------------------------------
 
+LittleEndian();
+
 //------------------------------------------------
 //--- Color Implementation taken from JPG.bt
-
-LittleEndian();
 
 local int colorSelect = 0;
 local int colorId = 0;
