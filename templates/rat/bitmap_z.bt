@@ -1,0 +1,53 @@
+//------------------------------------------------
+//--- 010 Editor v13.0 Binary Template
+//
+//      File: Ratatouille Bitmap_Z
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: *.Bitmap_Z
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+LittleEndian();
+
+struct LinkInfo {
+    uint32 linkCrc32;
+    uint32 linkCount;
+    uint32 linkedCrc32[linkCount];
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 linkSize;
+    uint32 decompressedSize;
+    uint32 compressedSize;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    LinkInfo linkInfo;
+};
+
+struct bitmap_z {
+    ObjectHeader header;
+    uint32 width;
+    uint32 height;
+    if (ReadUInt() != 0) {
+        uint32 ddsSize;
+        uint32 unk;
+        uint32 unk2;
+        byte dds[ddsSize];
+    }
+    else if (ReadUByte(44) == 12) {
+        uint32 unk;
+        uint32 unk;
+        uint32 unk;
+        ubyte image[width*height*4];
+    }
+    else if (ReadUByte(44) == 13) {
+        uint32 unk;
+        uint32 unk;
+        uint32 unk;
+        ubyte image[width*height*3];
+    };
+}Bitmap_Z;
