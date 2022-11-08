@@ -1,0 +1,176 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//--- Asobo Studio Compressed BaseObject_Z v1.06.63.0X
+//------------------------------------------------
+
+LittleEndian();
+BitfieldLeftToRight();
+BitfieldDisablePadding();
+local uint i;
+local uint j;
+
+//------------------------------------------------
+//--- Color Implementation taken from JPG.bt
+
+local int colorSelect = 0;
+local int colorId = 0;
+local DWORD clr = 0;
+local DWORD jetMap[6*3] = {
+	0x0000cc,0x0000ff,0x0033ff,0x0066ff,0x0099ff,0x00ccff,
+	0x00cccc,0x33ffcc,0x66ff99,0x99ff66,0xccff33,0xffff00,
+	0xffcc00,0xff9900,0xff6600,0xff3300,0xff0000,0xcc0000
+};
+
+void ChangeColor(byte bChangeColor) {
+	if(bChangeColor == 1) {colorSelect++; colorId = 0;}
+	clr = jetMap[(colorSelect%3)*6+(colorId%6)];
+	SetBackColor(clr);
+	colorId++;
+}
+
+//------------------------------------------------
+
+//------------------------------------------------
+//--- Vector struct taken from tge
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+    float W;
+} TVector4 <read=TVector4ToString>;
+
+string TVector4ToString( TVector4& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f, %.6f]", value.X, value.Y, value.Z, value.W );
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+} TVector3 <read=TVector3ToString>;
+
+string TVector3ToString( TVector3& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
+
+    return buffer;
+}
+
+//------------------------------------------------
+
+struct Mat4x4 {
+    TVector4 rows[4];
+};
+
+struct Sphere_Z {
+    TVector3 Center;
+    float radius;
+};
+
+struct LinkInfo {
+    uint32 linkCrc32;
+    uint32 linkCount;
+    uint32 linkedCrc32[linkCount];
+    uint32 meshDataCrc32;
+    Sphere_Z bSphereLocal;
+    Mat4x4 unkMatrix;
+    float unkFloat;
+    uint32 flags;
+    uint16 type;
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 linkSize;
+    uint32 decompressedSize;
+    uint32 compressedSize;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    LinkInfo linkInfo;
+};
+
+struct SymbolLiteral 
+{
+	char literal;
+};
+
+struct SymbolRepeated(uint matchLengthBitWidth) 
+{
+	uint16 matchLength : matchLengthBitWidth <read=displayMatchLength,optimize=false>;
+    uint16 jumpBackLength : (16 - matchLengthBitWidth) <read=displayJumpBackLength,optimize=false>;
+    
+};
+
+struct Flag {
+    for (j = 0; j < 30; j++) {
+        uint isRepeated : 1;
+    }
+	uint matchLengthBitWidth : 2 <read=displayMatchLengthBitWidth,optimize=false>;
+};
+
+struct CompressedChunk(uint& byteCount, uint compressedSize) 
+{
+	Flag flag;
+	byteCount += 4;
+	for (j = 0; j < 30 && byteCount+8 < compressedSize; j++) {
+		if (flag.isRepeated[j]) {
+			SymbolRepeated s(flag.matchLengthBitWidth+2);
+			byteCount += 2;
+		} else {
+			SymbolLiteral s;
+			byteCount += 1;
+		}
+	}
+};
+
+struct CompressedData 
+{
+	uint decompressedSize;
+    ChangeColor(1);
+	uint compressedSize;
+    ChangeColor(1);
+    i = 0;
+	while (i+8 < compressedSize) {
+        ChangeColor(1);
+		CompressedChunk chunk(i, compressedSize);
+	}
+};
+
+struct Object_Z
+{
+    ChangeColor(1);
+    ObjectHeader objHeader;
+    ChangeColor(1);
+    CompressedData data;
+} object;
+
+string displayMatchLengthBitWidth(uint value)
+{
+    local string str = "";
+    SPrintf(str, "%d", value+2);
+
+    return str;
+}
+
+string displayMatchLength(uint value)
+{
+    local string str = "";
+    SPrintf(str, "%d", value+3);
+
+    return str;
+}
+
+string displayJumpBackLength(uint value)
+{
+    local string str = "";
+    SPrintf(str, "%d", value+1);
+
+    return str;
+}

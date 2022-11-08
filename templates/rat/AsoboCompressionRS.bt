@@ -1,0 +1,80 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//--- Asobo Studio Compression (RS)
+//------------------------------------------------
+
+LittleEndian();
+BitfieldLeftToRight();
+BitfieldDisablePadding();
+local uint i;
+local uint j;
+
+//------------------------------------------------
+
+struct SymbolLiteral 
+{
+	char literal;
+};
+
+struct SymbolRepeated(uint matchLengthBitWidth) 
+{
+	uint16 matchLength : matchLengthBitWidth <read=displayMatchLength,optimize=false>;
+    uint16 jumpBackLength : (16 - matchLengthBitWidth) <read=displayJumpBackLength,optimize=false>;
+    
+};
+
+struct Flag {
+    for (j = 0; j < 30; j++) {
+        uint isRepeated : 1;
+    }
+	uint matchLengthBitWidth : 2 <read=displayMatchLengthBitWidth,optimize=false>;
+};
+
+struct CompressedChunk(uint& byteCount, uint compressedSize) 
+{
+	Flag flag;
+	byteCount += 4;
+	for (j = 0; j < 30 && byteCount+8 < compressedSize; j++) {
+		if (flag.isRepeated[j]) {
+			SymbolRepeated s(flag.matchLengthBitWidth+2);
+			byteCount += 2;
+		} else {
+			SymbolLiteral s;
+			byteCount += 1;
+		}
+	}
+};
+
+struct CompressedData 
+{
+	uint decompressedSize;
+	uint compressedSize;
+    i = 0;
+	while (i+8 < compressedSize) {
+		CompressedChunk chunk(i, compressedSize);
+	}
+};
+
+string displayMatchLengthBitWidth(uint value)
+{
+    local string str = "";
+    SPrintf(str, "%d", value+2);
+
+    return str;
+}
+
+string displayMatchLength(uint value)
+{
+    local string str = "";
+    SPrintf(str, "%d", value+3);
+
+    return str;
+}
+
+string displayJumpBackLength(uint value)
+{
+    local string str = "";
+    SPrintf(str, "%d", value+1);
+
+    return str;
+}
