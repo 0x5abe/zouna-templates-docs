@@ -53,7 +53,7 @@ struct CompressedData
 	while (i+8 < compressedSize) {
 		CompressedChunk chunk(i, compressedSize);
 	}
-};
+} data;
 
 string displayMatchLengthBitWidth(uint value)
 {

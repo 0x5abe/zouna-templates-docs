@@ -117,7 +117,7 @@ struct LinkInfo {
     uint32 meshDataCrc32;
     Sphere_Z bSphereLocal;
     Mat4x4 unkMatrix;
-    float unkFloat;
+    float fadeOutDistance;
     uint32 flags;
     uint16 type;
 };
@@ -192,11 +192,11 @@ struct CylindreCol {
     uint32 nameCrc32;
 };
 
-struct AABBColRelated {
-    int16 unk1;
-    int16 unk2; 
-    int16 unk3;
-    int16 zero;
+struct AABBColTri {
+    int16 firstVertexId;
+    int16 secondVertexId;
+    int16 thirdVertexId;
+    int16 materialIndex;
 };
 
 struct AABBCol {
@@ -262,41 +262,53 @@ struct Points_Z {
 struct Mesh_Z {
     Points_Z points;
     ChangeColor(1);
-    uint32 unk1Count;
+    uint32 uvCount;
     ChangeColor(1);
-    byte unk1s[8*unk1Count];
-    if (unk1Count != 0) {ChangeColor(1);}
-    uint32 unk2Count;
+    struct {
+        float u;
+        float v;
+    } uvs[8*uvCount];
+    if (uvCount != 0) {ChangeColor(1);}
+    uint32 normalCount;
     ChangeColor(1);
-    byte unk2s[12*unk2Count];
-    if (unk2Count != 0) {ChangeColor(1);}
-    uint32 unk3Count;
+    struct {
+        float x;
+        float y;
+        float z;
+    } normals[12*normalCount];
+    if (normalCount != 0) {ChangeColor(1);}
+    uint32 stripCount;
     ChangeColor(1);
-    struct unk3 {
+    struct {
         uint32 unk4Count;
         ChangeColor(1);
         byte unk4s[2*unk4Count];
         if (unk4Count != 0) {ChangeColor(1);}
         byte unk5[8];
         ChangeColor(1);
-    } unk3s[unk3Count];
+    } strips[stripCount];
     if (points.header.linkInfo.flags & 2) {
-        byte unk6[4*unk3Count];
-        if (unk3Count != 0) {ChangeColor(1);}
+        byte unk6[4*stripCount];
+        if (stripCount != 0) {ChangeColor(1);}
     }
-    uint32 unk7Count;
+    uint32 stripExtCount;
     ChangeColor(1);
-    struct unk7 {
+    struct {
         uint32 unk8Count;
         ChangeColor(1);
         byte unk8s[8*unk8Count];
         if (unk8Count != 0) {ChangeColor(1);}
-    } unk7s[unk7Count];
+    } stripExts[stripExtCount];
     uint32 materialCrc32Count;
     ChangeColor(1);
     uint32 materialCrc32s[materialCrc32Count];
     ChangeColor(1);
-    byte stuffRelatedToCounts[24];
+    float drawingStartDistance;
+    float drawingCutoffDistance;
+    uint shadowRelated;
+    uint unkUintRelatedToCount2;
+    uint unkUintRelatedToCount3;
+    uint unkUintRelatedToCount4;
     ChangeColor(1);
     uint32 sphereColCount;
     ChangeColor(1);
@@ -310,9 +322,9 @@ struct Mesh_Z {
     ChangeColor(1);
     CylindreCol cylindreCols[cylindreColCount];
     ChangeColor(1);
-    uint32 AABBColRelatedCount;
+    uint32 AABBColTriCount;
     ChangeColor(1);
-    AABBColRelated AABBColRelateds[AABBColRelatedCount]; 
+    AABBColTri AABBColTris[AABBColTriCount]; 
     ChangeColor(1);
     uint32 AABBColCount;
     ChangeColor(1);
@@ -331,8 +343,8 @@ struct VertexStruct60 {
     TVector3Byte normals;
     ubyte normalPadding;
     TVector2 UV;
-    float blendIndices[4];
-    float blends[4];  
+    float blendIndices[4] <read=matIndexToBoneIndex,optimize=false>;
+    float blendWeights[4];  
 };
 
 struct VertexStruct48 {
@@ -418,10 +430,16 @@ struct MeshPC_Z {
 
 void PrintInfo() {
     local uint32 i;
+    local uint32 j;
+    local uint32 k;
+    local float maxBlendIndex = -1;
     Printf("-- Info -- #materials: %d\n", meshPc.mesh.materialCrc32Count);
     Printf("-- Info -- #short-vertices: %d\n", meshPc.mesh.vertexCount);
     for (i = 0; i < meshPc.vertexBufferCount; i++) {
         Printf("-- Info -- #vertex-structs in VB #%d: %d\n", i, meshPc.vertexBuffers[i].vertexStructCount);
+        //for (j = 0; j < meshPc.vertexBuffers[i].vertexStructCount; j++) {
+            //Printf("-- Info -- #VB #%d | vertex #%d | tangent : %s\n", i, j, TVector3ByteToString(meshPc.vertexBuffers[i].vertexStructs[j].tangent));
+        //}
     }
     for (i = 0; i < meshPc.indexBufferCount; i++) {
         Printf("-- Info -- #faces in IB #%d: %d\n", i, meshPc.indexBuffers[i].faceCount);
@@ -439,6 +457,14 @@ string byteToFloat(ubyte& value )
     local float normalByteToD3DColorComponent = ((value/255.0));
     local float normalByteToFloat = ((normalByteToD3DColorComponent * 2) - 1);
     SPrintf(str, "%f",normalByteToFloat);
+
+    return str;
+}
+
+string matIndexToBoneIndex(float& value )
+{
+    local string str = "";
+    SPrintf(str, "%.0f", value/6);
 
     return str;
 }

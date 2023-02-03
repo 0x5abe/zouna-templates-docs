@@ -1,0 +1,287 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//--- Asobo Studio Surface_Z v1.06.63.0X
+//------------------------------------------------
+
+LittleEndian();
+BitfieldLeftToRight();
+BitfieldDisablePadding();
+
+//------------------------------------------------
+//--- Color Implementation taken from JPG.bt
+
+local int colorSelect = 0;
+local int colorId = 0;
+local DWORD clr = 0;
+local DWORD jetMap[6*3] = {
+	0x0000cc,0x0000ff,0x0033ff,0x0066ff,0x0099ff,0x00ccff,
+	0x00cccc,0x33ffcc,0x66ff99,0x99ff66,0xccff33,0xffff00,
+	0xffcc00,0xff9900,0xff6600,0xff3300,0xff0000,0xcc0000
+};
+
+void ChangeColor(byte bChangeColor) {
+	if(bChangeColor == 1) {colorSelect++; colorId = 0;}
+	clr = jetMap[(colorSelect%3)*6+(colorId%6)];
+	SetBackColor(clr);
+	colorId++;
+}
+
+//------------------------------------------------
+
+//------------------------------------------------
+//--- Vector struct taken from tge
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+    float W;
+} TVector4 <read=TVector4ToString>;
+
+string TVector4ToString( TVector4& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f, %.6f]", value.X, value.Y, value.Z, value.W );
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+} TVector3 <read=TVector3ToString>;
+
+string TVector3ToString( TVector3& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
+
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+} TVector2 <read=TVector2ToString>;
+
+string TVector2ToString( TVector2& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f]", value.X, value.Y );
+
+    return buffer;
+}
+
+typedef struct
+{
+    ubyte X<read=byteToFloat,optimize=false>;
+    ubyte Y<read=byteToFloat,optimize=false>;
+    ubyte Z<read=byteToFloat,optimize=false>;
+} TVector3Byte <read=TVector3ByteToString>;
+
+string TVector3ByteToString( TVector3Byte& value )
+{
+    local char buffer[255];
+    local float normalByteToD3DColorComponentX = ((value.X/255.0));
+    local float normalByteToFloatX = ((normalByteToD3DColorComponentX * 2) - 1);
+    local float normalByteToD3DColorComponentY = ((value.Y/255.0));
+    local float normalByteToFloatY = ((normalByteToD3DColorComponentY * 2) - 1);
+    local float normalByteToD3DColorComponentZ = ((value.Z/255.0));
+    local float normalByteToFloatZ = ((normalByteToD3DColorComponentZ * 2) - 1);
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", normalByteToFloatX, normalByteToFloatY, normalByteToFloatZ );
+
+    return buffer;
+}
+
+//------------------------------------------------
+
+struct Quat {
+    TVector3 v;
+    float w;
+};
+
+struct Mat4x4 {
+    TVector4 rows[4];
+};
+
+struct Sphere_Z {
+    TVector3 Center;
+    float radius;
+};
+
+struct Box_Z
+{
+    Mat4x4 transformation;
+};
+
+struct LinkInfo {
+    uint32 linkCrc32;
+    uint32 linkCount;
+    uint32 linkedCrc32[linkCount];
+    uint32 meshDataCrc32;
+    Sphere_Z bSphereLocal;
+    Mat4x4 unkMatrix;
+    float unkFloat;
+    uint32 flags;
+    uint16 type;
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 linkSize;
+    uint32 decompressedSize;
+    uint32 compressedSize;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    LinkInfo linkInfo;
+};
+
+struct PointsRelated0 {
+    ChangeColor(1);
+    TVector3 vec3;
+};
+
+struct PointsRelated1 {
+    ChangeColor(1);
+    TVector4 vec4;
+};
+
+struct MorpherRelated {
+    byte data[16];
+};
+
+struct MorphTargetDescRelated {
+    byte data[16];
+};
+
+struct MorphTargetDesc_Z {
+    uint32 name;
+    uint32 MorphTargetDescRelatedCount;
+    MorphTargetDescRelated MorphTargetDescRelateds[MorphTargetDescRelatedCount];
+};
+
+struct Morpher_Z {
+    uint32 MorpherRelatedCount;
+    MorpherRelated MorpherRelateds[MorpherRelatedCount];
+    ChangeColor(1);
+    uint32 morphTargetDescCount;
+    MorphTargetDesc_Z morphTargetDescs[morphTargetDescCount];
+};
+
+struct Points_Z {
+    ObjectHeader header;
+    ChangeColor(1);
+    uint32 PointsRelated0Count;
+    PointsRelated0 PointsRelateds0[PointsRelated0Count]<optimize=false>;
+    ChangeColor(1);
+    uint32 PointsRelated1Count;
+    PointsRelated1 PointsRelateds1[PointsRelated1Count]<optimize=false>;
+    ChangeColor(1);
+    Morpher_Z morpher;
+};
+
+struct unkStruct1 {
+    ChangeColor(1);
+    float unkFloats[4];
+    uint unkPlaceholderPtr1;
+    uint unkNumber;
+    uint unkPlaceholderPtr2;
+    uint unkPlaceholderPtr3;
+}; // IDK
+
+struct unkStruct2 {
+    ChangeColor(1);
+    TVector4 vec4f;
+    uint unkUints[3];
+    float unkFloat;
+}; // EDGECOL?
+
+struct Patch_Z {
+    ChangeColor(1);
+    uint16 flag;
+    uint16 indexInUnkShortDA;
+    uint16 edgeIndices[4];
+    uint32 materialAnimIndex; //gets replaced
+    byte unk2[4];
+    Sphere_Z someSphere;
+    byte unk3[28];
+    Box_Z BBox;
+    byte unk4[44];
+    uint materialAnimCrc32;
+};
+
+struct Edge_Z {
+    ChangeColor(1);
+    uint16 P[2];
+    uint16 T[2];
+};
+
+struct unk32ByteStruct {
+    byte data[32];
+};
+
+struct SeadVoxel_Z {
+    uint16 elementEntry;
+    uint16 numElement;
+};
+
+struct SeadIndex_Z {
+    ChangeColor(1);
+    uint seadVoxelCount;
+    SeadVoxel_Z seadVoxels[seadVoxelCount];
+    ChangeColor(1);
+    uint elementCount;
+    uint16 elements[elementCount];
+    ChangeColor(1);
+    byte unkBytes[208];
+    ChangeColor(1);
+    uint repeatedPatchCount;
+};
+
+struct shouldDrawBitfield {
+    byte indexInDrawInfoArray : 3;
+    byte shiftAmountForBit : 5;
+    byte other;
+};
+
+struct Surface_Z {
+    ChangeColor(1);
+    Points_Z points;
+    ChangeColor(1);
+    uint unkStruct1Count;
+    unkStruct1 unkStructs1[unkStruct1Count];
+    ChangeColor(1);
+    uint unkStruct2Count;
+    unkStruct2 unkStructs2[unkStruct2Count];
+    ChangeColor(1);
+    uint patchCount;
+    Patch_Z patches[patchCount];
+    ChangeColor(1);
+    uint edgeCount;
+    Edge_Z edges[edgeCount];
+    ChangeColor(1);
+    uint maybeNormalCount;
+    TVector3 maybeNormals[maybeNormalCount];
+    ChangeColor(1);
+    uint unkVec3fCount;
+    TVector3 unkVec3fs[unkVec3fCount];
+    ChangeColor(1);
+    uint unkVec2fCount;
+    TVector2 unkVec2fs[unkVec2fCount];
+    ChangeColor(1);
+    //Occlusion related, maybe backFaceCulling
+    uint shouldDrawRelatedCount; //Related to should draw
+    shouldDrawBitfield shouldDrawRelateds[shouldDrawRelatedCount];
+    ChangeColor(1);
+    uint unk32ByteStructCount;
+    unk32ByteStruct unk32ByteStructs[unk32ByteStructCount];
+    ChangeColor(1);
+    byte isSead;
+    if (isSead) {
+        ChangeColor(1);
+        SeadIndex_Z seadIndex;
+    }
+} surface;

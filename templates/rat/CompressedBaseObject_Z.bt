@@ -8,6 +8,7 @@ BitfieldLeftToRight();
 BitfieldDisablePadding();
 local uint i;
 local uint j;
+local int maxMatchLength = -1;
 
 //------------------------------------------------
 //--- Color Implementation taken from JPG.bt
@@ -54,15 +55,17 @@ struct SymbolLiteral
 struct SymbolRepeated(uint matchLengthBitWidth) 
 {
 	uint16 matchLength : matchLengthBitWidth <read=displayMatchLength,optimize=false>;
-    uint16 jumpBackLength : (16 - matchLengthBitWidth) <read=displayJumpBackLength,optimize=false>;
-    
+    if (matchLength+3 > maxMatchLength) {
+        maxMatchLength = matchLength+3;
+    }
+    uint16 jumpBackLength : (16 - matchLengthBitWidth) <read=displayJumpBackLength,optimize=false>;  
 };
 
 struct Flag {
     for (j = 0; j < 30; j++) {
         uint isRepeated : 1;
     }
-	uint matchLengthBitWidth : 2 <read=displayMatchLengthBitWidth,optimize=false>;
+    uint matchLengthBitWidth : 2 <read=displayMatchLengthBitWidth,optimize=false>;
 };
 
 struct CompressedChunk(uint& byteCount, uint compressedSize) 
@@ -99,6 +102,7 @@ struct BaseObject_Z
     ObjectHeader objHeader;
     ChangeColor(1);
     CompressedData data;
+    Printf("%d", maxMatchLength);
 } baseObject;
 
 string displayMatchLengthBitWidth(uint value)

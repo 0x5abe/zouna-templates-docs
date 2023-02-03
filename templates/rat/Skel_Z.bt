@@ -101,19 +101,19 @@ struct BoneNode_Z {
     ChangeColor(1);
     uint32 userDefineCrc32;
     ChangeColor(1);
-    Quat rotationInverse0;
+    Quat localRotation;
     TVector3 scale;
     uint32 flags;
-    TVector3 unkMatRow0;
+    TVector3 localTranslation;
     uint32 placeHolderChildPtr;
-    TVector3 unkMatRow1;
-    short worldMatrixId;
-    short inverseWorldMatrixId;
-    TVector3 unkMatRow2;
-    uint32 placeholderWorldMatrixPtr;
-    TVector3 unkMatRow3;
-    uint32 placeholderInverseWorldMatrixPtr;
-    Quat rotationInverse1;
+    TVector3 modelRotMatrixRow1;
+    short modelMatrixId;
+    short inverseModelMatrixId;
+    TVector3 modelRotMatrixRow2;
+    uint32 placeholderModelMatrixPtr;
+    TVector3 modelRotMatrixRow3;
+    uint32 placeholderInverseModelMatrixPtr;
+    Quat localRotationInverse1;
     uint32 unkPtr1;
     uint32 unkPtr2;
     uint32 unkPtr3;
@@ -127,7 +127,7 @@ struct BoneNode_Z {
     uint32 unkPtr9;
     uint32 placeHolderNextSiblingPtr;
     ChangeColor(1);
-    Mat4x4 originalWorldTransform;
+    Mat4x4 originalModelTransform;
     ChangeColor(1);
     int childBoneId;
     int parentBoneId;
@@ -209,7 +209,9 @@ void PrintInfo() {
     local uint32 i;
     for (i = 0; i < skel.boneNodeCount; i++) {
         if (skel.boneNodes[i].userDefineCrc32 != 0) {
-            Printf("-- Info -- BoneNode #%d has userDefine: %u\n", i, skel.boneNodes[i].userDefineCrc32);
+            //Printf("-- Info -- BoneNode #%d has userDefine: %u\n", i, skel.boneNodes[i].userDefineCrc32);
         }
+        //Printf("-- Info -- BoneNode #%d Scale:  [%.6f, %.6f, %.6f]\n", i, skel.boneNodes[i].scale.X, skel.boneNodes[i].scale.Y, skel.boneNodes[i].scale.Z);
+        //Printf("%u\n", skel.boneNodes[i].boneNameCrc32);
     }
 }
