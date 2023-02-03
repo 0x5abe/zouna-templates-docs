@@ -433,7 +433,7 @@ def readSkin(f,curMeshObjects=0):
     linkCount = reader.read_uint32()
     reader.seek(4*linkCount,1)
     skelCrc32 = reader.read_uint32()
-    if (skelCrc32 is not 0):
+    if (skelCrc32 != 0):
         rig = execute(skelCrc32)
     
     #print("skel_z is totes: ", skelCrc32)
@@ -501,19 +501,20 @@ def readSkin(f,curMeshObjects=0):
     boneNames.clear()
     bones.clear()
     boneTrans.clear()
+    boneRot.clear()
     
     return curMeshObjects + skinSectionCount
 
 def loadAll(path):
     curMeshObjs = 0
-    
-    for file in os.listdir(rootpath):
+    rootpathDir = os.listdir(rootpath)
+    for file in rootpathDir:
         
         if file.endswith(".Skin_Z"):
             f = open(os.path.join(rootpath, file), "rb")
             print("loading: " + os.path.join(path, file))
             
-            curMeshObjs = readSkin(f.curMeshObjs)
+            curMeshObjs = readSkin(f,curMeshObjs)
             
     for file in os.listdir(rootpath):
         
