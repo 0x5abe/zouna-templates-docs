@@ -437,7 +437,7 @@ def readMesh_Z(f,subsectionMatIndices,meshBoneCrc32s=None):
     globalMeshObjects.append(meshObjects)
 
 
-def readSkin(f,curMeshObjects=0):
+def readSkin(f):
     subSectionMaterialIndices = []
     reader = BinaryReader(f.read())
     reader.set_endian(False)
@@ -453,6 +453,10 @@ def readSkin(f,curMeshObjects=0):
     skelCrc32 = reader.read_uint32()
     if (skelCrc32 != 0):
         rig = execute(skelCrc32,namecrc32)
+    else:
+        ShowMessageBox("Unsupported Skin_Z", "Alert", 'ERROR')
+        print("No skel skin (??) : " + str(namecrc32))
+        return
     
     #print("skel_z is totes: ", skelCrc32)
     reader.seek(16,1)
@@ -508,7 +512,7 @@ def readSkin(f,curMeshObjects=0):
         mf = open(meshName, "rb")
         readMesh_Z(mf,subSectionMaterialIndices,meshBoneCrc32s)
         
-    for i in range(curMeshObjects, curMeshObjects+skinSectionCount):
+    for i in range(0, len(globalMeshObjects)):
         for mesh_obj in globalMeshObjects[i]:
             mesh_obj.parent = rig
             modifier = mesh_obj.modifiers.new('Armature Rig', 'ARMATURE')
@@ -520,19 +524,17 @@ def readSkin(f,curMeshObjects=0):
     bones.clear()
     boneTrans.clear()
     boneRot.clear()
-    
-    return curMeshObjects + skinSectionCount
+    globalMeshObjects.clear()
 
 def loadAll(path):
     curMeshObjs = 0
     rootpathDir = os.listdir(rootpath)
     for file in rootpathDir:
-        
         if file.endswith(".Skin_Z"):
             f = open(os.path.join(rootpath, file), "rb")
             print("loading: " + os.path.join(path, file))
             
-            curMeshObjs = readSkin(f,curMeshObjs)
+            readSkin(f)
             
     for file in os.listdir(rootpath):
         
@@ -556,6 +558,14 @@ def loadOne(path):
         print("loading: " + path)
             
         readMesh_Z(f,[])
+
+def ShowMessageBox(message = "", title = "Message Box", icon = 'INFO'):
+
+    def draw(self, context):
+        self.layout.label(text=message)
+
+    bpy.context.window_manager.popup_menu(draw, title = title, icon = icon)
+
 
 # Load specific skin/mesh
 
