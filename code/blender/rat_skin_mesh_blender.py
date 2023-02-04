@@ -375,6 +375,22 @@ def readMesh_Z(f,subsectionMatIndices,meshBoneCrc32s=None):
                         meshBoneCrc32s[i][curBoneIndex] = curBoneName
                         
                     vert[weight_layer][boneNames.index(str(curBoneName))] = weights[k]
+            elif (vertexSize == 48):
+                weightIndex = reader.read_float()
+                reader.read_float()
+                reader.read_float()
+                reader.read_float()
+                weight = reader.read_float()
+                if (weight != 0.0):
+                    curBoneIndex = int(weightIndex//6)
+                    
+                    curBoneName = meshBoneCrc32s[i][curBoneIndex]
+
+                    if (curBoneName == 4294967295 or curBoneName == 4294967294):
+                        curBoneName = meshBoneCrc32s[i-1][curBoneIndex]
+                        meshBoneCrc32s[i][curBoneIndex] = curBoneName
+                        
+                    vert[weight_layer][boneNames.index(str(curBoneName))] = weight
             else:
                 reader.read_bytes(vertexSize - 28)
                 
