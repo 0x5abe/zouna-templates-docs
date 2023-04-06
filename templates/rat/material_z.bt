@@ -1,0 +1,78 @@
+//------------------------------------------------
+//--- 010 Editor v13.0.1 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+LittleEndian();
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+} TVector3 <read=TVector3ToString>;
+
+string TVector3ToString( TVector3& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
+    return buffer;
+}
+struct mat3x3 {
+    TVector3 rows[3];
+};
+struct LinkInfo {
+    uint32 linkCrc32;
+    uint32 linkCount;
+    uint32 linkedCrc32[linkCount];
+    ubyte links[header.linkSize - (linkCount * 4) - 8];
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 linkSize;
+    uint32 decompressedSize;
+    uint32 compressedSize;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    LinkInfo linkInfo;
+};
+struct color {
+    float r;
+    float g;
+    float b;
+};
+
+struct material_z {
+    ObjectHeader header;
+    color diffuseColor;
+    float diffuseOpacity;
+    color emissiveColor;
+    uint32 cdcdcdcd;
+    mat3x3 uvTransformationMatrix;
+    float unks[8];
+    uint32 cdcdcdcd;
+    uint32 cdcdcdcd;
+    uint32 cdcdcdcd;
+    float diffuseTranslation[2];
+    float diffuseScale[2];
+    float diffuseRotation;
+    uint32 flags[2];
+    ubyte textureFlag;
+    if (textureFlag == 1){
+        uint32 diffuseTex;
+    }
+    else if (textureFlag == 3){
+        uint32 diffuseTex; 
+        uint32 unkTex;
+    }
+    else{
+        uint32 tex[4];
+    };
+}Material_Z;
