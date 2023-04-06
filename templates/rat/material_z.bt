@@ -63,7 +63,7 @@ struct material_z {
     float diffuseTranslation[2];
     float diffuseScale[2];
     float diffuseRotation;
-    uint32 flags[2];
+    uint32 flags[3];
     ubyte textureFlag;
     if (textureFlag == 1){
         uint32 diffuseTex;
