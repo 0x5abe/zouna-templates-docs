@@ -347,7 +347,7 @@ struct VertexStruct60 {
     float blendWeights[4];  
 };
 
-struct VertexStruct48 {
+struct VertexStruct48_blend1 {
     ChangeColor(1);
     TVector3 coordinates;
     TVector3Byte tangent;
@@ -356,6 +356,14 @@ struct VertexStruct48 {
     ubyte normalPadding;
     TVector2 UV;
     float unk[5];
+};
+
+struct VertexStruct48_skinVolume {
+    ChangeColor(1);
+    TVector3 coordinates;
+    TVector3 unk1;
+    TVector3 unk2;
+    TVector3 blendIndices;
 };
 
 struct VertexStruct36 {
@@ -399,7 +407,8 @@ struct MeshPC_Z {
                 VertexStruct60 vertexStructs[vertexStructCount] <optimize=false>;
                 break;
             case 48:        
-                VertexStruct48 vertexStructs[vertexStructCount] <optimize=false>;
+                VertexStruct48_skinVolume vertexStructs[vertexStructCount] <optimize=false>;
+                //VertexStruct48_blend1 vertexStructs[vertexStructCount] <optimize=false>;
                 break;
             case 36:        
                 VertexStruct36 vertexStructs[vertexStructCount] <optimize=false>;

@@ -44,10 +44,10 @@ struct ObjectHeader {
 
 struct RotFrame {
     float time;
-    uint16 a;
-    uint16 b;
-    uint16 c;
-    uint16 d;
+    int16 x <read=int16ToFloat,optimize=false>;
+    int16 y <read=int16ToFloat,optimize=false>;
+    int16 z <read=int16ToFloat,optimize=false>;
+    int16 w <read=int16ToFloat,optimize=false>;
 };
 
 struct KeyframerRot_Z {
@@ -96,12 +96,12 @@ struct Message_Z {
 struct KeyMessage_Z {
     float time;
     uint32 messageCount;
-    Message_Z messages[messageCount];
+    Message_Z messages[messageCount] <optimize=false>;
 };
 
 struct KeyframerMessage_Z {
     uint32 keyMessageCount;
-    KeyMessage_Z keyMessages[keyMessageCount];
+    KeyMessage_Z keyMessages[keyMessageCount] <optimize=false>;
 };
 
 struct FloatCompFrame {
@@ -224,4 +224,13 @@ void PrintInfo() {
             Printf("-- Info -- animNodeModifier #%d has message(s) -- index: %d | count: %d \n", i, animation.animationNodeModifiers[i].messageStartFrame, animation.animationNodeModifiers[i].messageFrameCount);
         }
     }
+}
+
+string int16ToFloat(int16& value )
+{
+    local string str = "";
+    local float int16ToFloat = (float)value*0.0005;
+    SPrintf(str, "%f",int16ToFloat);
+
+    return str;
 }
