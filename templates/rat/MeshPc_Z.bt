@@ -114,7 +114,7 @@ struct LinkInfo {
     uint32 linkCrc32;
     uint32 linkCount;
     uint32 linkedCrc32[linkCount];
-    uint32 meshDataCrc32;
+    uint32 dataCrc32;
     Sphere_Z bSphereLocal;
     Mat4x4 unkMatrix;
     float fadeOutDistance;
@@ -252,9 +252,9 @@ struct Triangle {
 struct Points_Z {
     ObjectHeader header;
     ChangeColor(1);
-    uint32 PointsRelated0Count;
+    uint32 PointsRelated0Count; // maybe vertices
     PointsRelated0 PointsRelateds0[PointsRelated0Count];
-    uint32 PointsRelated1Count;
+    uint32 PointsRelated1Count; // maybe normals
     PointsRelated1 PointsRelateds1[PointsRelated1Count];
     Morpher_Z morpher;
 };
@@ -332,7 +332,7 @@ struct Mesh_Z {
     ChangeColor(1);
     uint32 vertexCount;
     ChangeColor(1);
-    Vertex vertices[vertexCount];
+    Vertex vertices[vertexCount]; //Used for AABB col
 };
 
 struct VertexStruct60 {

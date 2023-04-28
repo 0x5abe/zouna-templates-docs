@@ -62,21 +62,21 @@ struct BezierRotFrame {
 
 struct KeyframerBezierRot_Z {
     uint32 bezierRotFrameCount;
-    RotFrame rotFrames[bezierRotFrameCount];
+    BezierRotFrame rotFrames[bezierRotFrameCount];
 };
 
 struct Vec3fCompFrame {
     float time;
-    uint16 a;
-    uint16 b;
-    uint16 c;
-    uint16 d;
-    uint16 e;
-    uint16 f;
-    uint16 g;
-    uint16 h;
-    uint16 i;
-    uint16 j;
+    int16 a;
+    int16 b;
+    int16 c;
+    int16 d;
+    int16 e;
+    int16 f;
+    int16 g;
+    int16 h;
+    int16 i;
+    int16 j;
 };
 
 struct KeyframerVec3fComp_Z {
@@ -106,10 +106,10 @@ struct KeyframerMessage_Z {
 
 struct FloatCompFrame {
     float time;
-    uint16 a;
-    uint16 b;
-    uint16 c;
-    uint16 d;
+    int16 a;
+    int16 b;
+    int16 c;
+    int16 d;
 };
 
 struct KeyframerFloatComp_Z

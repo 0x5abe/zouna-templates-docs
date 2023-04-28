@@ -89,7 +89,7 @@ struct LinkInfo {
     uint32 lodDataCrc32;
     Sphere_Z bSphereLocal;
     Mat4x4 unkMatrix;
-    float unkFloat;
+    float fadeOutDistance;
     uint32 flags;
     uint16 type;
 };
@@ -106,7 +106,7 @@ struct ObjectHeader {
 
 struct ClassRes {
     ChangeColor(1);
-    uint32 unk1;
+    uint32 id;
     uint32 crc32;
 };
 
@@ -124,7 +124,7 @@ struct SphereCol_Z {
 struct BoxCol_Z
 {
     ChangeColor(1);
-    Mat4x4 transformation;
+    Mat4x4 box;
     uint32 flag;
     uint32 nameCrc32;
 };
@@ -156,17 +156,17 @@ struct Lod_Z {
     float closeY;
     float closeZ;
     ChangeColor(1);
-    uint32 crc32Count;
-    uint32 crc32s[crc32Count];
+    uint32 componentCrc32Count;
+    uint32 componentCrc32s[componentCrc32Count];
     ChangeColor(1);
-    uint32 lastCrc32;
+    uint32 shadowCrc32;
     ChangeColor(1);
-    uint32 classRes1Count;
-    ClassRes classRes1s[classRes1Count];
+    uint32 animCount;
+    ClassRes anims[animCount];
     if (objectHeader.linkInfo.flags & 1048576) {
         ChangeColor(1);
-        uint32 classRes2Count;
-        ClassRes classRes2s[classRes2Count];
+        uint32 soundCount;
+        ClassRes sounds[soundCount];
     }
     ChangeColor(1);
     uint32 userDefineCrc32;

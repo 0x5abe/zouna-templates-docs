@@ -123,6 +123,8 @@ struct SubWorldData_Z {
 local uint32 freeCountCheck0;
 local uint32 freeCountCheck1;
 struct World_Z {
+    //
+    Printf("-------------------------------------------\n");
     ChangeColor(1);
     ObjectHeader objectHeader;
     ChangeColor(1);
@@ -162,8 +164,8 @@ struct World_Z {
     ChangeColor(1);
     uint32 warpCrc32;
     uint32 gameObjCrc32;
-    uint32 crc32sUnk5;
-    uint32 crc32sUnk6;
+    uint32 crc32Unk5;
+    uint32 crc32Unk6;
     local uint32 i = 0;
     for (i = 0; i < seadHandle0.seadEntryCount; i++) {
         if (seadHandle0.seadEntries[i].nodeCrc32 == 0) {
@@ -175,6 +177,53 @@ struct World_Z {
             freeCountCheck1++;
         }
     }
+    if (subWorldDataCount != 0) {
+        Printf("Has subworld Data !!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+    }
+    if (crc32Unk4Count != 0) {
+        Printf("Has crc32Unk4 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+    }
+    if (crc32Unk5 != 0) {
+        Printf("Has crc32Unk5 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+    }
+    if (crc32Unk6 != 0) {
+        Printf("Has crc32Unk6 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+    }
     Printf("Free count check #0: %d\n", freeCountCheck0);
     Printf("Free count check #1: %d\n", freeCountCheck1);
+
+    Printf("DISP SIZEX %d\n", seadHandle0.sizeX);
+    Printf("DISP SIZEY %d\n", seadHandle0.sizeY);
+    Printf("COLL SIZEX %d\n", seadHandle1.sizeX);
+    Printf("COLL SIZEY %d\n", seadHandle1.sizeY);
+    
+    local double dispSizeX = (double)(seadHandle0.PMax.x - seadHandle0.PMin.x);
+    local double dispSizeY = (double)(seadHandle0.PMax.y - seadHandle0.PMin.y);
+
+    local double collSizeX = (double)(seadHandle1.PMax.x - seadHandle1.PMin.x);
+    local double collSizeY = (double)(seadHandle1.PMax.y - seadHandle1.PMin.y);
+
+    if (Ceil(dispSizeX/Max((dispSizeX/50.0),15.0)) != (double)seadHandle0.sizeX) {
+        Printf("!!!!!!!!!!!!!!DISP INVALID SIZEX\n");
+    } else {
+        Printf("DISP VALID SIZEX\n");
+    }
+
+    if (Ceil(dispSizeY/Max((dispSizeY/50.0),15.0)) != (double)seadHandle0.sizeY) {
+        Printf("!!!!!!!!!!!!!!DISP INVALID SIZEY\n");
+    } else {
+        Printf("DISP VALID SIZEY\n");
+    }
+
+    if (Ceil(collSizeX/Max((collSizeX/50.0),3.0)) != (double)seadHandle1.sizeX) {
+        Printf("!!!!!!!!!!!!!!COLL INVALID SIZEX\n");
+    } else {
+        Printf("COLL VALID SIZEX\n");
+    }
+
+    if (Ceil(collSizeY/Max((collSizeY/50.0),3.0)) != (double)seadHandle1.sizeY) {
+        Printf("!!!!!!!!!!!!!!COLL INVALID SIZEY\n");
+    } else {
+        Printf("COLL VALID SIZEY\n");
+    }
 } world;

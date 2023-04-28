@@ -121,10 +121,10 @@ struct LinkInfo {
     uint32 linkCrc32;
     uint32 linkCount;
     uint32 linkedCrc32[linkCount];
-    uint32 meshDataCrc32;
+    uint32 surfaceDataCrc32;
     Sphere_Z bSphereLocal;
     Mat4x4 unkMatrix;
-    float unkFloat;
+    float fadeOutDistance;
     uint32 flags;
     uint16 type;
 };
@@ -174,10 +174,10 @@ struct Morpher_Z {
 struct Points_Z {
     ObjectHeader header;
     ChangeColor(1);
-    uint32 PointsRelated0Count;
+    uint32 PointsRelated0Count; //pos?
     PointsRelated0 PointsRelateds0[PointsRelated0Count]<optimize=false>;
     ChangeColor(1);
-    uint32 PointsRelated1Count;
+    uint32 PointsRelated1Count; //normals?
     PointsRelated1 PointsRelateds1[PointsRelated1Count]<optimize=false>;
     ChangeColor(1);
     Morpher_Z morpher;

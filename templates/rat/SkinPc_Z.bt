@@ -118,7 +118,7 @@ struct LinkInfo {
     uint32 skelCrc32;
     Sphere_Z bSphereLocal;
     Mat4x4 unkMatrix;
-    float unkFloat;
+    float fadeOutDistance;
     uint32 flags;
     uint16 type;
 };
