@@ -220,7 +220,11 @@ struct Edge_Z {
 };
 
 struct unk32ByteStruct {
-    byte data[32];
+    float floats[4];
+    uint32 num;
+    uint16 num1;
+    uint16 num2;
+    uint32 cdcdcdcd[2];
 };
 
 struct SeadVoxel_Z {
@@ -252,16 +256,16 @@ struct Surface_Z {
     Points_Z points;
     ChangeColor(1);
     uint unkStruct1Count;
-    unkStruct1 unkStructs1[unkStruct1Count];
+    unkStruct1 unkStructs1[unkStruct1Count] <optimize=false>;
     ChangeColor(1);
     uint unkStruct2Count;
-    unkStruct2 unkStructs2[unkStruct2Count];
+    unkStruct2 unkStructs2[unkStruct2Count] <optimize=false>;
     ChangeColor(1);
     uint patchCount;
-    Patch_Z patches[patchCount];
+    Patch_Z patches[patchCount] <optimize=false>;
     ChangeColor(1);
     uint edgeCount;
-    Edge_Z edges[edgeCount];
+    Edge_Z edges[edgeCount] <optimize=false>;
     ChangeColor(1);
     uint maybeNormalCount;
     TVector3 maybeNormals[maybeNormalCount];
@@ -277,7 +281,7 @@ struct Surface_Z {
     shouldDrawBitfield shouldDrawRelateds[shouldDrawRelatedCount];
     ChangeColor(1);
     uint unk32ByteStructCount;
-    unk32ByteStruct unk32ByteStructs[unk32ByteStructCount];
+    unk32ByteStruct unk32ByteStructs[unk32ByteStructCount] <optimize=false>;
     ChangeColor(1);
     byte isSead;
     if (isSead) {
