@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio MeshDataPc_Z v1.06.63.0X
+//--- Asobo Studio LightDataPc_Z v1.291.03.06
 //------------------------------------------------
 
 LittleEndian();
@@ -135,41 +135,21 @@ struct Color {
 
 struct ObjectDatas_Z {
     ObjectHeader objectHeader;
-    float unkFloat1;
     Color color;
 };
 
-struct unkStruct1 {
-    byte data[16];
-};
-
-struct unkStruct2 {
-    byte data[16];
-};
-
-struct unkStruct3 {
-    byte data[32];
-};
-
-struct unkStruct4 {
-    byte data[16];
-};
-
-struct MeshVolume_Z {
-    uint unkStruct1Count;
-    unkStruct1 unkStruct1s[unkStruct1Count];
-    uint unkStruct2Count;
-    unkStruct2 unkStruct2s[unkStruct2Count];
-    uint unkStruct3Count;
-    unkStruct3 unkStruct3s[unkStruct3Count];
-    uint unkStruct4Count;
-    unkStruct4 unkStruct4s[unkStruct4Count];
-};
-
-struct MeshData_Z {
+struct LightData_Z {
+    ChangeColor(1);
     ObjectDatas_Z objectDatas;
-    MeshVolume_Z meshVolume;
-} meshData;
+    ChangeColor(1);
+    TVector3 direction;
+    ChangeColor(1);
+    TVector3 color;
+    ChangeColor(1);
+    uint flag;
+    ChangeColor(1);
+    TVector3 ambient;
+} lightData;
 
 
 

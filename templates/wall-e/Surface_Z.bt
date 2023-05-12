@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio Surface_Z v1.06.63.0X
+//--- Asobo Studio Surface_Z v1.291.03.06
 //------------------------------------------------
 
 LittleEndian();
@@ -150,7 +150,7 @@ struct PointsRelated1 {
 };
 
 struct MorpherRelated {
-    byte data[16];
+    byte data[4];
 };
 
 struct MorphTargetDescRelated {
@@ -166,9 +166,6 @@ struct MorphTargetDesc_Z {
 struct Morpher_Z {
     uint32 MorpherRelatedCount;
     MorpherRelated MorpherRelateds[MorpherRelatedCount];
-    ChangeColor(1);
-    uint32 morphTargetDescCount;
-    MorphTargetDesc_Z morphTargetDescs[morphTargetDescCount];
 };
 
 struct Points_Z {

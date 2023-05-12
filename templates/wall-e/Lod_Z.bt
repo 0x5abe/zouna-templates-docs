@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio CollisionVol_Z v1.06.63.0X
+//--- Asobo Studio Lod_Z v1.291.03.06
 //------------------------------------------------
 
 LittleEndian();
@@ -86,7 +86,7 @@ struct LinkInfo {
     uint32 linkCrc32;
     uint32 linkCount;
     uint32 linkedCrc32[linkCount];
-    uint32 dataCrc32;
+    uint32 lodDataCrc32;
     Sphere_Z bSphereLocal;
     Mat4x4 unkMatrix;
     float fadeOutDistance;
@@ -104,33 +104,75 @@ struct ObjectHeader {
     LinkInfo linkInfo;
 };
 
-struct CollisionVolInfo {
-    Mat4x4 localTransform;
-    Mat4x4 invLocalTransform;
+struct ClassRes {
+    ChangeColor(1);
+    uint32 id;
+    uint32 crc32;
 };
 
-struct CollisionVol_Z {
+struct SphereColNode {
+    byte data[28];
+};
+
+struct SphereCol_Z {
     ChangeColor(1);
-    ObjectHeader objHeader;
+    Sphere_Z sphere;
+    uint32 flag;
+    uint32 nameCrc32;
+};
+
+struct BoxCol_Z
+{
     ChangeColor(1);
-    uint32 collisionVolInfoCount;
-    CollisionVolInfo collisionVolInfos[collisionVolInfoCount] <optimize=false>;
+    Mat4x4 box;
+    uint32 flag;
+    uint32 nameCrc32;
+};
+
+struct CylindreCol
+{
+};
+
+struct Lod_Z {
     ChangeColor(1);
-    uint32 inMessageID; // message sent when entering
+    ObjectHeader objectHeader;
     ChangeColor(1);
-    uint32 outMessageID; // message sent when exiting
+    uint32 bSphereColNode;
     ChangeColor(1);
-    uint32 nodeParamCrc32s[12];
+    if (bSphereColNode != 0) {
+        SphereColNode sphereColNode;
+    }
     ChangeColor(1);
-    float floatParamCrc32s[12];
+    uint32 sphereColCount;
+    SphereCol_Z spheresCols[sphereColCount];
     ChangeColor(1);
-    uint32 animFrameCrc32Count;
-    uint32 animFrameCrc32s[animFrameCrc32Count];
+    uint32 boxColCount;
+    BoxCol_Z boxCols[boxColCount];
     ChangeColor(1);
-    uint32 materialAnimCrc32Count;
-    uint32 materialAnimCrc32s[materialAnimCrc32Count];
+    uint32 cylindreColCount;
+    CylindreCol cylindreCols[cylindreColCount];
     ChangeColor(1);
-    uint32 collisionVolAgentCrc32;
+    float closeX;
+    float closeY;
+    float closeZ;
     ChangeColor(1);
-    float animStartTime; // apparently delay between when StartNodeAnims is called and the animFrames actually start playing
-} colVol;
+    uint32 componentCrc32Count;
+    uint32 componentCrc32s[componentCrc32Count];
+    ChangeColor(1);
+    uint32 shadowCrc32;
+    ChangeColor(1);
+    byte hasAnim;
+    if (hasAnim & 1) {
+        ChangeColor(1);
+        uint32 animCount;
+        ClassRes anims[animCount];
+    }
+    byte hasSound;
+    if (hasSound & 1) {
+        ChangeColor(1);
+        uint32 soundCount;
+        ClassRes sounds[soundCount];
+    }
+    ChangeColor(1);
+    uint32 userDefineCrc32;
+} lod;

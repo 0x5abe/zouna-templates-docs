@@ -1,0 +1,215 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//--- Asobo Studio Skel_Z v1.291.03.06
+//------------------------------------------------
+
+//------------------------------------------------
+//--- Color Implementation taken from JPG.bt
+
+LittleEndian();
+
+local int colorSelect = 0;
+local int colorId = 0;
+local DWORD clr = 0;
+local DWORD jetMap[6*3] = {
+	0x0000cc,0x0000ff,0x0033ff,0x0066ff,0x0099ff,0x00ccff,
+	0x00cccc,0x33ffcc,0x66ff99,0x99ff66,0xccff33,0xffff00,
+	0xffcc00,0xff9900,0xff6600,0xff3300,0xff0000,0xcc0000
+};
+
+void ChangeColor(byte bChangeColor) {
+	if(bChangeColor == 1) {colorSelect++; colorId = 0;}
+	clr = jetMap[(colorSelect%3)*6+(colorId%6)];
+	SetBackColor(clr);
+	colorId++;
+}
+
+//------------------------------------------------
+
+//------------------------------------------------
+//--- Vector struct taken from tge
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+    float W;
+} TVector4 <read=TVector4ToString>;
+
+string TVector4ToString( TVector4& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f, %.6f]", value.X, value.Y, value.Z, value.W );
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+} TVector3 <read=TVector3ToString>;
+
+string TVector3ToString( TVector3& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
+    return buffer;
+}
+
+//------------------------------------------------
+
+struct LinkInfo {
+    uint32 linkCrc32;
+    uint32 linkCount;
+    uint32 linkedCrc32[linkCount];
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 linkSize;
+    uint32 decompressedSize;
+    uint32 compressedSize;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    LinkInfo linkInfo;
+};
+
+struct Mat4x4 {
+    TVector4 rows[4];
+};
+
+struct Sphere_Z {
+    TVector3 Center;
+    float radius;
+};
+
+struct ObjectDatas_Z {
+    uint32 flag;
+    Sphere_Z bSphereLocal;   
+};
+
+struct Quat {
+    float x;
+    float y;
+    float z;
+    float w;
+};
+
+struct BoneNode_Z {
+    ChangeColor(1);
+    uint32 userDefineCrc32;
+    ChangeColor(1);
+    Quat localRotation;
+    TVector3 scale;
+    uint32 flags;
+    TVector3 localTranslation;
+    uint32 placeHolderChildPtr;
+    TVector3 modelRotMatrixRow1;
+    short modelMatrixId;
+    short inverseModelMatrixId;
+    TVector3 modelRotMatrixRow2;
+    uint32 placeholderModelMatrixPtr;
+    TVector3 modelRotMatrixRow3;
+    uint32 placeholderInverseModelMatrixPtr;
+    Quat localRotationInverse1;
+    uint32 unkPtr1;
+    uint32 unkPtr2;
+    uint32 unkPtr3;
+    uint32 placeHolderParentPtr;
+    uint32 unkPtr4;
+    uint32 unkPtr5;
+    uint32 unkPtr6;
+    uint32 placeHolderPrevSiblingPtr;
+    uint32 unkPtr7;
+    uint32 unkPtr8;
+    uint32 unkPtr9;
+    uint32 placeHolderNextSiblingPtr;
+    ChangeColor(1);
+    Mat4x4 originalModelTransform;
+    ChangeColor(1);
+    int childBoneId;
+    int parentBoneId;
+    int nextSiblingBoneId;
+    int prevSiblingBoneId;
+    ChangeColor(1);
+    uint32 boneNameCrc32;
+};
+
+struct BoneNodeGroup {
+    ChangeColor(1);
+    uint32 boneNodeCrc32Count;
+    ChangeColor(1);
+    uint32 boneNodeCrc32s[boneNodeCrc32Count];
+};
+
+struct SphereCol_Z {
+    Sphere_Z sphere;
+    uint32 flag;
+    uint32 nameCrc32;
+};
+
+struct SphereColBone_Z {
+    ChangeColor(1);
+    SphereCol_Z sphereCol;
+    uint32 boneNodeName;
+};
+
+struct BoxCol_Z {
+    Mat4x4 mat;
+    uint32 flag;
+    uint32 nameCrc32;
+};
+
+struct BoxColBone_Z {
+    ChangeColor(1);
+    BoxCol_Z boxCol;
+    uint32 boneNodeName;
+};
+
+struct Skel_Z {
+    ChangeColor(1);
+    ObjectHeader objectHeader;
+    ChangeColor(1);
+    ObjectDatas_Z objectDatas;
+    ChangeColor(1);
+    uint32 boneNodeCount;
+    BoneNode_Z boneNodes[boneNodeCount] <optimize=false>;
+    ChangeColor(1);
+    uint32 materialCount;
+    ChangeColor(1);
+    uint32 materialCrc32s[materialCount];
+    ChangeColor(1);
+    uint32 meshDataCrc32Count;
+    ChangeColor(1);
+    uint32 meshDataCrc32s[meshDataCrc32Count];
+    ChangeColor(1);
+    uint32 boneNodeGroupsCount; //One boneGroup per mesh generally
+    BoneNodeGroup boneNodeGroups[boneNodeGroupsCount]<optimize=false>;
+    ChangeColor(1);
+    uint32 unkCrc32Count;
+    ChangeColor(1);
+    uint32 unkCrc32s[unkCrc32Count];
+    ChangeColor(1);
+    uint32 sphereColBone1Count;
+    SphereColBone_Z sphereColBones1[sphereColBone1Count] <optimize=false>;
+    ChangeColor(1);
+    uint32 sphereColBone2Count;
+    SphereColBone_Z sphereColBones2[sphereColBone2Count] <optimize=false>;
+    ChangeColor(1);
+    uint32 boxColBoneCount;
+    BoxColBone_Z boxColBones[boxColBoneCount] <optimize=false>;
+    PrintInfo();
+} skel;
+
+void PrintInfo() {
+    local uint32 i;
+    for (i = 0; i < skel.boneNodeCount; i++) {
+        if (skel.boneNodes[i].userDefineCrc32 != 0) {
+            //Printf("-- Info -- BoneNode #%d has userDefine: %u\n", i, skel.boneNodes[i].userDefineCrc32);
+        }
+        //Printf("-- Info -- BoneNode #%d Scale:  [%.6f, %.6f, %.6f]\n", i, skel.boneNodes[i].scale.X, skel.boneNodes[i].scale.Y, skel.boneNodes[i].scale.Z);
+        //Printf("%u\n", skel.boneNodes[i].boneNameCrc32);
+    }
+}

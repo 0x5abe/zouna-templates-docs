@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio MeshDataPc_Z v1.06.63.0X
+//--- Asobo Studio MeshDataPc_Z v1.291.03.06
 //------------------------------------------------
 
 LittleEndian();
@@ -139,52 +139,6 @@ struct ObjectDatas_Z {
     Color color;
 };
 
-struct unkStruct1 {
-    byte data[16];
-};
-
-struct unkStruct2 {
-    byte data[16];
-};
-
-struct unkStruct3 {
-    byte data[32];
-};
-
-struct unkStruct4 {
-    byte data[16];
-};
-
-struct MeshVolume_Z {
-    uint unkStruct1Count;
-    unkStruct1 unkStruct1s[unkStruct1Count];
-    uint unkStruct2Count;
-    unkStruct2 unkStruct2s[unkStruct2Count];
-    uint unkStruct3Count;
-    unkStruct3 unkStruct3s[unkStruct3Count];
-    uint unkStruct4Count;
-    unkStruct4 unkStruct4s[unkStruct4Count];
-};
-
 struct MeshData_Z {
     ObjectDatas_Z objectDatas;
-    MeshVolume_Z meshVolume;
 } meshData;
-
-
-
-void PrintInfo() {
-    local int i = 0;
-    if (meshData.meshVolume.unkStruct1Count > 0) {
-        Printf("-- Info -- MeshVolume has #%d unkStruct1s", meshData.meshVolume.unkStruct1Count);
-    }
-    if (meshData.meshVolume.unkStruct2Count > 0) {
-        Printf("-- Info -- MeshVolume has #%d unkStruct2s", meshData.meshVolume.unkStruct2Count);
-    }
-    if (meshData.meshVolume.unkStruct3Count > 0) {
-        Printf("-- Info -- MeshVolume has #%d unkStruct3s", meshData.meshVolume.unkStruct3Count);
-    }
-    if (meshData.meshVolume.unkStruct4Count > 0) {
-        Printf("-- Info -- MeshVolume has #%d unkStruct4s", meshData.meshVolume.unkStruct4Count);
-    }
-}

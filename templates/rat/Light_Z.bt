@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio Node_Z v1.06.63.0X
+//--- Asobo Studio Light_Z v1.06.63.0X
 //------------------------------------------------
 
 LittleEndian();
@@ -60,29 +60,6 @@ string TVector3ToString( TVector3& value )
 
 //------------------------------------------------
 
-struct LinkInfo {
-    uint32 linkCrc32;
-    uint32 linkCount;
-    uint32 linkedCrc32[linkCount];
-};
-
-struct ObjectHeader {
-    uint32 dataSize;
-    uint32 linkSize;
-    uint32 decompressedSize;
-    uint32 compressedSize;
-    uint32 classCrc32;
-    uint32 nameCrc32;
-    LinkInfo linkInfo;
-};
-
-struct color {
-    float R<read=floatToByte>;
-    float G<read=floatToByte>;
-    float B<read=floatToByte>;
-    float A<read=floatToByte>;
-};
-
 struct Mat4x4 {
     TVector4 rows[4];
 };
@@ -99,94 +76,55 @@ struct Sphere_Z {
     float radius;
 };
 
+struct LinkInfo {
+    uint32 linkCrc32;
+    uint32 linkCount;
+    uint32 linkedCrc32[linkCount];
+    uint32 dataCrc32;
+    Sphere_Z bSphereLocal;
+    Mat4x4 unkMatrix;
+    float fadeOutDistance;
+    uint32 flags;
+    uint16 type;
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 linkSize;
+    uint32 decompressedSize;
+    uint32 compressedSize;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    LinkInfo linkInfo;
+};
+
+struct Color {
+    float R<read=floatToByte>;
+    float G<read=floatToByte>;
+    float B<read=floatToByte>;
+    float A<read=floatToByte>;
+};
+
 struct Quat {
     TVector3 v;
     float w;
 };
 
-struct Node_Z
+struct Light_Z
 {
     ChangeColor(1);
     ObjectHeader objHeader;
     ChangeColor(1);
-    uint32 parentCRC32;
-    ChangeColor(1);
-    uint32 headChildCrc32;
-    ChangeColor(1);
-    uint32 prevNodeCrc32;
-    ChangeColor(1);
-    uint32 nextNodeCrc32;
-    ChangeColor(1);
-    uint32 objectCrc32;
-    ChangeColor(1);
-    uint32 userDefineCrc32;
-    ChangeColor(1);
-    uint32 bitmapCrc32; // LIGHT MAP??
-    ChangeColor(1);
-    uint32 unkCrc32;
-    ChangeColor(1);
-    Mat4x4 inverseWorldTransform; // (row major)
-    TVector3 unkVec3f;
-    ChangeColor(1);
-    uint32 collideSeadsId1;
-    ChangeColor(1);
-    TVector3 unkVec3f2;
-    ChangeColor(1);
-    uint32 placeholderWorldMatrixPtr;
-    ChangeColor(1);
-    TVector3 unkVec3f3;
-    ChangeColor(1);
-    uint32 displaySeadsId1;
-    ChangeColor(1);
-    Mat4x4 unkMat;
-    ChangeColor(1);
-    TVector3 translation;
-    ChangeColor(1);
-    uint32 flags;
-    ChangeColor(1);
     Quat rotation;
-    float scale;
-    float otherScale;
-    float oneOverScale;
-    float unkFloat1;
     ChangeColor(1);
-    color colors<optimize=false>;
+    TVector3 direction;
     ChangeColor(1);
-    Sphere_Z bSphere;
+    Color color;
     ChangeColor(1);
-    Rect displaySeadsRect;
+    TVector3 Ambient;
     ChangeColor(1);
-    Rect collideSeadsRect;
-    ChangeColor(1);
-    Mat4x4 worldTransform; // (row major)
-    ChangeColor(1);
-    uint32 collideSeadsId2;
-    ChangeColor(1);
-    uint32 displaySeadsId2;
-    ChangeColor(1);
-    uint16 unknown4;
-    ChangeColor(1);
-    uint32 unknown5;
-    ChangeColor(1);
-    uint32 unknown6;
-    PrintInfo();
-} node;
-
-void PrintInfo() {
-    //Printf("-- Info -- World Transform: \n%s\n", Mat4x4ToString(worldTransform));
-    if (node.bitmapCrc32 != 0)
-    {
-        Printf("-- Info -- HAS BTIMAP CRC\n");
-    }
-    if (node.unkCrc32 != 0)
-    {
-        Printf("-- Info -- HAS UNK CRC\n");
-    }
-    if (!(node.bitmapCrc32 != 0 || node.unkCrc32 != 0))
-    {
-        //
-    }
-}
+    TVector3 pos;
+} light;
 
 string floatToByte(float& value )
 {
