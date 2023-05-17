@@ -160,6 +160,8 @@ struct MorphTargetDescRelated {
 struct Morpher_Z {
     uint32 MorpherRelatedCount;
     MorpherRelated MorpherRelateds[MorpherRelatedCount];
+    uint32 MorpherRelatedCount;
+    uint32 MorpherRelatedCount;
 };
 
 struct Points_Z {

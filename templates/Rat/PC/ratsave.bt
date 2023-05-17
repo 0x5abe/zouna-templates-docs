@@ -1,0 +1,180 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+LittleEndian();
+enum<byte>bool{
+    False = 0,
+    True = 1,
+};
+enum<uint32>stageid{
+    DUMMY = 0,
+    MB = 1,
+    MB_RIVER = 2,
+    SW = 3,
+    CT_MUR = 4,
+    CT = 5,
+    CT_CHASE = 6,
+    KD = 7,
+    KD_CHASE = 8,
+    MK = 9,
+    MK_CHASE = 10,
+    MG_CAKE = 11,
+    MG_CAKE2 = 12,
+    MG_SOUP = 13,
+    MG_SOUP2 = 14,
+    MG_SOUP3 = 15,
+    MG_POTA = 16,
+    MG_MIXER = 17,
+    MG_PLATE = 18,
+    MG_PLATE2 = 19,
+    HS_SARBA = 20,
+    MG_ALARM = 21,
+    MG_FEN = 22,
+    KN = 23,
+    KN_CHASE = 24,
+    WI_FISH = 25,
+    WI_FISH2 = 26,
+    WI_WASH = 27,
+    WI_WASH2 = 28,
+    WI_CREPE = 29,
+    Multi01 = 30,
+    MultiKN = 31,
+    MultiBAL = 32,
+    MultiROP = 33,
+    DREAM01 = 34,
+    DREAM02 = 35,
+    DREAM03 = 36,
+    DREAM04 = 37,
+    DREAM05 = 38,
+    DREAM06 = 39,
+    DREAM07 = 40,
+    DREAM08 = 41,
+    DREAM10 = 42,
+    DREAM11 = 43,
+    PIPE_SW = 44,
+    PIPE_CT = 45,
+    PIPE_MK = 46,
+    PIPE_KN = 47,
+    RAFT_SW = 48,
+    Test_Mar = 49,
+    Test_Connex = 50,
+    Test_Nico = 51,
+    Test_Julien = 52,
+};
+struct header {
+    char magic [4];
+    uint32 Version;
+    uint32 pointer;
+    uint32 pointer2;
+    uint32 unk;
+    uint32 size;
+    uint32 crc32; //probably not crc32 but like idk what else to call it
+    uint32 crc32; //probably not crc32 but like idk what else to call it
+    uint32 crc32; //probably not crc32 but like idk what else to call it
+    uint32 crc32; //probably not crc32 but like idk what else to call it
+    char ratatouille[21];
+    local int stay;
+    stay = FTell();
+    FSeek(pointer);
+    byte png[size];
+}Header<name="Header">;
+    struct Save {
+        uint32 unk1;
+        uint32 pad<hidden=true>;
+        uint32 unk;
+        uint32 unk2;
+        uint32 pad<hidden=true>;
+        float hours;
+        float seconds;
+        float percentage;
+        stageid StageID;
+        char name[15];
+        byte pad<hidden=true>;
+        uint32 pad<hidden=true>;
+        int32 points;
+        byte pad<hidden=true>;
+        bool shopBool[119];
+        uint32 pad<hidden=true>;
+        uint32 unk5;
+        uint32 unk6;
+        uint32 unk7;
+        uint32 unk8;
+        uint32 unk9;
+        uint32 unk10;
+        uint32 unk11;
+        uint32 unk12;
+        uint32 unk13;
+        bool UnkBool[8]; 
+        uint32 unk14;
+        uint32 unk15;
+        byte unk;
+        byte LanguageID;
+        byte unk;
+        byte unk;
+        byte unk;
+        uint32 pad<hidden=true>; 
+        uint32 count;
+        local int violet;
+        local int violet2;
+        local int violet3;
+            for(violet=0;violet<count;violet++){
+                struct unk {
+                    float unk1;
+                    float unk2;
+                }Unk;
+            };
+        uint32 count2;
+            for(violet2=0;violet2<count2;violet2++){
+                struct unk2 {
+                    float unk3;
+                    float unk4;
+                }Unk2;
+            };
+        uint32 pad2<hidden=true>;
+        uint32 unk16;
+        uint32 unk17;
+        uint32 unk18;
+        uint32 pad2<hidden=true>;
+            for(violet3=0;violet3<258;violet3++){
+                struct unk3 {
+                    uint32 pad;
+                    float unk4;
+                    float unk5;
+                }Unk3;
+            };
+        FSeek(0x1370a);
+        byte check<hidden=true>;
+        if (check !=0){
+            FSeek(0x136f0);
+            float X;
+            float Y;
+            float Z;
+            float unk5; //probably W
+            float cameraRotation;
+            float unk5;
+            float characterRotation;
+            uint32 pad<hidden=true>;
+            };
+        if (check == 0){
+            FSeek(0x13710);
+            float X;
+            float Y;
+            float Z;
+            float unk5; //probably W
+            float cameraRotation;
+            float unk5;
+            float characterRotation;
+            uint32 pad<hidden=true>;
+            };
+        FSeek(0x1c2cb);
+        uint32 checksum;
+    }save<name="Save">;

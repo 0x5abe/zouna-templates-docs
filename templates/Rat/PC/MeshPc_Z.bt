@@ -446,9 +446,12 @@ void PrintInfo() {
     Printf("-- Info -- #short-vertices: %d\n", meshPc.mesh.vertexCount);
     for (i = 0; i < meshPc.vertexBufferCount; i++) {
         Printf("-- Info -- #vertex-structs in VB #%d: %d\n", i, meshPc.vertexBuffers[i].vertexStructCount);
-        //for (j = 0; j < meshPc.vertexBuffers[i].vertexStructCount; j++) {
-            //Printf("-- Info -- #VB #%d | vertex #%d | tangent : %s\n", i, j, TVector3ByteToString(meshPc.vertexBuffers[i].vertexStructs[j].tangent));
-        //}
+        for (j = 0; j < meshPc.vertexBuffers[i].vertexStructCount; j++) {
+            if (meshPc.vertexBuffers[i].vertexStructs[j].normalPadding != 0xCD) {
+                //Printf("-- Info -- #VB #%d | vertex #%d | tangent : %s\n", i, j, TVector3ByteToString(meshPc.vertexBuffers[i].vertexStructs[j].tangent));
+                Printf("-- Info -- #VB #%d | vertex #%d | normal padding : %s\n", i, j, TVector3ByteToString(meshPc.vertexBuffers[i].vertexStructs[j].normalPadding));
+            }
+        }
     }
     for (i = 0; i < meshPc.indexBufferCount; i++) {
         Printf("-- Info -- #faces in IB #%d: %d\n", i, meshPc.indexBuffers[i].faceCount);

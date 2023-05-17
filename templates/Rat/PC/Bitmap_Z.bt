@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio Material_Z v1.291.03.06
+//--- Asobo Studio Bitmap_Z v1.06.63.0X
 //------------------------------------------------
 
 LittleEndian();
@@ -26,24 +26,6 @@ void ChangeColor(byte bChangeColor) {
 
 //------------------------------------------------
 
-typedef struct
-{
-    float X;
-    float Y;
-    float Z;
-} TVector3 <read=TVector3ToString>;
-
-string TVector3ToString( TVector3& value )
-{
-    local char buffer[255];
-    SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
-    return buffer;
-}
-
-struct Mat3x3 {
-    TVector3 rows[3];
-};
-
 struct LinkInfo {
     uint32 linkCrc32;
     uint32 linkCount;
@@ -61,55 +43,36 @@ struct ObjectHeader {
     LinkInfo linkInfo;
 };
 
-struct Color {
-    float r;
-    float g;
-    float b;
-};
-
-struct Material_Z {
+struct Bitmap_Z {
     ChangeColor(1);
     ObjectHeader header;
     ChangeColor(1);
-    Color diffuseColor;
-    float diffuseOpacity;
+    uint32 width;
+    uint32 height;
     ChangeColor(1);
-    Color emissiveColor;
+    uint32 precalculatedSize;
     ChangeColor(1);
-    uint32 cdcdcdcd;
+    byte format;
     ChangeColor(1);
-    Mat3x3 uvTransformationMatrix;
+    byte formatCopy;
     ChangeColor(1);
-    float unks[8];
-    uint32 cdcdcdcd;
-    uint32 cdcdcdcd;
-    uint32 cdcdcdcd;
+    byte paletteFormat;
     ChangeColor(1);
-    float diffuseTranslation[2];
+    byte transpFormat;
     ChangeColor(1);
-    float diffuseScale[2];
+    byte mipCount;
     ChangeColor(1);
-    float diffuseRotation;
+    byte unkSetTo4;
     ChangeColor(1);
-    uint32 flags[3];
+    uint16 flag;
     ChangeColor(1);
-    ubyte textureFlag;
-    ChangeColor(1);
-    if (textureFlag == 1){
-        uint32 diffuseTex;
-        uint32 unk1;
-        uint32 unk2;
-        uint32 unk3;
-        uint32 unk4;
-        uint32 unk5;
-        uint32 unk6;
-        uint32 unk7;
+    if(precalculatedSize != 0){
+        byte dds[precalculatedSize];
     }
-    else if (textureFlag == 3){
-        uint32 diffuseTex; 
-        uint32 unkTex;
+    else if(format == 12){
+        byte tex[width*height*4];
     }
     else{
-        uint32 tex[4];
+        byte tex[width*height*3];
     };
-} material;
+} bitmap;

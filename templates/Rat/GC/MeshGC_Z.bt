@@ -1,0 +1,423 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//--- Asobo Studio MeshGC_Z v1.06.63.0X
+//------------------------------------------------
+
+BigEndian();
+
+//------------------------------------------------
+//--- Color Implementation taken from JPG.bt
+
+local int colorSelect = 0;
+local int colorId = 0;
+local DWORD clr = 0;
+local DWORD jetMap[6*3] = {
+	0x0000cc,0x0000ff,0x0033ff,0x0066ff,0x0099ff,0x00ccff,
+	0x00cccc,0x33ffcc,0x66ff99,0x99ff66,0xccff33,0xffff00,
+	0xffcc00,0xff9900,0xff6600,0xff3300,0xff0000,0xcc0000
+};
+
+void ChangeColor(byte bChangeColor) {
+	if(bChangeColor == 1) {colorSelect++; colorId = 0;}
+	clr = jetMap[(colorSelect%3)*6+(colorId%6)];
+	SetBackColor(clr);
+	colorId++;
+}
+
+//------------------------------------------------
+
+//------------------------------------------------
+//--- Vector struct taken from tge
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+    float W;
+} TVector4 <read=TVector4ToString>;
+
+string TVector4ToString( TVector4& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f, %.6f]", value.X, value.Y, value.Z, value.W );
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+} TVector3 <read=TVector3ToString>;
+
+string TVector3ToString( TVector3& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
+
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+} TVector2 <read=TVector2ToString>;
+
+string TVector2ToString( TVector2& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f]", value.X, value.Y );
+
+    return buffer;
+}
+
+typedef struct
+{
+    ubyte X<read=byteToFloat,optimize=false>;
+    ubyte Y<read=byteToFloat,optimize=false>;
+    ubyte Z<read=byteToFloat,optimize=false>;
+} TVector3Byte <read=TVector3ByteToString>;
+
+string TVector3ByteToString( TVector3Byte& value )
+{
+    local char buffer[255];
+    local float normalByteToD3DColorComponentX = ((value.X/255.0));
+    local float normalByteToFloatX = ((normalByteToD3DColorComponentX * 2) - 1);
+    local float normalByteToD3DColorComponentY = ((value.Y/255.0));
+    local float normalByteToFloatY = ((normalByteToD3DColorComponentY * 2) - 1);
+    local float normalByteToD3DColorComponentZ = ((value.Z/255.0));
+    local float normalByteToFloatZ = ((normalByteToD3DColorComponentZ * 2) - 1);
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", normalByteToFloatX, normalByteToFloatY, normalByteToFloatZ );
+
+    return buffer;
+}
+
+//------------------------------------------------
+
+struct Quat {
+    TVector3 v;
+    float w;
+};
+
+struct Mat4x4 {
+    TVector4 rows[4];
+};
+
+struct Sphere_Z {
+    TVector3 Center;
+    float radius;
+};
+
+struct LinkInfo {
+    uint32 linkCrc32;
+    uint32 linkCount;
+    uint32 linkedCrc32[linkCount];
+    uint32 dataCrc32;
+    Sphere_Z bSphereLocal;
+    Mat4x4 unkMatrix;
+    float fadeOutDistance;
+    uint32 flags;
+    uint16 type;
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 linkSize;
+    uint32 decompressedSize;
+    uint32 compressedSize;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    LinkInfo linkInfo;
+};
+
+struct PointsRelated0 {
+    byte data[12];
+};
+
+struct PointsRelated1 {
+    byte data[16];
+};
+
+struct MorpherRelated {
+    byte data[16];
+};
+
+struct MorphTargetDescRelated {
+    byte data[16];
+};
+
+struct MorphTargetDesc_Z {
+    uint32 name;
+    uint32 MorphTargetDescRelatedCount;
+    MorphTargetDescRelated MorphTargetDescRelateds[MorphTargetDescRelatedCount];
+};
+
+struct Morpher_Z {
+    uint32 MorpherRelatedCount;
+    MorpherRelated MorpherRelateds[MorpherRelatedCount];
+    uint32 morphTargetDescCount;
+    MorphTargetDesc_Z morphTargetDescs[morphTargetDescCount];
+};
+
+struct SphereCol {
+    byte data[20];
+    uint32 nameCrc32;
+};
+
+struct BoxCol {
+    float unk1;
+    float unk2;
+    float unk3;
+    float unk4;
+    float unk5;
+    float unk6;
+    float unk7;
+    float unk8;
+    float unk9;
+    float unk10;
+    float unk11;
+    float unk12;
+    float unk13;
+    float unk14;
+    float unk15;
+    float unk16;
+    uint32 unk17;
+    uint32 nameCrc32;
+};
+
+struct CylindreCol {
+    byte data[40];
+    uint32 nameCrc32;
+};
+
+struct AABBColTri {
+    int16 firstVertexId;
+    int16 secondVertexId;
+    int16 thirdVertexId;
+    int16 materialIndex;
+};
+
+struct AABBCol {
+    float unk1;
+    float unk2;
+    float unk3;
+    int16 unk4;
+    int16 unk5;
+    float unk6;
+    float unk7;
+    float unk8;
+    int16 unk9;
+    int16 unk10;
+};
+
+struct Vertex {
+    int16 x;
+    int16 y;
+    int16 z;
+};
+
+struct vertexGroup {
+    uint32 zero0;
+    uint32 zero1;
+    uint32 zero2;
+    ChangeColor(1);
+    uint32 maybePrimitive;
+    ChangeColor(1);
+    uint16 cdcd;
+    ChangeColor(1);
+    uint16 vertexBufferOffset;
+    ChangeColor(1);
+    uint16 vertexCount;
+    ChangeColor(1);
+    uint16 indexBufferOffsetInShorts;
+    ChangeColor(1);
+    uint32 faceCount;
+    ChangeColor(1);
+    uint16 unk1;
+    ChangeColor(1);
+    uint16 vertexSize;
+    ChangeColor(1);
+    uint32 cdcdcdcd;
+    ChangeColor(1);
+};
+
+struct Triangle {
+    int16 index1;
+    int16 index2;
+    int16 index3;
+};
+
+struct Points_Z {
+    ObjectHeader header;
+    ChangeColor(1);
+    uint32 PointsRelated0Count; // maybe vertices
+    PointsRelated0 PointsRelateds0[PointsRelated0Count];
+    uint32 PointsRelated1Count; // maybe normals
+    PointsRelated1 PointsRelateds1[PointsRelated1Count];
+    Morpher_Z morpher;
+};
+
+struct Mesh_Z {
+    Points_Z points;
+    ChangeColor(1);
+    uint32 uvCount;
+    ChangeColor(1);
+    struct {
+        float u;
+        float v;
+    } uvs[8*uvCount];
+    if (uvCount != 0) {ChangeColor(1);}
+    uint32 normalCount;
+    ChangeColor(1);
+    struct {
+        float x;
+        float y;
+        float z;
+    } normals[12*normalCount];
+    if (normalCount != 0) {ChangeColor(1);}
+    uint32 stripCount;
+    ChangeColor(1);
+    struct {
+        uint32 unk4Count;
+        ChangeColor(1);
+        byte unk4s[2*unk4Count];
+        if (unk4Count != 0) {ChangeColor(1);}
+        byte unk5[8];
+        ChangeColor(1);
+    } strips[stripCount];
+    if (points.header.linkInfo.flags & 2) {
+        byte unk6[4*stripCount];
+        if (stripCount != 0) {ChangeColor(1);}
+    }
+    uint32 stripExtCount;
+    ChangeColor(1);
+    struct {
+        uint32 unk8Count;
+        ChangeColor(1);
+        byte unk8s[8*unk8Count];
+        if (unk8Count != 0) {ChangeColor(1);}
+    } stripExts[stripExtCount];
+    uint32 materialCrc32Count;
+    ChangeColor(1);
+    uint32 materialCrc32s[materialCrc32Count];
+    ChangeColor(1);
+    float drawingStartDistance;
+    float drawingCutoffDistance;
+    uint shadowRelated;
+    uint unkUintRelatedToCount2;
+    uint unkUintRelatedToCount3;
+    uint unkUintRelatedToCount4;
+    ChangeColor(1);
+    uint32 sphereColCount;
+    ChangeColor(1);
+    SphereCol sphereCols[sphereColCount];
+    ChangeColor(1);
+    uint32 boxColCount;
+    ChangeColor(1);
+    BoxCol boxCols[boxColCount];
+    ChangeColor(1);
+    uint32 cylindreColCount;
+    ChangeColor(1);
+    CylindreCol cylindreCols[cylindreColCount];
+    ChangeColor(1);
+    uint32 AABBColTriCount;
+    ChangeColor(1);
+    AABBColTri AABBColTris[AABBColTriCount]; 
+    ChangeColor(1);
+    uint32 AABBColCount;
+    ChangeColor(1);
+    AABBCol AABBCols[AABBColCount];
+    ChangeColor(1);
+    uint32 vertexCount;
+    ChangeColor(1);
+    Vertex vertices[vertexCount]; //Used for AABB col
+};
+
+struct VertexStruct60 {
+    ChangeColor(1);
+    TVector3 coordinates;
+    TVector3Byte tangent;
+    ubyte tangentPadding;
+    TVector3Byte normals;
+    ubyte normalPadding;
+    TVector2 UV;
+    float blendIndices[4] <read=matIndexToBoneIndex,optimize=false>;
+    float blendWeights[4];  
+};
+
+struct VertexStruct48_blend1 {
+    ChangeColor(1);
+    TVector3 coordinates;
+    TVector3Byte tangent;
+    ubyte tangentPadding;
+    TVector3Byte normals;
+    ubyte normalPadding;
+    TVector2 UV;
+    float unk[5];
+};
+
+struct VertexStruct48_skinVolume {
+    ChangeColor(1);
+    TVector3 coordinates;
+    TVector3 unk1;
+    TVector3 unk2;
+    TVector3 blendIndices;
+};
+
+struct VertexStruct36 {
+    ChangeColor(1);
+    TVector3 coordinates;
+    TVector3Byte tangent;
+    ubyte tangentPadding;
+    TVector3Byte normals;
+    ubyte normalPadding;
+    TVector2 UV;
+    float luvX; // lightUVX? related to radiosity
+    float luvY; // lightUVY? related to radiosity 
+};
+
+struct VertexStruct24 {
+    ChangeColor(1);
+    TVector3 coordinates;
+    float unk;
+    TVector2 UV;
+};
+
+struct VertexStructUnk (uint32 bytes) {
+    ChangeColor(1);
+    byte data[bytes];
+};
+
+struct vertexRef {
+    uint16 posIndex;
+    uint16 normalIndex;
+    uint16 uvIndex;
+};
+
+struct DisplayList_Z {
+    uint32 byteCount;
+    uint32 unkUint; // byte count - 32 it seems
+    ubyte primAndVtxFmt;
+    uint16 vertexRefCount;
+    vertexRef vertexRefs[vertexRefCount];
+    byte padding[byteCount - 3 - vertexRefCount*6];
+};
+
+struct MeshGC_Z {
+    ChangeColor(1);
+    Mesh_Z mesh;
+    ChangeColor(1);
+    uint32 uvCount;
+    uint16 uvs[uvCount];
+    ChangeColor(1);
+    uint32 normalCount;
+    byte normals[normalCount];
+    ChangeColor(1);
+    uint32 displayListCount;
+    DisplayList_Z displayLists[displayListCount] <optimize=false>;
+    ChangeColor(1);
+    uint32 materialLinkNameCrc32Count;
+    uint32 materialLinkNameCrc32s[materialLinkNameCrc32Count];
+} meshGc;

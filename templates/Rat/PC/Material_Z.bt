@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio Material_Z v1.291.03.06
+//--- Asobo Studio Material_Z v1.06.63.0X
 //------------------------------------------------
 
 LittleEndian();
@@ -75,7 +75,6 @@ struct Material_Z {
     float diffuseOpacity;
     ChangeColor(1);
     Color emissiveColor;
-    ChangeColor(1);
     uint32 cdcdcdcd;
     ChangeColor(1);
     Mat3x3 uvTransformationMatrix;
@@ -97,13 +96,6 @@ struct Material_Z {
     ChangeColor(1);
     if (textureFlag == 1){
         uint32 diffuseTex;
-        uint32 unk1;
-        uint32 unk2;
-        uint32 unk3;
-        uint32 unk4;
-        uint32 unk5;
-        uint32 unk6;
-        uint32 unk7;
     }
     else if (textureFlag == 3){
         uint32 diffuseTex; 

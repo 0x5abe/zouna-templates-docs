@@ -128,10 +128,33 @@ struct Object {
 };
 
 struct Block (local uint32 objectCount, local uint32 padding) {
+    local uint32 maxCompressedObjDecompressedSize = 0;
+    local uint32 indexMaxCompressedObjDecompressedSize = -1;
+    local uint32 offsetInBlock = 0;
+    local uint32 workingBufferOffset = 0;
     Object objects[objectCount] <optimize=false>;
+    local int i;
+    for (i = 0; i < objectCount; i++) {
+        if (objects[i].objHeader.compressedSize != 0 && objects[i].objHeader.decompressedSize > maxCompressedObjDecompressedSize) {
+            indexMaxCompressedObjDecompressedSize = i;
+        }
+    }
+    if (indexMaxCompressedObjDecompressedSize != -1) {
+        maxCompressedObjDecompressedSize = objects[indexMaxCompressedObjDecompressedSize].objHeader.decompressedSize;
+        for (i = 0; i < indexMaxCompressedObjDecompressedSize; i++) {
+            offsetInBlock = offsetInBlock + 24 + objects[i].objHeader.dataSize;
+        }
+        offsetInBlock = offsetInBlock + 24 + objects[indexMaxCompressedObjDecompressedSize].objHeader.linkSize;
+        workingBufferOffset = calculatePaddedSize(maxCompressedObjDecompressedSize + offsetInBlock);
+    }
+    Printf("-- Info -- #block: %d\n",workingBufferOffset);
     ChangeColor(1);
     byte padding[padding];
 };
+
+uint32 calculatePaddedSize(uint32 value) {
+    return value;//(uint32)(2048.0*Ceil(((double)value)/2048.0));
+}
 
 struct DXX {
     SetBackColor(jetMap[0]);
