@@ -218,37 +218,6 @@ struct Vertex {
     int16 z;
 };
 
-struct vertexGroup {
-    uint32 zero0;
-    uint32 zero1;
-    uint32 zero2;
-    ChangeColor(1);
-    uint32 maybePrimitive;
-    ChangeColor(1);
-    uint16 cdcd;
-    ChangeColor(1);
-    uint16 vertexBufferOffset;
-    ChangeColor(1);
-    uint16 vertexCount;
-    ChangeColor(1);
-    uint16 indexBufferOffsetInShorts;
-    ChangeColor(1);
-    uint32 faceCount;
-    ChangeColor(1);
-    uint16 unk1;
-    ChangeColor(1);
-    uint16 vertexSize;
-    ChangeColor(1);
-    uint32 cdcdcdcd;
-    ChangeColor(1);
-};
-
-struct Triangle {
-    int16 index1;
-    int16 index2;
-    int16 index3;
-};
-
 struct Points_Z {
     ObjectHeader header;
     ChangeColor(1);
@@ -332,73 +301,18 @@ struct Mesh_Z {
     ChangeColor(1);
     uint32 vertexCount;
     ChangeColor(1);
-    Vertex vertices[vertexCount]; //Used for AABB col
-};
-
-struct VertexStruct60 {
-    ChangeColor(1);
-    TVector3 coordinates;
-    TVector3Byte tangent;
-    ubyte tangentPadding;
-    TVector3Byte normals;
-    ubyte normalPadding;
-    TVector2 UV;
-    float blendIndices[4] <read=matIndexToBoneIndex,optimize=false>;
-    float blendWeights[4];  
-};
-
-struct VertexStruct48_blend1 {
-    ChangeColor(1);
-    TVector3 coordinates;
-    TVector3Byte tangent;
-    ubyte tangentPadding;
-    TVector3Byte normals;
-    ubyte normalPadding;
-    TVector2 UV;
-    float unk[5];
-};
-
-struct VertexStruct48_skinVolume {
-    ChangeColor(1);
-    TVector3 coordinates;
-    TVector3 unk1;
-    TVector3 unk2;
-    TVector3 blendIndices;
-};
-
-struct VertexStruct36 {
-    ChangeColor(1);
-    TVector3 coordinates;
-    TVector3Byte tangent;
-    ubyte tangentPadding;
-    TVector3Byte normals;
-    ubyte normalPadding;
-    TVector2 UV;
-    float luvX; // lightUVX? related to radiosity
-    float luvY; // lightUVY? related to radiosity 
-};
-
-struct VertexStruct24 {
-    ChangeColor(1);
-    TVector3 coordinates;
-    float unk;
-    TVector2 UV;
-};
-
-struct VertexStructUnk (uint32 bytes) {
-    ChangeColor(1);
-    byte data[bytes];
+    Vertex vertices[vertexCount];
 };
 
 struct vertexRef {
-    uint16 posIndex;
-    uint16 normalIndex;
-    uint16 uvIndex;
+    uint16 posIndex; // references vertices
+    uint16 normalIndex; // references normals
+    uint16 uvIndex; // references uvs
 };
 
 struct DisplayList_Z {
     uint32 byteCount;
-    uint32 unkUint; // byte count - 32 it seems
+    uint32 unkUint; // apparently always byteCount-32
     ubyte primAndVtxFmt;
     uint16 vertexRefCount;
     vertexRef vertexRefs[vertexRefCount];
