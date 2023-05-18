@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio MeshGC_Z v1.06.63.0X
+//--- Asobo Studio MeshGC_Z v1.05.54.00
 //------------------------------------------------
 
 BigEndian();
@@ -302,14 +302,14 @@ struct Mesh_Z {
 };
 
 struct vertexRef {
-    uint16 posIndex; // references vertices
-    uint16 normalIndex; // references normals
-    uint16 uvIndex; // references uvs
+    uint16 posIndex; // index into vertices, 3 int16s
+    uint16 normalIndex; // index into normals, 3 int8s
+    uint16 uvIndex; // index into uvs, 2 int16s
 };
 
 struct DisplayList_Z {
     uint32 byteCount;
-    uint32 unkUint; // apparently always byteCount-32
+    uint32 unkUint; // number of actual GX commands, usaully byteCount-32 beacuse of byte alignment for GX WGPipe
     ubyte primAndVtxFmt;
     uint16 vertexRefCount;
     vertexRef vertexRefs[vertexRefCount];
