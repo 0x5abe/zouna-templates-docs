@@ -96,6 +96,10 @@ string TVector3ByteToString( TVector3Byte& value )
 
 //------------------------------------------------
 
+local uint32 maxPosIndex = 0;
+local uint32 maxNormIndex = 0;
+local uint32 maxUvIndex = 0;
+
 struct Quat {
     TVector3 v;
     float w;
@@ -218,6 +222,17 @@ struct Vertex {
     int16 z;
 };
 
+struct Vec3i8 {
+    byte x;
+    byte y;
+    byte z;
+};
+
+struct Vec2i16 {
+    int16 u;
+    int16 v;
+};
+
 struct Points_Z {
     ObjectHeader header;
     ChangeColor(1);
@@ -324,14 +339,41 @@ struct MeshGC_Z {
     Mesh_Z mesh;
     ChangeColor(1);
     uint32 uvCount;
-    uint16 uvs[uvCount];
+    Vec2i16 uvs[uvCount/2];
     ChangeColor(1);
     uint32 normalCount;
-    byte normals[normalCount];
+    Vec3i8 normals[normalCount/3];
     ChangeColor(1);
     uint32 displayListCount;
     DisplayList_Z displayLists[displayListCount] <optimize=false>;
     ChangeColor(1);
     uint32 materialLinkNameCrc32Count;
     uint32 materialLinkNameCrc32s[materialLinkNameCrc32Count];
+    PrintInfo();
 } meshGc;
+
+void PrintInfo() {
+    local uint32 i;
+    local uint32 j;
+    local uint32 k;
+    local float maxBlendIndex = -1;
+    Printf("-- Info -- #materials: %d\n", meshGc.mesh.materialCrc32Count);
+    Printf("-- Info -- #vertices: %d\n", meshGc.mesh.vertexCount);
+    for (i = 0; i < meshGc.displayListCount; i++) {
+        Printf("-- Info -- #vertex refs in DL #%d: %d\n", i, meshGc.displayLists[i].vertexRefCount);
+        for (j = 0; j < meshGc.displayLists[i].vertexRefCount; j++) {
+            if (meshGc.displayLists[i].vertexRefs[j].normalIndex > maxNormIndex) {
+                maxNormIndex = meshGc.displayLists[i].vertexRefs[j].normalIndex;
+            }
+            if (meshGc.displayLists[i].vertexRefs[j].posIndex > maxPosIndex) {
+                maxPosIndex = meshGc.displayLists[i].vertexRefs[j].posIndex;
+            }
+            if (meshGc.displayLists[i].vertexRefs[j].uvIndex > maxUvIndex) {
+                maxUvIndex = meshGc.displayLists[i].vertexRefs[j].uvIndex;
+            }
+        }
+    }
+    Printf("-- Info -- maxPosIndex: %d\n", maxPosIndex);
+    Printf("-- Info -- maxNormIndex: %d\n", maxNormIndex);
+    Printf("-- Info -- maxUvIndex: %d\n", maxUvIndex);
+}
