@@ -356,6 +356,8 @@ void PrintInfo() {
     local float maxBlendIndex = -1;
     Printf("-- Info -- #materials: %d\n", meshGc.mesh.materialCrc32Count);
     Printf("-- Info -- #vertices: %d\n", meshGc.mesh.vertexCount);
+    Printf("-- Info -- #uvs: %d\n", meshGc.uvCount/2);
+    Printf("-- Info -- #normals: %d\n", meshGc.normalCount/3);
     for (i = 0; i < meshGc.displayListCount; i++) {
         Printf("-- Info -- #vertex refs in DL #%d: %d\n", i, meshGc.displayLists[i].vertexRefCount);
         for (j = 0; j < meshGc.displayLists[i].vertexRefCount; j++) {
@@ -370,7 +372,7 @@ void PrintInfo() {
             }
         }
     }
-    Printf("-- Info -- maxPosIndex: %d\n", maxPosIndex);
-    Printf("-- Info -- maxNormIndex: %d\n", maxNormIndex);
-    Printf("-- Info -- maxUvIndex: %d\n", maxUvIndex);
+    //Printf("-- Info -- maxPosIndex: %d\n", maxPosIndex);
+    //Printf("-- Info -- maxNormIndex: %d\n", maxNormIndex);
+    //Printf("-- Info -- maxUvIndex: %d\n", maxUvIndex);
 }
