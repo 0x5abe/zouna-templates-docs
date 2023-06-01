@@ -121,11 +121,11 @@ struct Node_Z
     ChangeColor(1);
     uint32 userDefineCrc32;
     ChangeColor(1);
-    uint32 lightDataCrc32; // LIGHT MAP??
+    uint32 lightDataCrc32; 
+    ChangeColor(1);
+    uint32 bitmapCrc32;
     ChangeColor(1);
     uint32 unkCrc32;
-    ChangeColor(1);
-    uint32 unkCrc32_2;
     ChangeColor(1);
     Mat4x4 inverseWorldTransform; // (row major)
     TVector3 unkVec3f;
@@ -176,7 +176,7 @@ struct Node_Z
 
 void PrintInfo() {
     //Printf("-- Info -- World Transform: \n%s\n", Mat4x4ToString(worldTransform));
-    if (node.lightDataCrc32 != 0)
+    if (node.bitmapCrc32 != 0)
     {
         Printf("-- Info -- HAS BTIMAP CRC\n");
     }

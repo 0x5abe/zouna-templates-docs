@@ -319,7 +319,14 @@ struct Mesh_Z {
     Vertex vertices[vertexCount];
 };
 
-struct vertexRef {
+struct vertexRef1 {
+    uint16 posIndex; // index into vertices, 3 int16s
+    uint16 normalIndex; // index into normals, 3 int8s
+    uint16 uvIndex; // index into uvs, 2 int16s
+    uint16 uvIndex2;
+};
+
+struct vertexRef2 {
     uint16 posIndex; // index into vertices, 3 int16s
     uint16 normalIndex; // index into normals, 3 int8s
     uint16 uvIndex; // index into uvs, 2 int16s
@@ -330,8 +337,16 @@ struct DisplayList_Z {
     uint32 unkUint; // number of actual GX commands, usaully byteCount-32 beacuse of byte alignment for GX WGPipe
     ubyte primAndVtxFmt;
     uint16 vertexRefCount;
-    vertexRef vertexRefs[vertexRefCount];
-    byte padding[byteCount - 3 - vertexRefCount*6];
+    local uint32 size;
+    Printf("%d", primAndVtxFmt & 7 == 1);
+    if (((primAndVtxFmt << 5) >> 5) == 1) {
+        vertexRef1 vertexRefs[vertexRefCount];
+        size = 8;
+    } else if (((primAndVtxFmt << 5) >> 5) == 2) {
+        vertexRef2 vertexRefs[vertexRefCount];
+        size = 6;
+    }
+    byte padding[byteCount - 3 - vertexRefCount*size];
 };
 
 struct MeshGC_Z {

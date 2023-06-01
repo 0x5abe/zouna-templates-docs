@@ -26,6 +26,38 @@ void ChangeColor(byte bChangeColor) {
 
 //------------------------------------------------
 
+//Material collision flags:
+
+//0x1 -> UNK
+//0x2 -> COLLIDABLE
+//0x4 -> UNK
+//0x8 -> UNK
+//0x10 -> UNK
+//0x20 -> UNK
+//0x40 -> UNK
+//0x80 -> UNK
+//0x100 -> UNK
+//0x200 -> UNK
+//0x400 -> UNK
+//0x800 -> UNK
+//0x1000 -> UNK
+//0x2000 -> UNK
+//0x4000 -> UNK
+//0x8000 -> UNK
+//0x10000 -> UNK
+//0x20000 -> UNK
+//0x40000 -> Sound related - combined with 80000,100000,200000 changes
+//0x80000 -> Sound related - combined with 40000,100000,200000 changes
+//0x100000 -> Sound related - combined with 40000,80000,200000 changes
+//0x200000 -> Sound related - combined with 40000,80000,100000 changes with 80000 particles change
+//0x400000 -> Slide surface 1 -> when used in combination with sticky surface you get slippery surface
+//0x800000 -> Slide surface 2
+//0x1000000 -> Sticky surface -> when used in combination with Slide surface 1 you get slippery surface
+//0x2000000 -> UNK
+//0x4000000 -> UNK
+//0x8000000 -> UNK
+//0x10000000 -> UNK
+//0x20000000 -> UNK
 typedef struct
 {
     float X;

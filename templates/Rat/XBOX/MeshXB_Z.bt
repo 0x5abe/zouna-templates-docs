@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio MeshPc_Z v1.06.63.0X
+//--- Asobo Studio MeshXB_Z v1.06.63.0X
 //------------------------------------------------
 
 LittleEndian();
@@ -321,62 +321,35 @@ struct Mesh_Z {
     Vertex vertices[vertexCount]; //Used for AABB col
 };
 
-struct VertexStruct60 {
-    ChangeColor(1);
-    TVector3 coordinates;
-    TVector3Byte tangent;
-    ubyte tangentPadding;
-    TVector3Byte normals;
-    ubyte normalPadding;
-    TVector2 UV;
-    float blendIndices[4] <read=matIndexToBoneIndex,optimize=false>;
-    float blendWeights[4];  
-};
-
-struct VertexStruct48_blend1 {
-    ChangeColor(1);
-    TVector3 coordinates;
-    TVector3Byte tangent;
-    ubyte tangentPadding;
-    TVector3Byte normals;
-    ubyte normalPadding;
-    TVector2 UV;
-    float unk[5];
-};
-
-struct VertexStruct48_skinVolume {
-    ChangeColor(1);
-    TVector3 coordinates;
-    TVector3 unk1;
-    TVector3 unk2;
-    TVector3 blendIndices;
-};
-
-struct VertexStruct36 {
-    ChangeColor(1);
-    TVector3 coordinates;
-    TVector3Byte tangent;
-    ubyte tangentPadding;
-    TVector3Byte normals;
-    ubyte normalPadding;
-    TVector2 UV;
-    float luvX; // lightUVX? related to radiosity
-    float luvY; // lightUVY? related to radiosity 
-};
-
-struct VertexStruct24 {
-    ChangeColor(1);
-    TVector3 coordinates;
-    float unk;
-    TVector2 UV;
-};
-
 struct VertexStructUnk (uint32 bytes) {
     ChangeColor(1);
     byte data[bytes];
 };
 
-struct MeshPC_Z {
+struct VertexStruct28 {
+    ChangeColor(1);
+    TVector3 coordinates;
+    float normals;
+    TVector2 UV;
+    short luv[2]; // not too sure of the translation to float
+};
+
+struct VertexStruct56 {
+    ChangeColor(1);
+    TVector3 coordinates;
+    float normals;
+    TVector2 UV;
+    float index0;
+    float weight0;
+    float index1;
+    float weight1;
+    float index2;
+    float weight2;
+    float index3;
+    float weight3;
+};
+
+struct MeshXB_Z {
     ChangeColor(1);
     Mesh_Z mesh;
     ChangeColor(1);
@@ -389,18 +362,11 @@ struct MeshPC_Z {
         uint16 vertexStructCount;
         uint16 vertexStructLength;
         switch (vertexStructLength) {
-            case 60:
-                VertexStruct60 vertexStructs[vertexStructCount] <optimize=false>;
+            case 56:
+                VertexStruct56 vertexStructs[vertexStructCount] <optimize=false>;
                 break;
-            case 48:        
-                VertexStruct48_skinVolume vertexStructs[vertexStructCount] <optimize=false>;
-                //VertexStruct48_blend1 vertexStructs[vertexStructCount] <optimize=false>;
-                break;
-            case 36:        
-                VertexStruct36 vertexStructs[vertexStructCount] <optimize=false>;
-                break;
-            case 24:
-                VertexStruct24 vertexStructs[vertexStructCount] <optimize=false>;
+            case 28:
+                VertexStruct28 vertexStructs[vertexStructCount] <optimize=false>;
                 break;
             default:
                 VertexStructUnk vertexStructs(vertexStructLength)[vertexStructCount] <optimize=false>;
@@ -421,7 +387,7 @@ struct MeshPC_Z {
     ChangeColor(1);
     vertexGroup vertexGroups[vertexGroupCount]  <optimize=false>;
     PrintInfo();
-} meshPc;
+} meshXB;
 
 void PrintInfo() {
     local uint32 i;
@@ -430,45 +396,35 @@ void PrintInfo() {
     local float maxBlendIndex = -1;
     local int16 maxAABBColunk9 = 0;
     local int16 maxAABBColunk10 = 0;
-    local float maxluvX;
-    local float maxluvY;
-    Printf("-- Info -- #materials: %d\n", meshPc.mesh.materialCrc32Count);
-    Printf("-- Info -- #short-vertices: %d\n", meshPc.mesh.vertexCount);
-    for (i = 0; i < meshPc.vertexBufferCount; i++) {
-        Printf("-- Info -- #vertex-structs in VB #%d: %d\n", i, meshPc.vertexBuffers[i].vertexStructCount);
-        for (j = 0; j < meshPc.vertexBuffers[i].vertexStructCount; j++) {
-        //    if (meshPc.vertexBuffers[i].vertexStructs[j].normalPadding != 0xCD) {
-        //        //Printf("-- Info -- #VB #%d | vertex #%d | tangent : %s\n", i, j, TVector3ByteToString(meshPc.vertexBuffers[i].vertexStructs[j].tangent));
-        //        Printf("-- Info -- #VB #%d | vertex #%d | normal padding : %s\n", i, j, TVector3ByteToString(meshPc.vertexBuffers[i].vertexStructs[j].normalPadding));
+    Printf("-- Info -- #materials: %d\n", meshXB.mesh.materialCrc32Count);
+    Printf("-- Info -- #short-vertices: %d\n", meshXB.mesh.vertexCount);
+    for (i = 0; i < meshXB.vertexBufferCount; i++) {
+        Printf("-- Info -- #vertex-structs in VB #%d: %d\n", i, meshXB.vertexBuffers[i].vertexStructCount);
+        //for (j = 0; j < meshXB.vertexBuffers[i].vertexStructCount; j++) {
+        //    if (meshXB.vertexBuffers[i].vertexStructs[j].normalPadding != 0xCD) {
+        //        //Printf("-- Info -- #VB #%d | vertex #%d | tangent : %s\n", i, j, TVector3ByteToString(meshXB.vertexBuffers[i].vertexStructs[j].tangent));
+        //        Printf("-- Info -- #VB #%d | vertex #%d | normal padding : %s\n", i, j, TVector3ByteToString(meshXB.vertexBuffers[i].vertexStructs[j].normalPadding));
         //    }
-              if (meshPc.vertexBuffers[i].vertexStructs[j].luvX > maxluvX) {
-                    maxluvX = meshPc.vertexBuffers[i].vertexStructs[j].luvX;
-              }
-              if (meshPc.vertexBuffers[i].vertexStructs[j].luvY > maxluvY) {
-                    maxluvY = meshPc.vertexBuffers[i].vertexStructs[j].luvY;
-              }
+        //}
+    }
+    for (i = 0; i < meshXB.indexBufferCount; i++) {
+        Printf("-- Info -- #faces in IB #%d: %d\n", i, meshXB.indexBuffers[i].faceCount);
+    }
+    Printf("-- Info -- #vertexGroups: %d\n", meshXB.vertexGroupCount);
+    for (i = 0; i < meshXB.vertexGroupCount; i++) {
+        Printf("-- Info -- indexBufferOffsetBytes of VertexGroup #%d: %x\n", i, meshXB.vertexGroups[i].indexBufferOffsetInShorts*2);
+        Printf("-- Info -- #faces in VertexGroup #%d: %d\n", i, meshXB.vertexGroups[i].faceCount);
+    }
+    for (i = 0; i < meshXB.mesh.AABBColCount; i++) {
+        if (meshXB.mesh.AABBCols[i].unk9 > maxAABBColunk9) {
+            maxAABBColunk9 = meshXB.mesh.AABBCols[i].unk9;
         }
-    }
-    for (i = 0; i < meshPc.indexBufferCount; i++) {
-        Printf("-- Info -- #faces in IB #%d: %d\n", i, meshPc.indexBuffers[i].faceCount);
-    }
-    Printf("-- Info -- #vertexGroups: %d\n", meshPc.vertexGroupCount);
-    for (i = 0; i < meshPc.vertexGroupCount; i++) {
-        Printf("-- Info -- indexBufferOffsetBytes of VertexGroup #%d: %x\n", i, meshPc.vertexGroups[i].indexBufferOffsetInShorts*2);
-        Printf("-- Info -- #faces in VertexGroup #%d: %d\n", i, meshPc.vertexGroups[i].faceCount);
-    }
-    for (i = 0; i < meshPc.mesh.AABBColCount; i++) {
-        if (meshPc.mesh.AABBCols[i].unk9 > maxAABBColunk9) {
-            maxAABBColunk9 = meshPc.mesh.AABBCols[i].unk9;
-        }
-        if (meshPc.mesh.AABBCols[i].unk10 > maxAABBColunk10) {
-            maxAABBColunk10 = meshPc.mesh.AABBCols[i].unk10;
+        if (meshXB.mesh.AABBCols[i].unk10 > maxAABBColunk10) {
+            maxAABBColunk10 = meshXB.mesh.AABBCols[i].unk10;
         }
     }
     Printf("-- Info -- Max AABBCol unk9: %d\n", maxAABBColunk9);
     Printf("-- Info -- Max AABBCol unk10: %d\n", maxAABBColunk10);
-    Printf("-- Info -- Max LUvX: %f\n", maxluvX);
-    Printf("-- Info -- Max LUvY: %f\n", maxluvY);
 }
 
 string byteToFloat(ubyte& value )

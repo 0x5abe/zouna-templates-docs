@@ -186,9 +186,9 @@ struct EdgeCol {
     ChangeColor(1);
     Sphere_Z sphere;
     uint flag; //unused
+    uint unk;
+    uint unk2; //unused
     uint edgeId;
-    uint cacheIndexMaybe; //unused
-    uint unkPlaceholderPtr3; //unused
 };
 
 struct ClingLineRelated {
