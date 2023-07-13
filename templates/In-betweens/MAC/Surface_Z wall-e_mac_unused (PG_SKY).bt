@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio Surface_Z v1.291.03.06
+//--- Asobo Studio Surface_Z v1.235.88.06
 //------------------------------------------------
 
 LittleEndian();
@@ -149,26 +149,12 @@ struct PointsRelated1 {
     TVector4 vec4;
 };
 
-struct MorpherRelated {
+struct PointsRelated2 {
     byte data[4];
-};
-
-struct MorphTargetDescRelated {
-    byte data[16];
-};
-
-
-struct unkStruct1 {
-    byte bytes[176];
 };
 
 struct unkStruct2 {
     int16 shorts[4];
-};
-
-struct Morpher_Z {
-    uint32 MorpherRelatedCount;
-    MorpherRelated MorpherRelateds[MorpherRelatedCount];
 };
 
 struct Points_Z {
@@ -180,7 +166,8 @@ struct Points_Z {
     uint32 PointsRelated1Count; //normals?
     PointsRelated1 PointsRelateds1[PointsRelated1Count]<optimize=false>;
     ChangeColor(1);
-    Morpher_Z morpher;
+    uint32 PointsRelated2Count;
+    PointsRelated2 PointsRelateds2[PointsRelated2Count]<optimize=false>;
 };
 
 struct PatchCol {
