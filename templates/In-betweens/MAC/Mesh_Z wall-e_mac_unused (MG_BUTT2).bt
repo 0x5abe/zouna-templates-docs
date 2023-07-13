@@ -325,7 +325,7 @@ struct VertexStructUnk (uint32 bytes) {
     byte data[bytes];
 };
 
-struct MeshPC_Z {
+struct MeshMAC_Z {
     ChangeColor(1);
     Mesh_Z mesh;
     ChangeColor(1);
@@ -366,25 +366,7 @@ struct MeshPC_Z {
     uint32 vertexGroupCount;
     ChangeColor(1);
     vertexGroup vertexGroups[vertexGroupCount]  <optimize=false>;
-    PrintInfo();
-} meshPc;
-
-void PrintInfo() {
-    local uint32 i;
-    Printf("-- Info -- #materials: %d\n", meshPc.mesh.materialCrc32Count);
-    Printf("-- Info -- #short-vertices: %d\n", meshPc.mesh.vertexCount);
-    for (i = 0; i < meshPc.vertexBufferCount; i++) {
-        Printf("-- Info -- #vertex-structs in VB #%d: %d\n", i, meshPc.vertexBuffers[i].vertexStructCount);
-    }
-    for (i = 0; i < meshPc.indexBufferCount; i++) {
-        Printf("-- Info -- #faces in IB #%d: %d\n", i, meshPc.indexBuffers[i].faceCount);
-    }
-    Printf("-- Info -- #vertexGroups: %x\n", meshPc.vertexGroupCount);
-    for (i = 0; i < meshPc.vertexGroupCount; i++) {
-        Printf("-- Info -- indexBufferOffsetBytes of VertexGroup #%d: %x\n", i, meshPc.vertexGroups[i].indexBufferOffsetInShorts*2);
-        Printf("-- Info -- #faces in VertexGroup #%d: %d\n", i, meshPc.vertexGroups[i].faceCount);
-    }
-}
+} meshMac;
 
 string byteToFloat(ubyte& value )
 {
