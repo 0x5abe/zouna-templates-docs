@@ -1,0 +1,332 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//--- Asobo Studio Surface_Z v1.291.03.06
+//------------------------------------------------
+
+LittleEndian();
+BitfieldLeftToRight();
+BitfieldDisablePadding();
+
+//------------------------------------------------
+//--- Color Implementation taken from JPG.bt
+
+local int colorSelect = 0;
+local int colorId = 0;
+local DWORD clr = 0;
+local DWORD jetMap[6*3] = {
+	0x0000cc,0x0000ff,0x0033ff,0x0066ff,0x0099ff,0x00ccff,
+	0x00cccc,0x33ffcc,0x66ff99,0x99ff66,0xccff33,0xffff00,
+	0xffcc00,0xff9900,0xff6600,0xff3300,0xff0000,0xcc0000
+};
+
+void ChangeColor(byte bChangeColor) {
+	if(bChangeColor == 1) {colorSelect++; colorId = 0;}
+	clr = jetMap[(colorSelect%3)*6+(colorId%6)];
+	SetBackColor(clr);
+	colorId++;
+}
+
+//------------------------------------------------
+
+//------------------------------------------------
+//--- Vector struct taken from tge
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+    float W;
+} TVector4 <read=TVector4ToString>;
+
+string TVector4ToString( TVector4& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f, %.6f]", value.X, value.Y, value.Z, value.W );
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+} TVector3 <read=TVector3ToString>;
+
+string TVector3ToString( TVector3& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
+
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+} TVector2 <read=TVector2ToString>;
+
+string TVector2ToString( TVector2& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f]", value.X, value.Y );
+
+    return buffer;
+}
+
+typedef struct
+{
+    ubyte X<read=byteToFloat,optimize=false>;
+    ubyte Y<read=byteToFloat,optimize=false>;
+    ubyte Z<read=byteToFloat,optimize=false>;
+} TVector3Byte <read=TVector3ByteToString>;
+
+string TVector3ByteToString( TVector3Byte& value )
+{
+    local char buffer[255];
+    local float normalByteToD3DColorComponentX = ((value.X/255.0));
+    local float normalByteToFloatX = ((normalByteToD3DColorComponentX * 2) - 1);
+    local float normalByteToD3DColorComponentY = ((value.Y/255.0));
+    local float normalByteToFloatY = ((normalByteToD3DColorComponentY * 2) - 1);
+    local float normalByteToD3DColorComponentZ = ((value.Z/255.0));
+    local float normalByteToFloatZ = ((normalByteToD3DColorComponentZ * 2) - 1);
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", normalByteToFloatX, normalByteToFloatY, normalByteToFloatZ );
+
+    return buffer;
+}
+
+//------------------------------------------------
+
+struct Quat {
+    TVector3 v;
+    float w;
+};
+
+struct Mat4x4 {
+    TVector4 rows[4];
+};
+
+struct Sphere_Z {
+    TVector3 Center;
+    float radius;
+};
+
+struct Box_Z
+{
+    Mat4x4 transformation;
+};
+
+struct LinkInfo {
+    uint32 linkCrc32;
+    uint32 linkCount;
+    uint32 linkedCrc32[linkCount];
+    uint32 surfaceDataCrc32;
+    Sphere_Z bSphereLocal;
+    Mat4x4 unkMatrix;
+    float fadeOutDistance;
+    uint32 flags;
+    uint16 type;
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 linkSize;
+    uint32 decompressedSize;
+    uint32 compressedSize;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    LinkInfo linkInfo;
+};
+
+struct PointsRelated0 {
+    ChangeColor(1);
+    TVector3 vec3;
+};
+
+struct PointsRelated1 {
+    ChangeColor(1);
+    TVector4 vec4;
+};
+
+struct MorpherRelated {
+    byte data[4];
+};
+
+struct MorphTargetDescRelated {
+    byte data[16];
+};
+
+
+struct unkStruct1 {
+    byte bytes[176];
+};
+
+struct unkStruct2 {
+    int16 shorts[4];
+};
+
+struct Morpher_Z {
+    uint32 MorpherRelatedCount;
+    MorpherRelated MorpherRelateds[MorpherRelatedCount];
+};
+
+struct Points_Z {
+    ObjectHeader header;
+    ChangeColor(1);
+    uint32 PointsRelated0Count; //pos?
+    PointsRelated0 PointsRelateds0[PointsRelated0Count]<optimize=false>;
+    ChangeColor(1);
+    uint32 PointsRelated1Count; //normals?
+    PointsRelated1 PointsRelateds1[PointsRelated1Count]<optimize=false>;
+    ChangeColor(1);
+    Morpher_Z morpher;
+};
+
+struct PatchCol {
+    Sphere_Z sphere;
+    uint32 flag;
+    uint16 edgeColId;
+    uint16 nextPatchColId; //not an id into the stored array, instead an id into an array at runtime during the loop
+    uint32 cdcdcdcd[2];
+}; // research looping better Surface_Z::GetCollisionLines
+
+struct EdgeCol {
+    ChangeColor(1);
+    Sphere_Z sphere;
+    uint flag; //unused
+    uint edgeId;
+    uint cacheIndexMaybe; //unused
+    uint unkPlaceholderPtr3; //unused
+    byte bytes[22222];
+};
+
+struct ClingLineRelated {
+    ChangeColor(1);
+    Sphere_Z sphere;
+    uint flag;
+    uint edgeId;
+    uint unkUints[2]; // unk
+    float unkFloat; //unk
+    byte bytes[22222];
+}; // UNK
+
+struct CullCone {
+    byte data[32];
+};
+
+struct Patch_Z {
+    ChangeColor(1);
+    uint16 flag;
+    uint16 shouldDrawRelatedStartIndex;
+    uint16 edgeIndices[4];
+    uint32 materialAnimIndex; //gets replaced
+    Sphere_Z someSphere;
+    CullCone cullCone;
+    Box_Z BBox;
+    uint16 unkIndices[4];
+    uint16 colorIndices[4];
+    uint16 normalIndices[4];
+    uint16 displacementIndices[8];
+    uint16 colCacheIndex;
+    uint16 unk;
+    uint materialAnimCrc32;
+};
+
+struct Edge_Z {
+    ChangeColor(1);
+    uint16 P[2];
+    uint16 T[2];
+};
+
+struct SeadVoxel_Z {
+    uint16 elementEntry;
+    uint16 elementCount;
+};
+
+struct SeadIndex_Z {
+    ChangeColor(1);
+    uint seadVoxelCount;
+    SeadVoxel_Z seadVoxels[seadVoxelCount];
+    ChangeColor(1);
+    uint patchIndexCount;
+    uint16 patchIndices[patchIndexCount];
+    ChangeColor(1);
+    TVector4 unkVec4_1;
+    TVector4 unkVec4_2;
+    TVector4 unkVec4_3;
+    ChangeColor(1);
+    TVector3 Axes_1;
+    uint32 unkPtr1;
+    TVector3 Axes_2;
+    uint32 unkPtr2;
+    TVector3 Axes_3;
+    uint32 unkPtr3;
+    ChangeColor(1);
+    TVector4 unkVec4_4;
+    TVector4 size;
+    TVector3 step;
+    uint32 unkPtr4;
+    ChangeColor(1);
+    TVector4 center;
+    TVector4 unkVec4_7;
+    TVector3 fSize;
+    uint32 unkPtr5;
+    ChangeColor(1);
+    uint unkUsedInVoxelTrace;
+    TVector3 iSize;
+    uint hitPatchCount;
+};
+
+struct shouldDrawBitfield {
+    byte indexInDrawInfoArray : 3;
+    byte shiftAmountForBit : 5;
+    byte other;
+};
+
+struct test {
+    byte bytes[22222];
+};
+
+struct Surface_Z {
+    ChangeColor(1);
+    Points_Z points;
+    ChangeColor(1);
+    uint patchCount;
+    Patch_Z patches[patchCount] <optimize=false>;
+    ChangeColor(1);
+    uint edgeCount;
+    Edge_Z edges[edgeCount] <optimize=false>;
+    ChangeColor(1);
+    uint normalCount;
+    TVector3 normals[normalCount];
+    ChangeColor(1);
+    uint colorCount;
+    TVector3 colors[colorCount]; // changing doesnt seem to take effect
+    ChangeColor(1);
+    uint displacementRelatedCount;
+    TVector2 displacementRelateds[displacementRelatedCount]; // used for water in rat
+    ChangeColor(1);
+    //Occlusion related, maybe backFaceCulling
+    uint shouldDrawRelatedCount; //Related to should draw
+    shouldDrawBitfield shouldDrawRelateds[shouldDrawRelatedCount];
+    ChangeColor(1);
+    uint patchColCount;
+    PatchCol patchCols[patchColCount] <optimize=false>;
+    ChangeColor(1);
+    byte isSead;
+    if (isSead) {
+        ChangeColor(1);
+        SeadIndex_Z seadIndex;
+    }
+    ChangeColor(1);
+    uint edgeColCount;
+    EdgeCol edgeCols[edgeColCount] <optimize=false>;
+    ChangeColor(1);
+    uint clingLineRelatedCount;
+    ClingLineRelated clingLineRelateds[clingLineRelatedCount] <optimize=false>;
+    uint someCount;
+    test test1[someCount];
+    uint someOtherCount;
+    test test2[someOtherCount];
+} surface;

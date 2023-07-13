@@ -1,0 +1,398 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//--- Asobo Studio Mesh_Z v1.291.03.06
+//------------------------------------------------
+
+//------------------------------------------------
+//--- Color Implementation taken from JPG.bt
+LittleEndian();
+
+local int colorSelect = 0;
+local int colorId = 0;
+local DWORD clr = 0;
+local DWORD jetMap[6*3] = {
+	0x0000cc,0x0000ff,0x0033ff,0x0066ff,0x0099ff,0x00ccff,
+	0x00cccc,0x33ffcc,0x66ff99,0x99ff66,0xccff33,0xffff00,
+	0xffcc00,0xff9900,0xff6600,0xff3300,0xff0000,0xcc0000
+};
+
+void ChangeColor(byte bChangeColor) {
+	if(bChangeColor == 1) {colorSelect++; colorId = 0;}
+	clr = jetMap[(colorSelect%3)*6+(colorId%6)];
+	SetBackColor(clr);
+	colorId++;
+}
+
+//------------------------------------------------
+
+struct Quat {
+    float x;
+    float y;
+    float z;
+    float w;
+};
+
+struct Mat4f {
+    float mat[16];
+};
+
+struct LinkInfo {
+    uint32 linkCrc32;
+    uint32 linkCount;
+    uint32 linkedCrc32[linkCount];
+    uint32 meshDataCrc32;
+    Quat rotation;
+    Mat4f transform;
+    float radius;
+    uint32 flags;
+    uint16 type;
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 linkSize;
+    uint32 decompressedSize;
+    uint32 compressedSize;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    LinkInfo linkInfo;
+};
+
+struct PointsRelated0 {
+    byte data[12];
+};
+
+struct PointsRelated1 {
+    byte data[16];
+};
+
+struct MorpherRelated {
+    byte data[4];
+};
+
+struct MorphTargetDescRelated {
+    byte data[16];
+};
+
+struct MorphTargetDesc_Z {
+    uint32 name;
+    uint32 MorphTargetDescRelatedCount;
+    MorphTargetDescRelated MorphTargetDescRelateds[MorphTargetDescRelatedCount];
+};
+
+struct Morpher_Z {
+    uint32 MorpherRelatedCount;
+    MorpherRelated MorpherRelateds[MorpherRelatedCount];
+};
+
+struct SphereCol {
+    byte data[20];
+    uint32 nameCrc32;
+};
+
+struct BoxCol {
+    float unk1;
+    float unk2;
+    float unk3;
+    float unk4;
+    float unk5;
+    float unk6;
+    float unk7;
+    float unk8;
+    float unk9;
+    float unk10;
+    float unk11;
+    float unk12;
+    float unk13;
+    float unk14;
+    float unk15;
+    float unk16;
+    uint32 unk17;
+    uint32 nameCrc32;
+};
+
+struct CylindreCol {
+    byte data[40];
+    uint32 nameCrc32;
+};
+
+struct AABBColRelated {
+    int16 unk1;
+    int16 unk2; 
+    int16 unk3;
+    int16 zero;
+};
+
+struct AABBCol {
+    float unk1;
+    float unk2;
+    float unk3;
+    int16 unk4;
+    int16 unk5;
+    float unk6;
+    float unk7;
+    float unk8;
+    int16 unk9;
+    int16 unk10;
+};
+
+struct Vertex {
+    int16 x;
+    int16 y;
+    int16 z;
+};
+
+struct vertexGroup {
+    uint32 zero0;
+    uint32 zero1;
+    uint32 zero2;
+    ChangeColor(1);
+    uint16 renderType1;
+    ChangeColor(1);
+    uint16 renderType2;
+    ChangeColor(1);
+    uint16 zero;
+    ChangeColor(1);
+    uint16 vertexOffsetInBufferInGroups;
+    ChangeColor(1);
+    uint16 vertexCountMinusOne;
+    ChangeColor(1);
+    uint16 vertexCount;
+    ChangeColor(1);
+    uint32 indexBufferOffsetInShorts;
+    ChangeColor(1);
+    uint32 faceCount;
+    ChangeColor(1);
+    uint32 unk1;
+    ChangeColor(1);
+    uint32 unkss;
+    ChangeColor(1);
+    uint16 vertexSize;
+    ChangeColor(1);
+    uint16 cdcdcdcd;
+    ChangeColor(1);
+};
+
+struct Triangle {
+    int16 index1;
+    int16 index2;
+    int16 index3;
+};
+
+struct Points_Z {
+    ObjectHeader header;
+    ChangeColor(1);
+    uint32 PointsRelated0Count;
+    PointsRelated0 PointsRelateds0[PointsRelated0Count];
+    uint32 PointsRelated1Count;
+    PointsRelated1 PointsRelateds1[PointsRelated1Count];
+    Morpher_Z morpher;
+};
+
+struct Mesh_Z {
+    Points_Z points;
+    ChangeColor(1);
+    uint32 unk1Count;
+    ChangeColor(1);
+    byte unk1s[8*unk1Count];
+    if (unk1Count != 0) {ChangeColor(1);}
+    uint32 unk2Count;
+    ChangeColor(1);
+    byte unk2s[12*unk2Count];
+    if (unk2Count != 0) {ChangeColor(1);}
+    uint32 unk3Count;
+    ChangeColor(1);
+    struct unk3 {
+        uint32 unk4Count;
+        ChangeColor(1);
+        byte unk4s[2*unk4Count];
+        if (unk4Count != 0) {ChangeColor(1);}
+        byte unk5[8];
+        ChangeColor(1);
+    } unk3s[unk3Count];
+    if (points.header.linkInfo.flags & 2) {
+        byte unk6[4*unk3Count];
+        if (unk3Count != 0) {ChangeColor(1);}
+    }
+    uint32 unk7Count;
+    ChangeColor(1);
+    struct unk7 {
+        uint32 unk8Count;
+        ChangeColor(1);
+        byte unk8s[8*unk8Count];
+        if (unk8Count != 0) {ChangeColor(1);}
+    } unk7s[unk7Count];
+    uint32 materialCrc32Count;
+    ChangeColor(1);
+    uint32 materialCrc32s[materialCrc32Count];
+    ChangeColor(1);
+    byte stuffRelatedToCounts[24];
+    ChangeColor(1);
+    uint32 sphereColCount;
+    ChangeColor(1);
+    SphereCol sphereCols[sphereColCount];
+    ChangeColor(1);
+    uint32 boxColCount;
+    ChangeColor(1);
+    BoxCol boxCols[boxColCount];
+    ChangeColor(1);
+    uint32 cylindreColCount;
+    ChangeColor(1);
+    CylindreCol cylindreCols[cylindreColCount];
+    ChangeColor(1);
+    uint32 AABBColRelatedCount;
+    ChangeColor(1);
+    AABBColRelated AABBColRelateds[AABBColRelatedCount]; 
+    ChangeColor(1);
+    uint32 AABBColCount;
+    ChangeColor(1);
+    AABBCol AABBCols[AABBColCount];
+    ChangeColor(1);
+    uint32 vertexCount;
+    ChangeColor(1);
+    Vertex vertices[vertexCount];
+};
+
+struct VertexStruct60 {
+    ChangeColor(1);
+    float x;
+    float y;
+    float z;
+    ubyte tangentX<read=byteToFloat,optimize=false>;
+    ubyte tangentY<read=byteToFloat,optimize=false>;
+    ubyte tangentZ<read=byteToFloat,optimize=false>;
+    ubyte tangentPadding;
+    ubyte normalX<read=byteToFloat,optimize=false>;
+    ubyte normalY<read=byteToFloat,optimize=false>;
+    ubyte normalZ<read=byteToFloat,optimize=false>;
+    ubyte normalPadding;
+    float uvX;
+    float uvY;
+    float blendIndices[4];
+    float blends[4];  
+};
+
+struct VertexStruct48 {
+    ChangeColor(1);
+    float x;
+    float y;
+    float z;
+    ubyte tangentX<read=byteToFloat,optimize=false>;
+    ubyte tangentY<read=byteToFloat,optimize=false>;
+    ubyte tangentZ<read=byteToFloat,optimize=false>;
+    ubyte tangentPadding;
+    ubyte normalX<read=byteToFloat,optimize=false>;
+    ubyte normalY<read=byteToFloat,optimize=false>;
+    ubyte normalZ<read=byteToFloat,optimize=false>;
+    ubyte normalPadding;
+    float uvX;
+    float uvY;
+    float unk[5];
+};
+
+struct VertexStruct36 {
+    ChangeColor(1);
+    float x;
+    float y;
+    float z;
+    ubyte tangentX<read=byteToFloat,optimize=false>;
+    ubyte tangentY<read=byteToFloat,optimize=false>;
+    ubyte tangentZ<read=byteToFloat,optimize=false>;
+    ubyte tangentPadding;
+    ubyte normalX<read=byteToFloat,optimize=false>;
+    ubyte normalY<read=byteToFloat,optimize=false>;
+    ubyte normalZ<read=byteToFloat,optimize=false>;
+    ubyte normalPadding;
+    float uvX;
+    float uvY;
+    float luvX; // lightUVX? related to radiosity
+    float luvY; // lightUVY? related to radiosity 
+};
+
+struct VertexStruct24 {
+    ChangeColor(1);
+    float x;
+    float y;
+    float z;
+    float unk;
+    float uvX;
+    float uvY;
+};
+struct VertexStructUnk (uint32 bytes) {
+    ChangeColor(1);
+    byte data[bytes];
+};
+
+struct MeshPC_Z {
+    ChangeColor(1);
+    Mesh_Z mesh;
+    ChangeColor(1);
+    uint32 unkUintCount;
+    uint32 unkUints[unkUintCount*232323];
+    ChangeColor(1);
+    uint32 vertexBufferCount;
+    struct VertexBuffer {
+        uint32 vertexStructCount;
+        uint32 vertexStructLength;
+        uint32 unk;
+        switch (vertexStructLength) {
+            case 60:
+                VertexStruct60 vertexStructs[vertexStructCount] <optimize=false>;
+                break;
+            case 48:        
+                VertexStruct48 vertexStructs[vertexStructCount] <optimize=false>;
+                break;
+            case 36:        
+                VertexStruct36 vertexStructs[vertexStructCount] <optimize=false>;
+                break;
+            case 24:
+                VertexStruct24 vertexStructs[vertexStructCount] <optimize=false>;
+                break;
+            default:
+                VertexStructUnk vertexStructs(vertexStructLength)[vertexStructCount] <optimize=false>;
+                break;
+        };
+        ChangeColor(1);
+    } vertexBuffers[vertexBufferCount]<optimize=false>;
+    ChangeColor(1);
+    uint32 indexBufferCount;
+    struct IndexBuffer {
+        uint32 indexCount;
+        uint32 unk;
+        local uint16 faceCount = indexCount / 3;
+        ChangeColor(1);
+        Triangle tris[faceCount];
+    } indexBuffers[indexBufferCount] <optimize=false>;
+    ChangeColor(1);
+    uint32 vertexGroupCount;
+    ChangeColor(1);
+    vertexGroup vertexGroups[vertexGroupCount]  <optimize=false>;
+    PrintInfo();
+} meshPc;
+
+void PrintInfo() {
+    local uint32 i;
+    Printf("-- Info -- #materials: %d\n", meshPc.mesh.materialCrc32Count);
+    Printf("-- Info -- #short-vertices: %d\n", meshPc.mesh.vertexCount);
+    for (i = 0; i < meshPc.vertexBufferCount; i++) {
+        Printf("-- Info -- #vertex-structs in VB #%d: %d\n", i, meshPc.vertexBuffers[i].vertexStructCount);
+    }
+    for (i = 0; i < meshPc.indexBufferCount; i++) {
+        Printf("-- Info -- #faces in IB #%d: %d\n", i, meshPc.indexBuffers[i].faceCount);
+    }
+    Printf("-- Info -- #vertexGroups: %x\n", meshPc.vertexGroupCount);
+    for (i = 0; i < meshPc.vertexGroupCount; i++) {
+        Printf("-- Info -- indexBufferOffsetBytes of VertexGroup #%d: %x\n", i, meshPc.vertexGroups[i].indexBufferOffsetInShorts*2);
+        Printf("-- Info -- #faces in VertexGroup #%d: %d\n", i, meshPc.vertexGroups[i].faceCount);
+    }
+}
+
+string byteToFloat(ubyte& value )
+{
+    local string str = "";
+    local float normalByteToD3DColorComponent = ((value/255.0));
+    local float normalByteToFloat = ((normalByteToD3DColorComponent * 2) - 1);
+    SPrintf(str, "%f",normalByteToFloat);
+
+    return str;
+}

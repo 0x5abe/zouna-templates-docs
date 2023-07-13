@@ -101,8 +101,22 @@ struct Quat {
     float w;
 };
 
+struct Mat3x3 {
+    TVector3 rows[3];
+};
+
 struct Mat4x4 {
     TVector4 rows[4];
+};
+
+struct Mat3x4 {
+    TVector4 rows[3];
+};
+
+struct Box_Z {
+    Mat3x4 mat;
+    TVector3 vec;
+    float maybeScale; // not really used it seems
 };
 
 struct Sphere_Z {
@@ -116,7 +130,7 @@ struct LinkInfo {
     uint32 linkedCrc32[linkCount];
     uint32 dataCrc32;
     Sphere_Z bSphereLocal;
-    Mat4x4 unkMatrix;
+    Box_Z bBox;
     float fadeOutDistance;
     uint32 flags;
     uint16 type;
@@ -161,19 +175,19 @@ struct Morpher_Z {
     MorphTargetDesc_Z morphTargetDescs[morphTargetDescCount];
 };
 
-struct SphereCol {
+struct SphereCol_Z {
     Sphere_Z sphere;
     uint32 flag;
     uint32 nameCrc32;
 };
 
-struct BoxCol {
-    Mat4x4 mat;
+struct BoxCol_Z {
+    Box_Z box;
     uint32 flag;
     uint32 nameCrc32;
 };
 
-struct CylindreCol {
+struct CylindreCol_Z {
     byte data[40];
     uint32 nameCrc32;
 };
@@ -298,15 +312,15 @@ struct Mesh_Z {
     ChangeColor(1);
     uint32 sphereColCount;
     ChangeColor(1);
-    SphereCol sphereCols[sphereColCount];
+    SphereCol_Z sphereCols[sphereColCount];
     ChangeColor(1);
     uint32 boxColCount;
     ChangeColor(1);
-    BoxCol boxCols[boxColCount];
+    BoxCol_Z boxCols[boxColCount];
     ChangeColor(1);
     uint32 cylindreColCount;
     ChangeColor(1);
-    CylindreCol cylindreCols[cylindreColCount];
+    CylindreCol_Z cylindreCols[cylindreColCount];
     ChangeColor(1);
     uint32 AABBColTriCount;
     ChangeColor(1);
@@ -441,12 +455,12 @@ void PrintInfo() {
         //        //Printf("-- Info -- #VB #%d | vertex #%d | tangent : %s\n", i, j, TVector3ByteToString(meshPc.vertexBuffers[i].vertexStructs[j].tangent));
         //        Printf("-- Info -- #VB #%d | vertex #%d | normal padding : %s\n", i, j, TVector3ByteToString(meshPc.vertexBuffers[i].vertexStructs[j].normalPadding));
         //    }
-              if (meshPc.vertexBuffers[i].vertexStructs[j].luvX > maxluvX) {
-                    maxluvX = meshPc.vertexBuffers[i].vertexStructs[j].luvX;
-              }
-              if (meshPc.vertexBuffers[i].vertexStructs[j].luvY > maxluvY) {
-                    maxluvY = meshPc.vertexBuffers[i].vertexStructs[j].luvY;
-              }
+              //if (meshPc.vertexBuffers[i].vertexStructs[j].luvX > maxluvX) {
+               //     maxluvX = meshPc.vertexBuffers[i].vertexStructs[j].luvX;
+              //}
+             // if (meshPc.vertexBuffers[i].vertexStructs[j].luvY > maxluvY) {
+             //       maxluvY = meshPc.vertexBuffers[i].vertexStructs[j].luvY;
+             // }
         }
     }
     for (i = 0; i < meshPc.indexBufferCount; i++) {

@@ -135,7 +135,9 @@ struct Color {
 
 struct ObjectDatas_Z {
     ObjectHeader objectHeader;
+    ChangeColor(1);
     float unkFloat1;
+    ChangeColor(1);
     Color color;
 };
 
@@ -158,20 +160,23 @@ struct unkStruct4 {
 struct MeshVolume_Z {
     uint unkStruct1Count;
     unkStruct1 unkStruct1s[unkStruct1Count];
+    ChangeColor(1);
     uint unkStruct2Count;
     unkStruct2 unkStruct2s[unkStruct2Count];
+    ChangeColor(1);
     uint unkStruct3Count;
     unkStruct3 unkStruct3s[unkStruct3Count];
+    ChangeColor(1);
     uint unkStruct4Count;
     unkStruct4 unkStruct4s[unkStruct4Count];
 };
 
 struct MeshData_Z {
+    ChangeColor(1);
     ObjectDatas_Z objectDatas;
+    ChangeColor(1);
     MeshVolume_Z meshVolume;
 } meshData;
-
-
 
 void PrintInfo() {
     local int i = 0;
