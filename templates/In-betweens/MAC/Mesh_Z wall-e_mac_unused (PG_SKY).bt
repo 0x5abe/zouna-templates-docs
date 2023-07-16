@@ -175,70 +175,30 @@ struct Points_Z {
     PointsRelated2 PointsRelateds2[PointsRelated2Count];
 };
 
-struct VertexStruct60 {
+struct VertexStruct64 {
     ChangeColor(1);
     float x;
     float y;
     float z;
-    ubyte tangentX<read=byteToFloat,optimize=false>;
-    ubyte tangentY<read=byteToFloat,optimize=false>;
-    ubyte tangentZ<read=byteToFloat,optimize=false>;
-    ubyte tangentPadding;
-    ubyte normalX<read=byteToFloat,optimize=false>;
-    ubyte normalY<read=byteToFloat,optimize=false>;
-    ubyte normalZ<read=byteToFloat,optimize=false>;
-    ubyte normalPadding;
+    float normalX;
+    float normalY;
+    float normalZ;
     float uvX;
     float uvY;
     float blendIndices[4];
-    float blends[4];  
+    float blends[4];
 };
 
-struct VertexStruct48 {
-    ChangeColor(1);
+struct VertexStruct40 {
     float x;
     float y;
     float z;
-    ubyte tangentX<read=byteToFloat,optimize=false>;
-    ubyte tangentY<read=byteToFloat,optimize=false>;
-    ubyte tangentZ<read=byteToFloat,optimize=false>;
-    ubyte tangentPadding;
-    ubyte normalX<read=byteToFloat,optimize=false>;
-    ubyte normalY<read=byteToFloat,optimize=false>;
-    ubyte normalZ<read=byteToFloat,optimize=false>;
-    ubyte normalPadding;
+    float normalX;
+    float normalY;
+    float normalZ;
     float uvX;
     float uvY;
-    float unk[5];
-};
-
-struct VertexStruct36 {
-    ChangeColor(1);
-    float x;
-    float y;
-    float z;
-    ubyte tangentX<read=byteToFloat,optimize=false>;
-    ubyte tangentY<read=byteToFloat,optimize=false>;
-    ubyte tangentZ<read=byteToFloat,optimize=false>;
-    ubyte tangentPadding;
-    ubyte normalX<read=byteToFloat,optimize=false>;
-    ubyte normalY<read=byteToFloat,optimize=false>;
-    ubyte normalZ<read=byteToFloat,optimize=false>;
-    ubyte normalPadding;
-    float uvX;
-    float uvY;
-    float luvX; // lightUVX? related to radiosity
-    float luvY; // lightUVY? related to radiosity 
-};
-
-struct VertexStruct24 {
-    ChangeColor(1);
-    float x;
-    float y;
-    float z;
-    float unk;
-    float uvX;
-    float uvY;
+    float unk[2];
 };
 
 struct VertexStructUnk (uint32 bytes) {
@@ -251,17 +211,11 @@ struct VertexBufferExt_Z {
     uint32 vertexStructLength;
     uint32 unk;
     switch (vertexStructLength) {
-        case 60:
-            VertexStruct60 vertexStructs[vertexStructCount] <optimize=false>;
+        case 64:
+            VertexStruct64 vertexStructs[vertexStructCount] <optimize=false>;
             break;
-        case 48:        
-            VertexStruct48 vertexStructs[vertexStructCount] <optimize=false>;
-            break;
-        case 36:        
-            VertexStruct36 vertexStructs[vertexStructCount] <optimize=false>;
-            break;
-        case 24:
-            VertexStruct24 vertexStructs[vertexStructCount] <optimize=false>;
+        case 40:        
+            VertexStruct40 vertexStructs[vertexStructCount] <optimize=false>;
             break;
         default:
             VertexStructUnk vertexStructs(vertexStructLength)[vertexStructCount] <optimize=false>;
@@ -291,9 +245,6 @@ struct MeshBuffers_Z {
     uint32 vertexGroupCount;
     ChangeColor(1);
     vertexGroup vertexGroups[vertexGroupCount]  <optimize=false>;
-    ChangeColor(1);
-    uint32 unkStruct2Count;
-    unkStruct2 unkStruct2s[unkStruct2Count];
 };
 
 struct unkStruct1 {
@@ -333,6 +284,8 @@ struct Mesh_Z {
         byte unk8s[8*unk8Count];
         if (unk8Count != 0) {ChangeColor(1);}
     } unk7s[unk7Count];
+    uint32 unkUint1;
+    uint32 unkUint2;
     uint32 materialCrc32Count;
     ChangeColor(1);
     uint32 materialCrc32s[materialCrc32Count];
@@ -362,8 +315,6 @@ struct Mesh_Z {
     uint32 vertexCount;
     ChangeColor(1);
     Vertex vertices[vertexCount];
-    uint32 unkStruct1Count;
-    unkStruct1 unkStruct1s[unkStruct1Count];
     MeshBuffers_Z meshBuffers;
 };
 
