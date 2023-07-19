@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio LightDataPc_Z v1.06.63.0X
+//--- Asobo Studio RotShape_Z v1.06.63.0X
 //------------------------------------------------
 
 LittleEndian();
@@ -101,8 +101,22 @@ struct Quat {
     float w;
 };
 
+struct Mat3x3 {
+    TVector3 rows[3];
+};
+
 struct Mat4x4 {
     TVector4 rows[4];
+};
+
+struct Mat3x4 {
+    TVector4 rows[3];
+};
+
+struct Box_Z {
+    Mat3x4 mat;
+    TVector3 vec;
+    float maybeScale; // not really used it seems
 };
 
 struct Sphere_Z {
@@ -114,6 +128,12 @@ struct LinkInfo {
     uint32 linkCrc32;
     uint32 linkCount;
     uint32 linkedCrc32[linkCount];
+    uint32 dataCrc32;
+    Sphere_Z bSphereLocal;
+    Box_Z bBox;
+    float fadeOutDistance;
+    uint32 flags;
+    uint16 type;
 };
 
 struct ObjectHeader {
@@ -126,30 +146,62 @@ struct ObjectHeader {
     LinkInfo linkInfo;
 };
 
-struct Color {
-    float r;
-    float g;
-    float b;
-    float a;
+struct PointsRelated0 {
+    byte data[12];
 };
 
-struct ObjectDatas_Z {
-    ObjectHeader objectHeader;
-    float unkFloat1;
-    Color color;
+struct PointsRelated1 {
+    byte data[16];
 };
 
-struct LightData_Z {
+struct MorpherRelated {
+    byte data[16];
+};
+
+struct MorphTargetDescRelated {
+    byte data[16];
+};
+
+struct MorphTargetDesc_Z {
+    uint32 name;
+    uint32 MorphTargetDescRelatedCount;
+    MorphTargetDescRelated MorphTargetDescRelateds[MorphTargetDescRelatedCount];
+};
+
+struct Morpher_Z {
+    uint32 MorpherRelatedCount;
+    MorpherRelated MorpherRelateds[MorpherRelatedCount];
+    uint32 morphTargetDescCount;
+    MorphTargetDesc_Z morphTargetDescs[morphTargetDescCount];
+};
+
+struct Points_Z {
+    ObjectHeader header;
     ChangeColor(1);
-    ObjectDatas_Z objectDatas;
+    uint32 vertexCount; // maybe vertices
+    TVector3 vertices[vertexCount];
+    uint32 PointsRelated1Count; // maybe normals
+    PointsRelated1 PointsRelateds1[PointsRelated1Count];
+    Morpher_Z morpher;
+};
+
+struct RotShape_Z {
     ChangeColor(1);
-    TVector3 direction;
+    Points_Z points;
     ChangeColor(1);
-    TVector3 color;
+    uint32 materialIndexCount;
+    uint32 materialIndices[materialIndexCount] <optimize=false>;
     ChangeColor(1);
-    byte padding[12];
+    uint32 localVertexCount;
+    TVector3 localVertices[localVertexCount] <optimize=false>;
     ChangeColor(1);
-    uint flag;
+    uint32 localUVCount;
+    TVector2 localUVs[localUVCount] <optimize=false>;
     ChangeColor(1);
-    TVector3 ambient;
-} lightData;
+    uint32 materialAnimCrc32Count;
+    uint32 materialAnimCrc32s[materialAnimCrc32Count];
+    ChangeColor(1);
+    float scale;
+    ChangeColor(1);
+    uint16 rotShapeType;
+} rotshape;
