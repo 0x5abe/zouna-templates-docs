@@ -154,7 +154,7 @@ struct Node_Z
     ChangeColor(1);
     uint32 userDefineCrc32;
     ChangeColor(1);
-    uint32 bitmapCrc32; // LIGHT MAP??
+    uint32 bitmapCrc32; // SHADOW MAP
     ChangeColor(1);
     uint32 unkCrc32;
     ChangeColor(1);
@@ -167,7 +167,7 @@ struct Node_Z
     ChangeColor(1);
     uint32 placeholderWorldMatrixPtr;
     ChangeColor(1);
-    TVector3 unkVec3f3;
+    TVector3 nodeNormalOrSmth; // used to determine Omni_Z direction and some other stuff
     ChangeColor(1);
     uint32 displaySeadsId1;
     ChangeColor(1);
