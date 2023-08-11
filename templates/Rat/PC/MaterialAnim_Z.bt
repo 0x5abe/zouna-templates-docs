@@ -27,8 +27,6 @@ void ChangeColor(byte bChangeColor) {
 //------------------------------------------------
 
 //------------------------------------------------
-
-//------------------------------------------------
 //--- Vector struct taken from tge
 
 typedef struct
@@ -98,84 +96,10 @@ string TVector3ByteToString( TVector3Byte& value )
 
 //------------------------------------------------
 
-//Material collision flags:
-
-//0x1 -> UNK
-//0x2 -> COLLIDABLE
-//0x4 -> UNK
-//0x8 -> UNK
-//0x10 -> UNK
-//0x20 -> UNK
-//0x40 -> UNK
-//0x80 -> UNK
-//0x100 -> UNK
-//0x200 -> UNK
-//0x400 -> UNK
-//0x800 -> UNK
-//0x1000 -> UNK
-//0x2000 -> UNK
-//0x4000 -> UNK
-//0x8000 -> UNK
-//0x10000 -> UNK
-//0x20000 -> UNK
-//0x40000 -> Sound related - combined with 80000,100000,200000 changes
-//0x80000 -> Sound related - combined with 40000,100000,200000 changes
-//0x100000 -> Sound related - combined with 40000,80000,200000 changes
-//0x200000 -> Sound related - combined with 40000,80000,100000 changes with 80000 particles change
-//0x400000 -> Slide surface 1 -> when used in combination with sticky surface you get slippery surface
-//0x800000 -> Slide surface 2
-//0x1000000 -> Sticky surface -> when used in combination with Slide surface 1 you get slippery surface
-//0x2000000 -> UNK
-//0x4000000 -> UNK
-//0x8000000 -> UNK
-//0x10000000 -> UNK
-//0x20000000 -> UNK
-
-//Material render flags:
-
-//0x1 -> UNK
-//0x2 -> UNK
-//0x4 -> UNK
-//0x8 -> UNK
-//0x10 -> UNK
-//0x20 -> UNK
-//0x40 -> UNK
-//0x80 -> UNK
-//0x100 -> UNK
-//0x200 -> UNK
-//0x400 -> UNK
-//0x800 -> UNK
-//0x1000 -> UNK
-//0x2000 -> UNK
-//0x4000 -> UNK
-//0x8000 -> UNK
-//0x10000 -> UNK
-//0x20000 -> Disable backface culling
-//0x40000 -> UNK
-//0x80000 -> UNK
-//0x100000 -> UNK
-//0x200000 -> UNK
-//0x400000 -> UNK
-//0x800000 -> UNK
-//0x1000000 -> UNK
-//0x2000000 -> UNK
-//0x4000000 -> UNK
-//0x8000000 -> UNK
-//0x10000000 -> UNK
-//0x20000000 -> UNK
-
-struct Mat3x3 {
-    TVector3 rows[3];
-};
-
-struct Mat3x4 {
-    TVector4 rows[3];
-};
-
 struct LinkInfo {
     uint32 linkCrc32;
     uint32 linkCount;
-    uint32 linkedCrc32[linkCount];
+    uint32 linkedCrc32[linkCount] <optimize=false>;
     ubyte links[header.linkSize - (linkCount * 4) - 8];
 };
 
@@ -195,34 +119,119 @@ struct Color {
     float b;
 };
 
-struct Material_Z {
+struct KeyVec2fLinear_Z {
+    float time;
+    ChangeColor(1);
+    TVector2 value;
+};
+
+struct KeyframerVec2fLinear_Z {
+    uint16 flag;
+    ChangeColor(1);
+    uint32 vec2fLinearFrameCount;
+    KeyVec2fLinear_Z vec2fLinearFrames[vec2fLinearFrameCount] <optimize=false>;
+};
+
+struct KeyVec3fLinear_Z {
+    float time;
+    ChangeColor(1);
+    TVector3 value;
+};
+
+struct KeyframerVec3fLinear_Z {
+    uint16 flag;
+    ChangeColor(1);
+    uint32 vec3fLinearFrameCount;
+    KeyVec3fLinear_Z vec3fLinearFrames[vec3fLinearFrameCount] <optimize=false>;
+};
+
+struct KeyVec4fLinear_Z {
+    float time;
+    ChangeColor(1);
+    TVector4 value;
+};
+
+struct KeyframerVec4fLinear_Z {
+    uint16 flag;
+    ChangeColor(1);
+    uint32 vec4fLinearFrameCount;
+    KeyVec4fLinear_Z vec4fLinearFrames[vec4fLinearFrameCount] <optimize=false>;
+};
+
+struct KeyFloatLinearComp_Z {
+    float time;
+    ChangeColor(1);
+    int16 value;
+    ChangeColor(1);
+    int16 tangentIn;
+    ChangeColor(1);
+    int16 tangentOut;
+    ChangeColor(1);
+    int16 padding;
+};
+
+struct KeyframerFloatLinearComp_Z
+{
+    uint16 flag;
+    ChangeColor(1);
+    uint32 floatCompFrameCount;
+    KeyFloatLinearComp_Z floatCompFrames[floatCompFrameCount] <optimize=false>;
+};
+
+struct KeyFlag_Z {
+    float time;
+    ChangeColor(1);
+    uint32 flag;
+};
+
+struct KeyframerFlag_Z
+{
+    uint32 flagFrameCount;
+    KeyFlag_Z flagFrames[flagFrameCount] <optimize=false>;
+};
+
+struct KeyHdl_Z {
+    float time;
+    ChangeColor(1);
+    uint32 handle;
+};
+
+struct KeyframerHdl_Z
+{
+    uint32 handleFrameCount;
+    KeyHdl_Z handleFrames[handleFrameCount] <optimize=false>;
+};
+
+struct MaterialAnim_Z {
     ChangeColor(1);
     ObjectHeader header;
     ChangeColor(1);
-    Color diffuseColor;
-    float diffuseOpacity;
+    byte flags;
     ChangeColor(1);
-    Color emissiveColor;
-    uint32 cdcdcdcd;
+    float duration;
     ChangeColor(1);
-    Mat3x4 uvTransformationMatrix; // doesn't get updated normally
+    KeyframerHdl_Z keyframerTexHdl;
     ChangeColor(1);
-    TVector4 unkVec4f; // unknown, 0 in some 0.9 in some
-    TVector4 params; // used by envmap (maybe each one relates to a type)
+    KeyframerVec2fLinear_Z keyframerTranslation;
     ChangeColor(1);
-    float rotation; 
+    KeyframerVec2fLinear_Z keyframerScale;
     ChangeColor(1);
-    TVector2 translation;
+    KeyframerFloatLinearComp_Z keyframerRotation;
     ChangeColor(1);
-    TVector2 scale;
+    KeyframerVec3fLinear_Z keyframerDiffuse;
     ChangeColor(1);
-    uint32 collisionFlag;
+    KeyframerVec3fLinear_Z keyframerEmissive;
     ChangeColor(1);
-    uint32 renderFlag;
+    KeyframerFloatLinearComp_Z keyframerDiffuseAlpha;
     ChangeColor(1);
-    uint32 objectFlag;
+    KeyframerVec4fLinear_Z keyframerUnkVec4f;
     ChangeColor(1);
-    ubyte generalFlag; // 0x1 for diffuse, 0x2 for envmap, 0x4 for normal, 0x8 for specular
+    KeyframerVec4fLinear_Z keyframerParams;
     ChangeColor(1);
-    uint32 tex[4];
-} material;
+    KeyframerFlag_Z keyframerCollisionFlag;
+    KeyframerFlag_Z keyframerRenderFlag;
+    ChangeColor(1);
+    KeyframerFlag_Z keyframerObjectFlag;
+    ChangeColor(1);
+    uint32 materialCrc32;
+} materialAnim;

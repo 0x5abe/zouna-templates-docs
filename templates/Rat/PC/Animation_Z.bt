@@ -25,6 +25,24 @@ void ChangeColor(byte bChangeColor) {
 }
 
 //------------------------------------------------
+struct Vec3f {
+    float x;
+    float y;
+    float z;
+};
+
+struct Vec3i16 {
+    int16 x;
+    int16 y;
+    int16 z;
+};
+
+struct Quati16 {
+    int16 x <read=int16ToFloat,optimize=false>;
+    int16 y <read=int16ToFloat,optimize=false>;
+    int16 z <read=int16ToFloat,optimize=false>;
+    int16 w <read=int16ToFloat,optimize=false>;
+};
 
 struct LinkInfo {
     uint32 linkCrc32;
@@ -44,10 +62,7 @@ struct ObjectHeader {
 
 struct RotFrame {
     float time;
-    int16 x <read=int16ToFloat,optimize=false>;
-    int16 y <read=int16ToFloat,optimize=false>;
-    int16 z <read=int16ToFloat,optimize=false>;
-    int16 w <read=int16ToFloat,optimize=false>;
+    Quati16 quat;
 };
 
 struct KeyframerRot_Z {
@@ -57,7 +72,9 @@ struct KeyframerRot_Z {
 
 struct BezierRotFrame {
     float time;
-    byte data[36];
+    Vec3f value; // euler rotation
+    Vec3f tangentIn; // euler rotation
+    Vec3f tangentOut; // euler rotation
 };
 
 struct KeyframerBezierRot_Z {
@@ -67,20 +84,14 @@ struct KeyframerBezierRot_Z {
 
 struct Vec3fCompFrame {
     float time;
-    int16 a;
-    int16 b;
-    int16 c;
-    int16 d;
-    int16 e;
-    int16 f;
-    int16 g;
-    int16 h;
-    int16 i;
-    int16 j;
+    Vec3i16 value;
+    Vec3i16 tangentIn;
+    Vec3i16 tangentOut;
+    int16 padding;
 };
 
 struct KeyframerVec3fComp_Z {
-    uint16 unkShort;
+    uint16 flag;
     uint32 vec3fCompFrameCount;
     Vec3fCompFrame vec3fCompFrames[vec3fCompFrameCount];
 };
@@ -104,23 +115,23 @@ struct KeyframerMessage_Z {
     KeyMessage_Z keyMessages[keyMessageCount] <optimize=false>;
 };
 
-struct FloatCompFrame {
+struct KeyFloatComp_Z {
     float time;
-    int16 a;
-    int16 b;
-    int16 c;
-    int16 d;
+    int16 value;
+    int16 tangentIn;
+    int16 tangentOut;
+    int16 padding;
 };
 
 struct KeyframerFloatComp_Z
 {
     uint16 flag;
     uint32 floatCompFrameCount;
-    FloatCompFrame floatCompFrames[floatCompFrameCount];
+    KeyFloatComp_Z floatCompFrames[floatCompFrameCount];
 };
 
 struct AnimationNode_Z {
-    uint16 unkShort1;
+    uint16 cdcd;
     KeyframerRot_Z keyframerRot;
     KeyframerBezierRot_Z keyframerBezierRot;
     KeyframerVec3fComp_Z keyframerScale;
@@ -129,19 +140,19 @@ struct AnimationNode_Z {
 };
 
 struct AnimationMaterial_Z {
-    KeyframerFloatComp_Z keyframerFloatComp0;
-    KeyframerFloatComp_Z keyframerFloatComp1;
-    KeyframerVec3fComp_Z keyframerVec3fComp0;
-    KeyframerVec3fComp_Z keyframerVec3fComp1;
-    KeyframerFloatComp_Z keyframerFloatComp2;
+    KeyframerFloatComp_Z keyframerTranslationU;
+    KeyframerFloatComp_Z keyframerTranslationV;
+    KeyframerVec3fComp_Z keyframerDiffuseColor;
+    KeyframerVec3fComp_Z keyframerEmissiveColor;
+    KeyframerFloatComp_Z keyframerRotation;
 };
 
 struct AnimationMesh_Z {
-    KeyframerFloatComp_Z keyframerFloatComp;
+    KeyframerFloatComp_Z keyframerUnk;
 };
 
 struct AnimationMorph_Z {
-    KeyframerFloatComp_Z keyframerFloatComp;
+    KeyframerFloatComp_Z keyframerUnk;
 };
 
 struct AnimationNodeModifier_Z {
@@ -185,8 +196,8 @@ struct AnimationMeshModifier_Z {
 };
 
 struct AnimationMorphModifier_Z {
-    uint32 meshLinkCrc32;
-    uint16 meshId;
+    uint32 morphObjectLinkCrc32;
+    uint16 morphObjectId;
     uint16 flag;
     uint16 keyframerFloatCompStartFrame;
     uint16 keyframerFloatCompFrameCount;
@@ -198,9 +209,9 @@ struct Animation_Z {
     ChangeColor(1);
     float duration;
     ChangeColor(1);
-    float unkSecondField;
+    float smoothFactor; // up to what time the animation will be smoothed out with the previous one (it gets multiplied by 0.1)
     ChangeColor(1);
-    uint16 unkShortSecondField;
+    uint16 flag; // 0x2 disables smoothing
     ChangeColor(1);
     AnimationNode_Z animNode;
     AnimationMaterial_Z animMat;
