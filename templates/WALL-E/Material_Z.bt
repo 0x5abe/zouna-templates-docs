@@ -31,9 +31,9 @@ typedef struct
     float X;
     float Y;
     float Z;
-} TVector3 <read=TVector3ToString>;
+} Vec3f <read=Vec3fToString>;
 
-string TVector3ToString( TVector3& value )
+string Vec3fToString( Vec3f& value )
 {
     local char buffer[255];
     SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
@@ -41,7 +41,7 @@ string TVector3ToString( TVector3& value )
 }
 
 struct Mat3x3 {
-    TVector3 rows[3];
+    Vec3f rows[3];
 };
 
 struct LinkInfo {

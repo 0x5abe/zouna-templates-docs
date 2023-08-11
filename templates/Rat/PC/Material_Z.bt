@@ -37,9 +37,9 @@ typedef struct
     float Y;
     float Z;
     float W;
-} TVector4 <read=TVector4ToString>;
+} Vec4f <read=Vec4fToString>;
 
-string TVector4ToString( TVector4& value )
+string Vec4fToString( Vec4f& value )
 {
     local char buffer[255];
     SPrintf( buffer, "[%.6f, %.6f, %.6f, %.6f]", value.X, value.Y, value.Z, value.W );
@@ -51,9 +51,9 @@ typedef struct
     float X;
     float Y;
     float Z;
-} TVector3 <read=TVector3ToString>;
+} Vec3f <read=Vec3fToString>;
 
-string TVector3ToString( TVector3& value )
+string Vec3fToString( Vec3f& value )
 {
     local char buffer[255];
     SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
@@ -65,9 +65,9 @@ typedef struct
 {
     float X;
     float Y;
-} TVector2 <read=TVector2ToString>;
+} Vec2f <read=Vec2fToString>;
 
-string TVector2ToString( TVector2& value )
+string Vec2fToString( Vec2f& value )
 {
     local char buffer[255];
     SPrintf( buffer, "[%.6f, %.6f]", value.X, value.Y );
@@ -80,9 +80,9 @@ typedef struct
     ubyte X<read=byteToFloat,optimize=false>;
     ubyte Y<read=byteToFloat,optimize=false>;
     ubyte Z<read=byteToFloat,optimize=false>;
-} TVector3Byte <read=TVector3ByteToString>;
+} Vec3fByte <read=Vec3fByteToString>;
 
-string TVector3ByteToString( TVector3Byte& value )
+string Vec3fByteToString( Vec3fByte& value )
 {
     local char buffer[255];
     local float normalByteToD3DColorComponentX = ((value.X/255.0));
@@ -165,11 +165,11 @@ string TVector3ByteToString( TVector3Byte& value )
 //0x20000000 -> UNK
 
 struct Mat3x3 {
-    TVector3 rows[3];
+    Vec3f rows[3];
 };
 
 struct Mat3x4 {
-    TVector4 rows[3];
+    Vec4f rows[3];
 };
 
 struct LinkInfo {
@@ -207,14 +207,14 @@ struct Material_Z {
     ChangeColor(1);
     Mat3x4 uvTransformationMatrix; // doesn't get updated normally
     ChangeColor(1);
-    TVector4 unkVec4f; // unknown, 0 in some 0.9 in some
-    TVector4 params; // used by envmap (maybe each one relates to a type)
+    Vec4f unkVec4f; // unknown, 0 in some 0.9 in some
+    Vec4f params; // used by envmap (maybe each one relates to a type)
     ChangeColor(1);
     float rotation; 
     ChangeColor(1);
-    TVector2 translation;
+    Vec2f translation;
     ChangeColor(1);
-    TVector2 scale;
+    Vec2f scale;
     ChangeColor(1);
     uint32 collisionFlag;
     ChangeColor(1);

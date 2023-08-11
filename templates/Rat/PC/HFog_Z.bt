@@ -35,9 +35,9 @@ typedef struct
     float Y;
     float Z;
     float W;
-} TVector4 <read=TVector4ToString>;
+} Vec4f <read=Vec4fToString>;
 
-string TVector4ToString( TVector4& value )
+string Vec4fToString( Vec4f& value )
 {
     local char buffer[255];
     SPrintf( buffer, "[%.6f, %.6f, %.6f, %.6f]", value.X, value.Y, value.Z, value.W );
@@ -49,9 +49,9 @@ typedef struct
     float X;
     float Y;
     float Z;
-} TVector3 <read=TVector3ToString>;
+} Vec3f <read=Vec3fToString>;
 
-string TVector3ToString( TVector3& value )
+string Vec3fToString( Vec3f& value )
 {
     local char buffer[255];
     SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
@@ -61,7 +61,7 @@ string TVector3ToString( TVector3& value )
 //------------------------------------------------
 
 struct Mat4x4 {
-    TVector4 rows[4];
+    Vec4f rows[4];
 };
 
 struct Rect {
@@ -72,8 +72,18 @@ struct Rect {
 };
 
 struct Sphere_Z {
-    TVector3 Center;
+    Vec3f Center;
     float radius;
+};
+
+struct Mat3x4 {
+    Vec4f rows[3];
+};
+
+struct Box_Z {
+    Mat3x4 mat;
+    Vec3f vec;
+    float maybeScale; // not really used it seems
 };
 
 struct LinkInfo {
@@ -82,7 +92,7 @@ struct LinkInfo {
     uint32 linkedCrc32[linkCount];
     uint32 dataCrc32;
     Sphere_Z bSphereLocal;
-    Mat4x4 unkMatrix;
+    Box_Z bBox;
     float fadeOutDistance;
     uint32 flags;
     uint16 type;
@@ -106,7 +116,7 @@ struct Color {
 };
 
 struct Quat {
-    TVector3 v;
+    Vec3f v;
     float w;
 };
 
@@ -119,11 +129,11 @@ struct HFog_Z
     ChangeColor(1);
     Quat rot;
     ChangeColor(1);
-    TVector3 color;
+    Vec3f color;
     ChangeColor(1);
-    TVector3 translation;
+    Vec3f translation;
     ChangeColor(1);
-    TVector3 scale;
+    Vec3f scale;
     ChangeColor(1);
     char active;
 } hfog;

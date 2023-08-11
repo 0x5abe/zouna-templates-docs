@@ -37,9 +37,9 @@ typedef struct
     float Y;
     float Z;
     float W;
-} TVector4 <read=TVector4ToString>;
+} Vec4f <read=Vec4fToString>;
 
-string TVector4ToString( TVector4& value )
+string Vec4fToString( Vec4f& value )
 {
     local char buffer[255];
     SPrintf( buffer, "[%.6f, %.6f, %.6f, %.6f]", value.X, value.Y, value.Z, value.W );
@@ -51,9 +51,9 @@ typedef struct
     float X;
     float Y;
     float Z;
-} TVector3 <read=TVector3ToString>;
+} Vec3f <read=Vec3fToString>;
 
-string TVector3ToString( TVector3& value )
+string Vec3fToString( Vec3f& value )
 {
     local char buffer[255];
     SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
@@ -65,9 +65,9 @@ typedef struct
 {
     float X;
     float Y;
-} TVector2 <read=TVector2ToString>;
+} Vec2f <read=Vec2fToString>;
 
-string TVector2ToString( TVector2& value )
+string Vec2fToString( Vec2f& value )
 {
     local char buffer[255];
     SPrintf( buffer, "[%.6f, %.6f]", value.X, value.Y );
@@ -80,9 +80,9 @@ typedef struct
     ubyte X<read=byteToFloat,optimize=false>;
     ubyte Y<read=byteToFloat,optimize=false>;
     ubyte Z<read=byteToFloat,optimize=false>;
-} TVector3Byte <read=TVector3ByteToString>;
+} Vec3fByte <read=Vec3fByteToString>;
 
-string TVector3ByteToString( TVector3Byte& value )
+string Vec3fByteToString( Vec3fByte& value )
 {
     local char buffer[255];
     local float normalByteToD3DColorComponentX = ((value.X/255.0));
@@ -99,22 +99,22 @@ string TVector3ByteToString( TVector3Byte& value )
 //------------------------------------------------
 
 struct Quat {
-    TVector3 v;
+    Vec3f v;
     float w;
 };
 
 struct Mat4x4 {
-    TVector4 rows[4];
+    Vec4f rows[4];
 };
 
-struct Sphere_Z {
-    TVector3 Center;
-    float radius;
+struct Mat3x4 {
+    Vec4f rows[3];
 };
 
-struct Box_Z
-{
-    Mat4x4 transformation;
+struct Box_Z {
+    Mat3x4 mat;
+    Vec3f vec;
+    float maybeScale; // not really used it seems
 };
 
 struct LinkInfo {
@@ -123,7 +123,7 @@ struct LinkInfo {
     uint32 linkedCrc32[linkCount];
     uint32 surfaceDataCrc32;
     Sphere_Z bSphereLocal;
-    Mat4x4 unkMatrix;
+    Box_Z bBox;
     float fadeOutDistance;
     uint32 flags;
     uint16 type;
@@ -141,12 +141,12 @@ struct ObjectHeader {
 
 struct PointsRelated0 {
     ChangeColor(1);
-    TVector3 vec3;
+    Vec3f vec3;
 };
 
 struct PointsRelated1 {
     ChangeColor(1);
-    TVector4 vec4;
+    Vec4f vec4;
 };
 
 struct MorpherRelated {
@@ -241,29 +241,29 @@ struct SeadIndex_Z {
     uint patchIndexCount;
     uint16 patchIndices[patchIndexCount];
     ChangeColor(1);
-    TVector4 unkVec4_1;
-    TVector4 unkVec4_2;
-    TVector4 unkVec4_3;
+    Vec4f unkVec4_1;
+    Vec4f unkVec4_2;
+    Vec4f unkVec4_3;
     ChangeColor(1);
-    TVector3 Axes_1;
+    Vec3f Axes_1;
     uint32 unkPtr1;
-    TVector3 Axes_2;
+    Vec3f Axes_2;
     uint32 unkPtr2;
-    TVector3 Axes_3;
+    Vec3f Axes_3;
     uint32 unkPtr3;
     ChangeColor(1);
-    TVector4 unkVec4_4;
-    TVector4 size;
-    TVector3 step;
+    Vec4f unkVec4_4;
+    Vec4f size;
+    Vec3f step;
     uint32 unkPtr4;
     ChangeColor(1);
-    TVector4 center;
-    TVector4 unkVec4_7;
-    TVector3 fSize;
+    Vec4f center;
+    Vec4f unkVec4_7;
+    Vec3f fSize;
     uint32 unkPtr5;
     ChangeColor(1);
     uint unkUsedInVoxelTrace;
-    TVector3 iSize;
+    Vec3f iSize;
     uint hitPatchCount;
 };
 
@@ -290,13 +290,13 @@ struct Surface_Z {
     Edge_Z edges[edgeCount] <optimize=false>;
     ChangeColor(1);
     uint normalCount;
-    TVector3 normals[normalCount];
+    Vec3f normals[normalCount];
     ChangeColor(1);
     uint colorCount;
-    TVector3 colors[colorCount]; // changing doesnt seem to take effect
+    Vec3f colors[colorCount]; // changing doesnt seem to take effect
     ChangeColor(1);
     uint displacementRelatedCount;
-    TVector2 displacementRelateds[displacementRelatedCount]; // used for water in rat
+    Vec2f displacementRelateds[displacementRelatedCount]; // used for water in rat
     ChangeColor(1);
     //Occlusion related, maybe backFaceCulling
     uint shouldDrawRelatedCount; //Related to should draw

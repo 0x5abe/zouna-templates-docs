@@ -35,9 +35,9 @@ typedef struct
     float Y;
     float Z;
     float W;
-} TVector4 <read=TVector4ToString>;
+} Vec4f <read=Vec4fToString>;
 
-string TVector4ToString( TVector4& value )
+string Vec4fToString( Vec4f& value )
 {
     local char buffer[255];
     SPrintf( buffer, "[%.6f, %.6f, %.6f, %.6f]", value.X, value.Y, value.Z, value.W );
@@ -49,9 +49,9 @@ typedef struct
     float X;
     float Y;
     float Z;
-} TVector3 <read=TVector3ToString>;
+} Vec3f <read=Vec3fToString>;
 
-string TVector3ToString( TVector3& value )
+string Vec3fToString( Vec3f& value )
 {
     local char buffer[255];
     SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
@@ -84,7 +84,7 @@ struct color {
 };
 
 struct Mat4x4 {
-    TVector4 rows[4];
+    Vec4f rows[4];
 };
 
 struct Rect {
@@ -95,12 +95,12 @@ struct Rect {
 };
 
 struct Sphere_Z {
-    TVector3 Center;
+    Vec3f Center;
     float radius;
 };
 
 struct Quat {
-    TVector3 v;
+    Vec3f v;
     float w;
 };
 
@@ -128,21 +128,21 @@ struct Node_Z
     uint32 unkCrc32;
     ChangeColor(1);
     Mat4x4 inverseWorldTransform; // (row major)
-    TVector3 unkVec3f;
+    Vec3f unkVec3f;
     ChangeColor(1);
     uint32 collideSeadsId1;
     ChangeColor(1);
-    TVector3 unkVec3f2;
+    Vec3f unkVec3f2;
     ChangeColor(1);
     uint32 placeholderWorldMatrixPtr;
     ChangeColor(1);
-    TVector3 unkVec3f3;
+    Vec3f unkVec3f3;
     ChangeColor(1);
     uint32 displaySeadsId1;
     ChangeColor(1);
     Mat4x4 unkMat;
     ChangeColor(1);
-    TVector3 translation;
+    Vec3f translation;
     ChangeColor(1);
     uint32 flags;
     ChangeColor(1);

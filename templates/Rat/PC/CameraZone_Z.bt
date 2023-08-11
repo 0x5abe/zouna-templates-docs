@@ -35,9 +35,9 @@ typedef struct
     float Y;
     float Z;
     float W;
-} TVector4 <read=TVector4ToString>;
+} Vec4f <read=Vec4fToString>;
 
-string TVector4ToString( TVector4& value )
+string Vec4fToString( Vec4f& value )
 {
     local char buffer[255];
     SPrintf( buffer, "[%.6f, %.6f, %.6f, %.6f]", value.X, value.Y, value.Z, value.W );
@@ -49,9 +49,9 @@ typedef struct
     float X;
     float Y;
     float Z;
-} TVector3 <read=TVector3ToString>;
+} Vec3f <read=Vec3fToString>;
 
-string TVector3ToString( TVector3& value )
+string Vec3fToString( Vec3f& value )
 {
     local char buffer[255];
     SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
@@ -63,9 +63,9 @@ typedef struct
 {
     float X;
     float Y;
-} TVector2 <read=TVector2ToString>;
+} Vec2f <read=Vec2fToString>;
 
-string TVector2ToString( TVector2& value )
+string Vec2fToString( Vec2f& value )
 {
     local char buffer[255];
     SPrintf( buffer, "[%.6f, %.6f]", value.X, value.Y );
@@ -78,9 +78,9 @@ typedef struct
     ubyte X<read=byteToFloat,optimize=false>;
     ubyte Y<read=byteToFloat,optimize=false>;
     ubyte Z<read=byteToFloat,optimize=false>;
-} TVector3Byte <read=TVector3ByteToString>;
+} Vec3fByte <read=Vec3fByteToString>;
 
-string TVector3ByteToString( TVector3Byte& value )
+string Vec3fByteToString( Vec3fByte& value )
 {
     local char buffer[255];
     local float normalByteToD3DColorComponentX = ((value.X/255.0));
@@ -97,30 +97,30 @@ string TVector3ByteToString( TVector3Byte& value )
 //------------------------------------------------
 
 struct Quat {
-    TVector3 v;
+    Vec3f v;
     float w;
 };
 
 struct Mat3x3 {
-    TVector3 rows[3];
+    Vec3f rows[3];
 };
 
 struct Mat4x4 {
-    TVector4 rows[4];
+    Vec4f rows[4];
 };
 
 struct Mat3x4 {
-    TVector4 rows[3];
+    Vec4f rows[3];
 };
 
 struct Box_Z {
     Mat3x4 mat;
-    TVector3 vec;
+    Vec3f vec;
     float maybeScale; // not really used it seems
 };
 
 struct Sphere_Z {
-    TVector3 Center;
+    Vec3f Center;
     float radius;
 };
 
@@ -153,11 +153,11 @@ struct RangeSizeOffset {
 };
 
 struct SplineZoneSead_Z {
-    TVector2 PMin;
+    Vec2f PMin;
     ChangeColor(1);
-    TVector2 PMax;
+    Vec2f PMax;
     ChangeColor(1);
-    TVector2 InvDiag;
+    Vec2f InvDiag;
     ChangeColor(1);
     uint32 maxZoneIndex;
     ChangeColor(1);
@@ -191,10 +191,10 @@ struct SplineZone {
 struct SplineZone_Z {
     ObjectHeader header;
     ChangeColor(1);
-    TVector4 unkVec4;
+    Vec4f unkVec4;
     ChangeColor(1);
     uint32 pointCount;
-    TVector3 points[pointCount] <optimize=false>;
+    Vec3f points[pointCount] <optimize=false>;
     ChangeColor(1);
     uint32 splineCount;
     Spline splines[splineCount] <optimize=false>;
@@ -206,7 +206,7 @@ struct SplineZone_Z {
     uint16 splineIds[splineIdCount] <optimize=false>; // stores indices into the spline DA
     ChangeColor(1);
     uint32 unk12ByteCount; // unused?
-    TVector3 unk12Bytes[unk12ByteCount] <optimize=false>; // unused?
+    Vec3f unk12Bytes[unk12ByteCount] <optimize=false>; // unused?
     ChangeColor(1);
     SplineZoneSead_Z splineZoneSead;
 };
@@ -226,7 +226,7 @@ struct Trigger_Z {
     ChangeColor(1);
     float smooth;
     ChangeColor(1);
-    TVector4 color;
+    Vec4f color;
     ChangeColor(1);
     uint16 flag;
     ChangeColor(1);
@@ -238,7 +238,7 @@ struct Trigger_Z {
     ChangeColor(1);
     float splineLength;
     ChangeColor(1);
-    TVector3 unk;
+    Vec3f unk;
 };
 
 struct ZoneTriggers_Z {

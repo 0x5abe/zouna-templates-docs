@@ -35,9 +35,9 @@ typedef struct
     float Y;
     float Z;
     float W;
-} TVector4 <read=TVector4ToString>;
+} Vec4f <read=Vec4fToString>;
 
-string TVector4ToString( TVector4& value )
+string Vec4fToString( Vec4f& value )
 {
     local char buffer[255];
     SPrintf( buffer, "[%.6f, %.6f, %.6f, %.6f]", value.X, value.Y, value.Z, value.W );
@@ -49,9 +49,9 @@ typedef struct
     float X;
     float Y;
     float Z;
-} TVector3 <read=TVector3ToString>;
+} Vec3f <read=Vec3fToString>;
 
-string TVector3ToString( TVector3& value )
+string Vec3fToString( Vec3f& value )
 {
     local char buffer[255];
     SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
@@ -63,9 +63,9 @@ typedef struct
 {
     float X;
     float Y;
-} TVector2 <read=TVector2ToString>;
+} Vec2f <read=Vec2fToString>;
 
-string TVector2ToString( TVector2& value )
+string Vec2fToString( Vec2f& value )
 {
     local char buffer[255];
     SPrintf( buffer, "[%.6f, %.6f]", value.X, value.Y );
@@ -78,9 +78,9 @@ typedef struct
     ubyte X<read=byteToFloat,optimize=false>;
     ubyte Y<read=byteToFloat,optimize=false>;
     ubyte Z<read=byteToFloat,optimize=false>;
-} TVector3Byte <read=TVector3ByteToString>;
+} Vec3fByte <read=Vec3fByteToString>;
 
-string TVector3ByteToString( TVector3Byte& value )
+string Vec3fByteToString( Vec3fByte& value )
 {
     local char buffer[255];
     local float normalByteToD3DColorComponentX = ((value.X/255.0));
@@ -97,30 +97,30 @@ string TVector3ByteToString( TVector3Byte& value )
 //------------------------------------------------
 
 struct Quat {
-    TVector3 v;
+    Vec3f v;
     float w;
 };
 
 struct Mat3x3 {
-    TVector3 rows[3];
+    Vec3f rows[3];
 };
 
 struct Mat4x4 {
-    TVector4 rows[4];
+    Vec4f rows[4];
 };
 
 struct Mat3x4 {
-    TVector4 rows[3];
+    Vec4f rows[3];
 };
 
 struct Box_Z {
     Mat3x4 mat;
-    TVector3 vec;
+    Vec3f vec;
     float maybeScale; // not really used it seems
 };
 
 struct Sphere_Z {
-    TVector3 Center;
+    Vec3f Center;
     float radius;
 };
 
@@ -179,7 +179,7 @@ struct Points_Z {
     ObjectHeader header;
     ChangeColor(1);
     uint32 vertexCount; // maybe vertices
-    TVector3 vertices[vertexCount];
+    Vec3f vertices[vertexCount];
     uint32 PointsRelated1Count; // maybe normals
     PointsRelated1 PointsRelateds1[PointsRelated1Count];
     Morpher_Z morpher;
@@ -193,10 +193,10 @@ struct RotShape_Z {
     uint32 materialIndices[materialIndexCount] <optimize=false>;
     ChangeColor(1);
     uint32 localVertexCount;
-    TVector3 localVertices[localVertexCount] <optimize=false>;
+    Vec3f localVertices[localVertexCount] <optimize=false>;
     ChangeColor(1);
     uint32 localUVCount;
-    TVector2 localUVs[localUVCount] <optimize=false>;
+    Vec2f localUVs[localUVCount] <optimize=false>;
     ChangeColor(1);
     uint32 materialAnimCrc32Count;
     uint32 materialAnimCrc32s[materialAnimCrc32Count];
