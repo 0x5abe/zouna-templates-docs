@@ -118,7 +118,6 @@ struct SphereColNode {
     byte data[28];
 };
 
-
 struct SphereCol_Z {
     Sphere_Z sphere;
     uint32 flag;

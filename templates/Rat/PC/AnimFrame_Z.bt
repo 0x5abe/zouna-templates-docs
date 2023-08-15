@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio Animation_Z v1.06.63.0X
+//--- Asobo Studio AnimFrame_Z v1.06.63.0X
 //------------------------------------------------
 
 LittleEndian();
@@ -70,16 +70,30 @@ struct KeyframerRot_Z {
     KeyRot_Z keys[keyCount];
 };
 
-struct KeyBezierRot_Z {
+struct KeyVec3f_Z {
     float time;
-    Vec3f value; // euler rotation
-    Vec3f tangentIn; // euler rotation
-    Vec3f tangentOut; // euler rotation
+    Vec3f value;
+    Vec3f tangentIn;
+    Vec3f tangentOut;
 };
 
-struct KeyframerBezierRot_Z {
+struct KeyframerVec3f_Z {
+    uint16 flag;
     uint32 keyCount;
-    KeyBezierRot_Z keys[keyCount];
+    KeyVec3f_Z keys[keyCount];
+};
+
+struct KeyVec3fLinear_Z {
+    float time;
+    ChangeColor(1);
+    Vec3f value;
+};
+
+struct KeyframerVec3fLinear_Z {
+    uint16 flag;
+    ChangeColor(1);
+    uint32 keyCount;
+    KeyVec3fLinear_Z keys[keyCount] <optimize=false>;
 };
 
 struct KeyVec3fComp_Z {
@@ -104,6 +118,7 @@ struct KeyframerVec3fComp_Z {
 // 14 disable bone flag 0x40
 // 15 enable bone flag 0x40
 // 16 material color
+// 19-20 hide/unhide ?
 // 33,34 plays sound
 // 182-185 related to attack fx
 // 228 starts mission
@@ -142,102 +157,70 @@ struct KeyframerFloatComp_Z
     KeyFloatComp_Z keys[keyCount];
 };
 
-struct AnimationNode_Z {
-    uint16 cdcd;
-    KeyframerRot_Z keyframerRot;
-    KeyframerBezierRot_Z keyframerBezierRot;
-    KeyframerVec3fComp_Z keyframerScale;
-    KeyframerVec3fComp_Z keyframerTranslation;
-    KeyframerMessage_Z keyframerMessage;
+struct KeyFollow_Z {
+    uint32 nodeCrc32;
+    Vec3f axis;
+    uint orient;
+    float avance;
 };
 
-struct AnimationMaterial_Z {
-    KeyframerFloatComp_Z keyframerTranslationU;
-    KeyframerFloatComp_Z keyframerTranslationV;
-    KeyframerVec3fComp_Z keyframerDiffuseColor;
-    KeyframerVec3fComp_Z keyframerEmissiveColor;
-    KeyframerFloatComp_Z keyframerRotation;
+struct KeyframerFollow_Z
+{
+    uint32 keyCount;
+    KeyFollow_Z keys[keyCount];
 };
 
-struct AnimationMesh_Z {
-    KeyframerFloatComp_Z keyframerHide; // hides mesh if float is 0
+struct StartStop_Z {
+    uint32 animFrameCrc32;
+    uint32 startOrStop;
 };
 
-struct AnimationMorph_Z {
-    KeyframerFloatComp_Z keyframerUnk;
+struct KeyStartStop_Z {
+    uint startStopCount;
+    float time;
+    StartStop_Z startStops[startStopCount];
 };
 
-struct AnimationNodeModifier_Z {
-    uint32 boneNameCrc32;
-    uint16 boneId;
-    uint16 flag;
-    uint16 translationStartFrame;
-    uint16 translationFrameCount;
-    uint16 rotStartFrame;
-    uint16 rotFrameCount;
-    uint16 bezierRotStartFrame;
-    uint16 bezierRotFrameCount;
-    uint16 scaleStartFrame;
-    uint16 scaleFrameCount;
-    uint16 messageStartFrame;
-    uint16 messageFrameCount;
+struct KeyframerStartStop_Z
+{
+    uint32 keyCount;
+    KeyStartStop_Z keys[keyCount];
 };
 
-struct AnimationMaterialModifier_Z {
-    uint32 materialLinkCrc32;
-    uint16 matId;
-    uint16 flag;
-    uint16 translationUStartFrame;
-    uint16 translationUFrameCount;
-    uint16 translationVStartFrame;
-    uint16 translationVFrameCount;
-    uint16 diffuseColorStartFrame;
-    uint16 diffuseColorFrameCount;
-    uint16 emissiveColorStartFrame;
-    uint16 emissiveColorFrameCount;
-    uint16 rotationStartFrame;
-    uint16 rotationFrameCount;
-};
-
-struct AnimationMeshModifier_Z {
-    uint32 meshLinkCrc32;
-    uint16 meshId;
-    uint16 flag;
-    uint16 keyframerFloatCompStartFrame;
-    uint16 keyframerFloatCompFrameCount;
-};
-
-struct AnimationMorphModifier_Z {
-    uint32 morphObjectLinkCrc32;
-    uint16 morphObjectId;
-    uint16 flag;
-    uint16 keyframerFloatCompStartFrame;
-    uint16 keyframerFloatCompFrameCount;
-};
-
-struct Animation_Z {
+struct AnimFrame_Z {
     ChangeColor(1);
     ObjectHeader objHeader;
     ChangeColor(1);
+    uint32 nodeCrc32;
+    ChangeColor(1);
     float maxTime;
     ChangeColor(1);
-    float smoothFactor; // up to what time the animation will be smoothed out with the previous one (it gets multiplied by 0.1)
+    KeyframerVec3f_Z keyframerTranslation;
     ChangeColor(1);
-    uint16 flag; // 0x2 disables smoothing
+    KeyframerRot_Z keyframerRot;
     ChangeColor(1);
-    AnimationNode_Z animNode;
-    AnimationMaterial_Z animMat;
-    AnimationMesh_Z animMesh;
-    AnimationMorph_Z animMorph;
-    uint32 animationNodeModifierCount;
-    AnimationNodeModifier_Z animationNodeModifiers[animationNodeModifierCount];
-    uint32 animationMaterialModifierCount;
-    AnimationMaterialModifier_Z animationMaterialModifiers[animationMaterialModifierCount];
-    uint32 animationMeshModifierCount;
-    AnimationMeshModifier_Z animationMeshModifiers[animationMeshModifierCount];
-    uint32 animationMorphModifierCount;
-    AnimationMorphModifier_Z animationMorphModifiers[animationMorphModifierCount];
-} animation;
+    KeyframerVec3fComp_Z keyframerScale;
+    ChangeColor(1);
+    KeyframerFloatComp_Z keyframerTime;
+    ChangeColor(1);
+    KeyframerVec3fLinear_Z keyframerColor;
+    ChangeColor(1);
+    KeyframerVec3fLinear_Z keyframerAmbient;
+    ChangeColor(1);
+    KeyframerMessage_Z keyframerMessage;
+    ChangeColor(1);
+    KeyframerFollow_Z keyframerFollow;
+    ChangeColor(1);
+    KeyframerStartStop_Z keyframerStartStop;
+    ChangeColor(1);
+    float curTime;
+    ChangeColor(1);
+    float startTime;
+    ChangeColor(1);
+    float prevTime;
+    ChangeColor(1);
+    uint16 playFlag;
+} animFrame;
 
 string int16ToFloat(int16& value )
 {

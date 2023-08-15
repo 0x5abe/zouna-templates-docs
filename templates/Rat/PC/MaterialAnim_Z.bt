@@ -128,8 +128,8 @@ struct KeyVec2fLinear_Z {
 struct KeyframerVec2fLinear_Z {
     uint16 flag;
     ChangeColor(1);
-    uint32 vec2fLinearFrameCount;
-    KeyVec2fLinear_Z vec2fLinearFrames[vec2fLinearFrameCount] <optimize=false>;
+    uint32 keyCount;
+    KeyVec2fLinear_Z keys[keyCount] <optimize=false>;
 };
 
 struct KeyVec3fLinear_Z {
@@ -141,8 +141,8 @@ struct KeyVec3fLinear_Z {
 struct KeyframerVec3fLinear_Z {
     uint16 flag;
     ChangeColor(1);
-    uint32 vec3fLinearFrameCount;
-    KeyVec3fLinear_Z vec3fLinearFrames[vec3fLinearFrameCount] <optimize=false>;
+    uint32 keyCount;
+    KeyVec3fLinear_Z keys[keyCount] <optimize=false>;
 };
 
 struct KeyVec4fLinear_Z {
@@ -154,8 +154,8 @@ struct KeyVec4fLinear_Z {
 struct KeyframerVec4fLinear_Z {
     uint16 flag;
     ChangeColor(1);
-    uint32 vec4fLinearFrameCount;
-    KeyVec4fLinear_Z vec4fLinearFrames[vec4fLinearFrameCount] <optimize=false>;
+    uint32 keyCount;
+    KeyVec4fLinear_Z keys[keyCount] <optimize=false>;
 };
 
 struct KeyFloatLinearComp_Z {
@@ -174,8 +174,8 @@ struct KeyframerFloatLinearComp_Z
 {
     uint16 flag;
     ChangeColor(1);
-    uint32 floatCompFrameCount;
-    KeyFloatLinearComp_Z floatCompFrames[floatCompFrameCount] <optimize=false>;
+    uint32 keyCount;
+    KeyFloatLinearComp_Z keys[keyCount] <optimize=false>;
 };
 
 struct KeyFlag_Z {
@@ -186,8 +186,8 @@ struct KeyFlag_Z {
 
 struct KeyframerFlag_Z
 {
-    uint32 flagFrameCount;
-    KeyFlag_Z flagFrames[flagFrameCount] <optimize=false>;
+    uint32 keyCount;
+    KeyFlag_Z keys[keyCount] <optimize=false>;
 };
 
 struct KeyHdl_Z {
@@ -198,8 +198,8 @@ struct KeyHdl_Z {
 
 struct KeyframerHdl_Z
 {
-    uint32 handleFrameCount;
-    KeyHdl_Z handleFrames[handleFrameCount] <optimize=false>;
+    uint32 keyCount;
+    KeyHdl_Z keys[keyCount] <optimize=false>;
 };
 
 struct MaterialAnim_Z {
@@ -229,6 +229,7 @@ struct MaterialAnim_Z {
     KeyframerVec4fLinear_Z keyframerParams;
     ChangeColor(1);
     KeyframerFlag_Z keyframerCollisionFlag;
+    ChangeColor(1);
     KeyframerFlag_Z keyframerRenderFlag;
     ChangeColor(1);
     KeyframerFlag_Z keyframerObjectFlag;
