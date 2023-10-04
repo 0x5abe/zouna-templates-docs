@@ -1,0 +1,52 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//------------------------------------------------
+BigEndian(); 
+
+struct BlockDescription {
+    uint32 objectCount;
+    uint32 blockPaddedSize;
+    uint32 blockSize;
+    uint32 unk1;
+    uint32 firstObjectCrc32;
+    uint32 unk2;
+};
+
+struct DGCHeader {    
+    char versionString[256];
+    uint32 blockCount;
+    uint32 unk1;
+    uint32 unk2;
+    uint32 unk3;
+    uint32 unk4;
+    uint32 unk5;
+    uint32 unk6;
+    BlockDescription blockDescriptions[64];
+    byte padding[228];
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 compressedSize;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+};
+
+struct Object {
+    ObjectHeader objHeader;
+    local uint32 size = objHeader.compressedSize != 0 ? objHeader.compressedSize : objHeader.dataSize;
+    byte data[size];
+};
+
+struct Block (local uint32 objectCount, local uint32 padding) {
+    Object objects[objectCount] <optimize=false>;
+    byte padding[padding];
+};
+
+struct DGC {
+    DGCHeader header;
+    local uint32 i;
+    for (i = 0; i < header.blockCount; i++) {
+        Block block(header.blockDescriptions[i].objectCount, header.blockDescriptions[i].blockPaddedSize - header.blockDescriptions[i].blockSize);
+    }
+} file;
