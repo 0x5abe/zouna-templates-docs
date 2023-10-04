@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio Material_Z v1.06.63.0X
+//--- Asobo Studio LightDataPs2_Z v1.634.78.10
 //------------------------------------------------
 
 LittleEndian();
@@ -96,11 +96,22 @@ string Vec3fByteToString( Vec3fByte& value )
 
 //------------------------------------------------
 
+struct Quat {
+    Vec3f v;
+    float w;
+};
+
+struct Mat4x4 {
+    Vec4f rows[4];
+};
+
+struct Sphere_Z {
+    Vec3f Center;
+    float radius;
+};
+
 struct LinkInfo {
     uint32 linkCrc32;
-    uint32 linkCount;
-    uint32 linkedCrc32[linkCount] <optimize=false>;
-    ubyte links[header.linkSize - (linkCount * 4) - 8];
 };
 
 struct ObjectHeader {
@@ -117,122 +128,41 @@ struct Color {
     float r;
     float g;
     float b;
+    float a;
 };
 
-struct KeyVec2fLinear_Z {
-    float time;
-    ChangeColor(1);
-    Vec2f value;
+struct ObjectDatas_Z {
+    ObjectHeader objectHeader;
+    Color color;
 };
 
-struct KeyframerVec2fLinear_Z {
-    uint16 flag;
+struct LightData_Z {
     ChangeColor(1);
-    uint32 keyCount;
-    KeyVec2fLinear_Z keys[keyCount] <optimize=false>;
-};
+    ObjectDatas_Z objectDatas;
+    ChangeColor(1);
+    Vec3f color;
+    ChangeColor(1);
+    byte text[12];
+    ChangeColor(1);
+    uint flag;
+    ChangeColor(1);
+    Vec3f ambient;
+} lightData;
 
-struct KeyVec3fLinear_Z {
-    float time;
-    ChangeColor(1);
-    Vec3f value;
-};
 
-struct KeyframerVec3fLinear_Z {
-    uint16 flag;
-    ChangeColor(1);
-    uint32 keyCount;
-    KeyVec3fLinear_Z keys[keyCount] <optimize=false>;
-};
 
-struct KeyVec4fLinear_Z {
-    float time;
-    ChangeColor(1);
-    Vec4f value;
-};
-
-struct KeyframerVec4fLinear_Z {
-    uint16 flag;
-    ChangeColor(1);
-    uint32 keyCount;
-    KeyVec4fLinear_Z keys[keyCount] <optimize=false>;
-};
-
-struct KeyFloatLinearComp_Z {
-    float time;
-    ChangeColor(1);
-    int16 value;
-    ChangeColor(1);
-    int16 tangentIn;
-    ChangeColor(1);
-    int16 tangentOut;
-    ChangeColor(1);
-    int16 padding;
-};
-
-struct KeyframerFloatLinearComp_Z
-{
-    uint16 flag;
-    ChangeColor(1);
-    uint32 keyCount;
-    KeyFloatLinearComp_Z keys[keyCount] <optimize=false>;
-};
-
-struct KeyFlag_Z {
-    float time;
-    ChangeColor(1);
-    uint32 flag;
-};
-
-struct KeyframerFlag_Z
-{
-    uint32 keyCount;
-    KeyFlag_Z keys[keyCount] <optimize=false>;
-};
-
-struct KeyHdl_Z {
-    float time;
-    ChangeColor(1);
-    uint32 handle;
-};
-
-struct KeyframerHdl_Z
-{
-    uint32 keyCount;
-    KeyHdl_Z keys[keyCount] <optimize=false>;
-};
-
-struct MaterialAnim_Z {
-    ChangeColor(1);
-    ObjectHeader header;
-    ChangeColor(1);
-    byte flags;
-    ChangeColor(1);
-    float duration;
-    ChangeColor(1);
-    KeyframerHdl_Z keyframerTexHdl;
-    ChangeColor(1);
-    KeyframerVec2fLinear_Z keyframerTranslation;
-    ChangeColor(1);
-    KeyframerVec2fLinear_Z keyframerScale;
-    ChangeColor(1);
-    KeyframerFloatLinearComp_Z keyframerRotation;
-    ChangeColor(1);
-    KeyframerVec3fLinear_Z keyframerDiffuse;
-    ChangeColor(1);
-    KeyframerVec3fLinear_Z keyframerEmissive;
-    ChangeColor(1);
-    KeyframerFloatLinearComp_Z keyframerDiffuseAlpha;
-    ChangeColor(1);
-    KeyframerVec4fLinear_Z keyframerSpecular;
-    ChangeColor(1);
-    KeyframerVec4fLinear_Z keyframerParams;
-    ChangeColor(1);
-    KeyframerFlag_Z keyframerCollisionFlag;
-    ChangeColor(1);
-    KeyframerFlag_Z keyframerRenderFlag;
-    ChangeColor(1);
-    KeyframerFlag_Z keyframerObjectFlag;
-    ChangeColor(1);
-    uint32 materialCrc32;
-} materialAnim;
+void PrintInfo() {
+    local int i = 0;
+    if (meshData.meshVolume.unkStruct1Count > 0) {
+        Printf("-- Info -- MeshVolume has #%d unkStruct1s", meshData.meshVolume.unkStruct1Count);
+    }
+    if (meshData.meshVolume.unkStruct2Count > 0) {
+        Printf("-- Info -- MeshVolume has #%d unkStruct2s", meshData.meshVolume.unkStruct2Count);
+    }
+    if (meshData.meshVolume.unkStruct3Count > 0) {
+        Printf("-- Info -- MeshVolume has #%d unkStruct3s", meshData.meshVolume.unkStruct3Count);
+    }
+    if (meshData.meshVolume.unkStruct4Count > 0) {
+        Printf("-- Info -- MeshVolume has #%d unkStruct4s", meshData.meshVolume.unkStruct4Count);
+    }
+}

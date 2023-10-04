@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio Mesh_Z v1.291.03.06
+//--- Asobo Studio MeshPc_Z v1.291.03.06
 //------------------------------------------------
 
 //------------------------------------------------
@@ -21,6 +21,76 @@ void ChangeColor(byte bChangeColor) {
 	clr = jetMap[(colorSelect%3)*6+(colorId%6)];
 	SetBackColor(clr);
 	colorId++;
+}
+
+//------------------------------------------------
+
+//------------------------------------------------
+//--- Vector struct taken from tge
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+    float W;
+} Vec4f <read=Vec4fToString>;
+
+string Vec4fToString( Vec4f& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f, %.6f]", value.X, value.Y, value.Z, value.W );
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+} Vec3f <read=Vec3fToString>;
+
+string Vec3fToString( Vec3f& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
+
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+} Vec2f <read=Vec2fToString>;
+
+string Vec2fToString( Vec2f& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f]", value.X, value.Y );
+
+    return buffer;
+}
+
+typedef struct
+{
+    ubyte X<read=byteToFloat,optimize=false>;
+    ubyte Y<read=byteToFloat,optimize=false>;
+    ubyte Z<read=byteToFloat,optimize=false>;
+} Vec3fByte <read=Vec3fByteToString>;
+
+string Vec3fByteToString( Vec3fByte& value )
+{
+    local char buffer[255];
+    local float normalByteToD3DColorComponentX = ((value.X/255.0));
+    local float normalByteToFloatX = ((normalByteToD3DColorComponentX * 2) - 1);
+    local float normalByteToD3DColorComponentY = ((value.Y/255.0));
+    local float normalByteToFloatY = ((normalByteToD3DColorComponentY * 2) - 1);
+    local float normalByteToD3DColorComponentZ = ((value.Z/255.0));
+    local float normalByteToFloatZ = ((normalByteToD3DColorComponentZ * 2) - 1);
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", normalByteToFloatX, normalByteToFloatY, normalByteToFloatZ );
+
+    return buffer;
 }
 
 //------------------------------------------------
@@ -123,24 +193,27 @@ struct CylindreCol {
     uint32 nameCrc32;
 };
 
-struct AABBColRelated {
-    int16 unk1;
-    int16 unk2; 
-    int16 unk3;
-    int16 zero;
+struct AABBColTri {
+    int16 firstVertexId;
+    int16 secondVertexId;
+    int16 thirdVertexId;
+    int16 materialIndex;
 };
 
-struct AABBCol {
-    float unk1;
-    float unk2;
-    float unk3;
-    int16 unk4;
-    int16 unk5;
-    float unk6;
-    float unk7;
-    float unk8;
-    int16 unk9;
-    int16 unk10;
+struct AABBColTreeNode {
+    Vec3f bbMin;
+    int16 rightChildIndexPlusOne;
+    int16 leftChildIndexPlusOne;
+    Vec3f bbMin;
+    int16 aabbColTriOffset;
+    int16 aabbColTriSize;
+};
+
+struct AABBCol_Z {
+    uint32 aabbColTriCount;
+    AABBColTri aabbColTris[aabbColTriCount];
+    uint32 aabbColTreeNodeCount;
+    AABBColTreeNode aabbColTreeNodes[aabbColTreeNodeCount];
 };
 
 struct Vertex {
@@ -371,13 +444,7 @@ struct Mesh_Z {
     ChangeColor(1);
     CylindreCol cylindreCols[cylindreColCount];
     ChangeColor(1);
-    uint32 AABBColRelatedCount;
-    ChangeColor(1);
-    AABBColRelated AABBColRelateds[AABBColRelatedCount]; 
-    ChangeColor(1);
-    uint32 AABBColCount;
-    ChangeColor(1);
-    AABBCol AABBCols[AABBColCount];
+    AABBCol_Z aabbCol;
     ChangeColor(1);
     uint32 vertexCount;
     ChangeColor(1);

@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio Omni_Z v1.06.63.0X
+//--- Asobo Studio CollisionVol_Z v1.634.78.10
 //------------------------------------------------
 
 LittleEndian();
@@ -60,15 +60,15 @@ string Vec3fToString( Vec3f& value )
 
 //------------------------------------------------
 
-struct Mat4x4 {
-    Vec4f rows[4];
+struct Quat {
+    float x;
+    float y;
+    float z;
+    float w;
 };
 
-struct Rect {
-    uint16 x1;
-    uint16 y1;
-    uint16 x2;
-    uint16 y2;
+struct Mat4x4 {
+    Vec4f rows[4];
 };
 
 struct Sphere_Z {
@@ -88,8 +88,6 @@ struct Box_Z {
 
 struct LinkInfo {
     uint32 linkCrc32;
-    uint32 linkCount;
-    uint32 linkedCrc32[linkCount];
     uint32 dataCrc32;
     Sphere_Z bSphereLocal;
     Box_Z bBox;
@@ -108,42 +106,33 @@ struct ObjectHeader {
     LinkInfo linkInfo;
 };
 
-struct Color {
-    float R<read=floatToByte>;
-    float G<read=floatToByte>;
-    float B<read=floatToByte>;
-    float A<read=floatToByte>;
+struct CollisionVolInfo {
+    Mat4x4 localTransform;
+    Mat4x4 invLocalTransform;
 };
 
-struct Quat {
-    Vec3f v;
-    float w;
-};
-
-struct Omni_Z
-{
+struct CollisionVol_Z {
     ChangeColor(1);
     ObjectHeader objHeader;
     ChangeColor(1);
-    Mat4x4 unkMat; // seems unused
+    uint32 collisionVolInfoCount;
+    CollisionVolInfo collisionVolInfos[collisionVolInfoCount] <optimize=false>;
     ChangeColor(1);
-    Vec3f color;
+    uint32 inMessageID; // message sent when entering
     ChangeColor(1);
-    float attn;
+    uint32 outMessageID; // message sent when exiting
     ChangeColor(1);
-    Vec3f attnColor;
+    uint32 nodeParamCrc32s[12];
     ChangeColor(1);
-    float unkAngle; // debug pc to check
+    float floatParamCrc32s[12];
     ChangeColor(1);
-    float cutoffAngle; //Spotlight related (GX_InitLightSpot) debug pc to check
+    uint32 animFrameCrc32Count;
+    uint32 animFrameCrc32s[animFrameCrc32Count];
     ChangeColor(1);
-    float cutoffRelatedDistance1; // defines attenuation with distance
+    uint32 materialAnimCrc32Count;
+    uint32 materialAnimCrc32s[materialAnimCrc32Count];
     ChangeColor(1);
-    float cutoffRelatedDistance2; // defines attenuation with distance
+    uint32 collisionVolAgentCrc32;
     ChangeColor(1);
-    float falloffStart; // range at which the light begins to fall off, 0-radius for normal. if > radius the light gets inverted
-    ChangeColor(1);
-    float radius; // useless, overriden by bSphere radius
-    ChangeColor(1);
-    uint32 materialAnimCrc32; // unused
-} omni;
+    float animStartTime; // apparently delay between when StartNodeAnims is called and the animFrames actually start playing
+} colVol;

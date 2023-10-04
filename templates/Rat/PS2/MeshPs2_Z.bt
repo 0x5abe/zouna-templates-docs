@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio MeshPc_Z v1.06.63.0X
+//--- Asobo Studio MeshPs2_Z v1.06.63.0X
 //------------------------------------------------
 
 LittleEndian();
@@ -221,6 +221,37 @@ struct Vertex {
     int16 z;
 };
 
+struct vertexGroup {
+    uint32 zero0;
+    uint32 zero1;
+    uint32 zero2;
+    ChangeColor(1);
+    uint32 maybePrimitive;
+    ChangeColor(1);
+    uint16 cdcd;
+    ChangeColor(1);
+    uint16 vertexBufferOffset;
+    ChangeColor(1);
+    uint16 vertexCount;
+    ChangeColor(1);
+    uint16 indexBufferOffsetInShorts;
+    ChangeColor(1);
+    uint32 faceCount;
+    ChangeColor(1);
+    uint16 unk1;
+    ChangeColor(1);
+    uint16 vertexSize;
+    ChangeColor(1);
+    uint32 cdcdcdcd;
+    ChangeColor(1);
+};
+
+struct Triangle {
+    int16 index1;
+    int16 index2;
+    int16 index3;
+};
+
 struct Points_Z {
     ObjectHeader header;
     ChangeColor(1);
@@ -301,149 +332,69 @@ struct Mesh_Z {
     Vertex vertices[vertexCount]; //Used for AABB col
 };
 
-struct VertexStruct60 {
-    ChangeColor(1);
-    Vec3f coordinates;
-    Vec3fByte tangent;
-    ubyte tangentPadding;
-    Vec3fByte normals;
-    ubyte normalPadding;
-    Vec2f UV;
-    float blendIndices[4] <read=matIndexToBoneIndex,optimize=false>;
-    float blendWeights[4];  
+struct Qword {
+    uint32 a;
+    uint32 b;
+    uint32 c;
+    uint32 d;
 };
 
-struct VertexStruct48_blend1 {
-    ChangeColor(1);
-    Vec3f coordinates;
-    Vec3fByte tangent;
-    ubyte tangentPadding;
-    Vec3fByte normals;
-    ubyte normalPadding;
-    Vec2f UV;
-    float unk[5];
-};
-
-struct VertexStruct48_skinVolume {
-    ChangeColor(1);
-    Vec3f coordinates;
-    Vec3f unk1;
-    Vec3f unk2;
-    Vec3f blendIndices;
-};
-
-struct VertexStruct36 {
-    ChangeColor(1);
-    Vec3f coordinates;
-    Vec3fByte tangent;
-    ubyte tangentPadding;
-    Vec3fByte normals;
-    ubyte normalPadding;
-    Vec2f UV;
-    float luvX; // lightUVX? related to radiosity
-    float luvY; // lightUVY? related to radiosity 
-};
-
-struct VertexStruct24 {
-    ChangeColor(1);
-    Vec3f coordinates;
-    float unk;
-    Vec2f UV;
-};
-
-struct VertexStructUnk (uint32 bytes) {
-    ChangeColor(1);
-    byte data[bytes];
-};
-
-struct VertexBufferExt_Z  {
-    uint16 vertexStructCount;
-    uint16 vertexStructLength;
-    switch (vertexStructLength) {
-        case 60:
-            VertexStruct60 vertexStructs[vertexStructCount] <optimize=false>;
-            break;
-        case 48:        
-            VertexStruct48_skinVolume vertexStructs[vertexStructCount] <optimize=false>;
-            //VertexStruct48_blend1 vertexStructs[vertexStructCount] <optimize=false>;
-            break;
-        case 36:        
-            VertexStruct36 vertexStructs[vertexStructCount] <optimize=false>;
-            break;
-        case 24:
-            VertexStruct24 vertexStructs[vertexStructCount] <optimize=false>;
-            break;
-        default:
-            VertexStructUnk vertexStructs(vertexStructLength)[vertexStructCount] <optimize=false>;
-            break;
-   };
-   ChangeColor(1);
-};
-
-struct Triangle {
-    int16 index1;
-    int16 index2;
-    int16 index3;
-};
-
-struct IndexBufferExt_Z {
-    uint16 indexCount;
-    local uint16 faceCount = indexCount / 3;
-    ChangeColor(1);
-    Triangle tris[faceCount];
-    ChangeColor(1);
-};
-
-struct PrimitiveInfo_Z {
-    uint32 vertexBufferPtrPlaceholder; // gets replaced by vbuffer ptr
-    uint32 indexBufferPtrPlaceholder; // gets replaced by ibuffer ptr
-    uint32 winShaderConstantPtrPlaceholder; // replaced with WinShaderConstant_Z ptr
-    ChangeColor(1);
-    uint16 primitiveType; // D3DPRIMITIVETYPE type
-    ChangeColor(1);
-    uint16 shaderToUse; // used to figure out which shader to use
-    ChangeColor(1);
-    uint16 cdcd;
-    ChangeColor(1);
-    uint16 vertexBufferOffset;
-    ChangeColor(1);
-    uint16 vertexCount;
-    ChangeColor(1);
-    uint16 indexBufferOffsetInShorts;
-    ChangeColor(1);
-    uint32 faceCount;
-    ChangeColor(1);
-    uint16 startVertex; // Used only in non-indexed draw
-    ChangeColor(1);
-    uint16 vertexSize;
-    ChangeColor(1);
-    uint32 cdcdcdcd;
-    ChangeColor(1);
-};
-
-struct MeshBuffers_Z {
-    uint32 vertexBufferCount;
-    ChangeColor(1);
-    VertexBufferExt_Z vertexBuffers[vertexBufferCount] <optimize=false>;
-    ChangeColor(1);
-    uint32 indexBufferCount;
-    ChangeColor(1);
-    IndexBufferExt_Z indexBuffers[indexBufferCount] <optimize=false>;
-    uint32 primInfoCount;
-    PrimitiveInfo_Z primInfos[primInfoCount]  <optimize=false>;
-    ChangeColor(1);
+struct SubMesh_Z {
+    byte materialId;
+    uint32 qwordCount;
+    Qword dmaPacket[qwordCount] <optimize=false>;
 };
 
 struct MeshPC_Z {
     ChangeColor(1);
     Mesh_Z mesh;
     ChangeColor(1);
-    uint32 zero2;
-    uint32 unkUintCount;
-    uint32 unkUints[unkUintCount];
-    ChangeColor(1);
-    MeshBuffers_Z meshBuffers;
-} meshPc;
+    uint32 subMeshCount;
+    SubMesh_Z subMeshes[subMeshCount] <optimize=false>;
+    //PrintInfo();
+} meshPs2;
+
+void PrintInfo() {
+    local uint32 i;
+    local uint32 j;
+    local uint32 k;
+    local float maxBlendIndex = -1;
+    local int16 maxAABBColunk9 = 0;
+    local int16 maxAABBColunk9i = 0;
+    local int16 maxAABBColunk10 = 0;
+    local int16 maxVertexId = 0;    
+    local int16 maxVertexIdi = 0;
+    local float maxluvX;
+    local float maxluvY;
+    for (i = 0; i < meshPs2.mesh.aabbCol.aabbColTreeNodeCount; i++) {
+        if (meshPs2.mesh.aabbCol.aabbColTreeNodes[i].aabbColTriOffset > maxAABBColunk9) {
+            maxAABBColunk9 = meshPs2.mesh.aabbCol.aabbColTreeNodes[i].aabbColTriOffset;
+            maxAABBColunk9i = i;
+        }
+        if (meshPs2.mesh.aabbCol.aabbColTreeNodes[i].aabbColTriSize > maxAABBColunk10) {
+            maxAABBColunk10 = meshPs2.mesh.aabbCol.aabbColTreeNodes[i].aabbColTriSize;
+        }
+    }
+    for (i = 0; i < meshPs2.mesh.aabbCol.aabbColTriCount; i++) {
+        if (meshPs2.mesh.aabbCol.aabbColTris[i].firstVertexId > maxVertexId) {
+            maxVertexId = meshPs2.mesh.aabbCol.aabbColTris[i].firstVertexId;
+            maxVertexIdi = i;
+        }
+        if (meshPs2.mesh.aabbCol.aabbColTris[i].secondVertexId > maxVertexId) {
+            maxVertexId = meshPs2.mesh.aabbCol.aabbColTris[i].secondVertexId;
+            maxVertexIdi = i;
+        }
+        if (meshPs2.mesh.aabbCol.aabbColTris[i].thirdVertexId > maxVertexId) {
+            maxVertexId = meshPs2.mesh.aabbCol.aabbColTris[i].thirdVertexId;
+            maxVertexIdi = i;
+        }
+    }
+    Printf("-- Info -- Max AABBCol aabbColTriOffset: %d\n", maxAABBColunk9);
+    Printf("-- Info -- Max AABBCol aabbColTriOffset i: %d\n", maxAABBColunk9i);
+    Printf("-- Info -- Max AABBCol aabbColTriSize: %d\n", maxAABBColunk10);
+    Printf("-- Info -- Max AABBCol maxVertexId: %d\n", maxVertexId);
+    Printf("-- Info -- Max AABBCol maxVertexId i: %d\n", maxVertexIdi);
+}
 
 string byteToFloat(ubyte& value )
 {

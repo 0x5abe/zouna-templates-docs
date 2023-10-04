@@ -72,7 +72,7 @@ string Vec3fToString( Vec3f& value )
 //0x80 -> INVERSE MATRIX NEEDS UPDATE (ONLY USED BY OBJECT, OR WHEN CALLING GETINVERSEWORLDMATRIX)
 //0x100 -> MATRIX CHANGED (USED BY OBJECT)
 //0x200 -> RELATED TO CARRYING (LINKED TO ANOTHER NODE?)
-//0x400 -> RELATED TO OMNI (BEING LIT BY OMNI?)
+//0x400 -> RELATED TO OMNI (BAKED LIGHTING?)
 //0x800 -> RELATED TO CLIPPING (OCCLUSION)
 //0x1000 -> USE AGENT (NO AGENT CREATED IF 0)
 //0x2000 -> USE ANIMATED AGENT (LODAGENT_Z IF 0, ANIMATEDAGENT_Z IF 1. ONLY USED BY NODES WITH LOD_Z AS OBJECT)
@@ -120,6 +120,14 @@ struct Mat4x4 {
     Vec4f rows[4];
 };
 
+struct Mat3x3 {
+    Vec3f rows[3];
+};
+
+struct Mat3x4 {
+    Vec4f rows[3];
+};
+
 struct Rect {
     uint16 x1;
     uint16 y1;
@@ -156,7 +164,7 @@ struct Node_Z
     ChangeColor(1);
     uint32 bitmapCrc32; // SHADOW MAP
     ChangeColor(1);
-    uint32 unkCrc32;
+    uint32 otherBitmapCrc32; // other shadow map (never used aside from a weird empty surface in KN)
     ChangeColor(1);
     Mat4x4 inverseWorldTransform; // (row major)
     Vec3f unkVec3f;
@@ -171,15 +179,16 @@ struct Node_Z
     ChangeColor(1);
     uint32 displaySeadsId1;
     ChangeColor(1);
-    Mat4x4 unkMat;
+    Mat3x4 unkMat;
     ChangeColor(1);
+    Quat rotInWorld;
     Vec3f translation;
     ChangeColor(1);
     uint32 flags;
     ChangeColor(1);
     Quat rotation;
     float scale;
-    float otherScale;
+    float otherScale; // used in omnis to scale the whole range of the omni
     float oneOverScale;
     float unkFloat1;
     ChangeColor(1);
@@ -211,11 +220,11 @@ void PrintInfo() {
     {
         Printf("-- Info -- HAS BTIMAP CRC\n");
     }
-    if (node.unkCrc32 != 0)
+    if (node.otherBitmapCrc32 != 0)
     {
         Printf("-- Info -- HAS UNK CRC\n");
     }
-    if (!(node.bitmapCrc32 != 0 || node.unkCrc32 != 0))
+    if (!(node.bitmapCrc32 != 0 || node.otherBitmapCrc32 != 0))
     {
         //
     }

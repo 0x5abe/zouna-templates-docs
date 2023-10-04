@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio Bitmap_Z v1.06.63.0X
+//--- Asobo Studio UserDefine_Z v1.634.78.10
 //------------------------------------------------
 
 LittleEndian();
@@ -28,9 +28,6 @@ void ChangeColor(byte bChangeColor) {
 
 struct LinkInfo {
     uint32 linkCrc32;
-    uint32 linkCount;
-    uint32 linkedCrc32[linkCount];
-    ubyte links[header.linkSize - (linkCount * 4) - 8];
 };
 
 struct ObjectHeader {
@@ -43,36 +40,17 @@ struct ObjectHeader {
     LinkInfo linkInfo;
 };
 
-struct Bitmap_Z {
+struct UserDefine_Z
+{
     ChangeColor(1);
-    ObjectHeader header;
+    ObjectHeader objHeader;
     ChangeColor(1);
-    uint32 width;
-    uint32 height;
+    uint32 length;
     ChangeColor(1);
-    uint32 precalculatedSize;
-    ChangeColor(1);
-    byte format;
-    ChangeColor(1);
-    byte formatCopy;
-    ChangeColor(1);
-    byte paletteFormat;
-    ChangeColor(1);
-    byte transpFormat;
-    ChangeColor(1);
-    byte mipCount;
-    ChangeColor(1);
-    byte unkSetTo4;
-    ChangeColor(1);
-    uint16 flag;
-    ChangeColor(1);
-    if(precalculatedSize != 0){
-        byte dds[precalculatedSize];
-    }
-    else if(format == 12){
-        byte tex[width*height*4];
-    }
-    else{
-        byte tex[width*height*2];
-    };
-} bitmap;
+    char characters[length];
+    PrintInfo();
+} userDefine;
+
+void PrintInfo() {
+    Printf("-- Info -- Length: %d\n", userDefine.length);
+}

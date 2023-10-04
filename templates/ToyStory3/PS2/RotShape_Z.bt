@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio Material_Z v1.06.63.0X
+//--- Asobo Studio RotShape_Z v1.634.78.10
 //------------------------------------------------
 
 LittleEndian();
@@ -96,11 +96,42 @@ string Vec3fByteToString( Vec3fByte& value )
 
 //------------------------------------------------
 
+struct Quat {
+    Vec3f v;
+    float w;
+};
+
+struct Mat3x3 {
+    Vec3f rows[3];
+};
+
+struct Mat4x4 {
+    Vec4f rows[4];
+};
+
+struct Mat3x4 {
+    Vec4f rows[3];
+};
+
+struct Box_Z {
+    Mat3x4 mat;
+    Vec3f vec;
+    float maybeScale; // not really used it seems
+};
+
+struct Sphere_Z {
+    Vec3f Center;
+    float radius;
+};
+
 struct LinkInfo {
     uint32 linkCrc32;
-    uint32 linkCount;
-    uint32 linkedCrc32[linkCount] <optimize=false>;
-    ubyte links[header.linkSize - (linkCount * 4) - 8];
+    uint32 dataCrc32;
+    Sphere_Z bSphereLocal;
+    Box_Z bBox;
+    float fadeOutDistance;
+    uint32 flags;
+    uint16 type;
 };
 
 struct ObjectHeader {
@@ -113,126 +144,63 @@ struct ObjectHeader {
     LinkInfo linkInfo;
 };
 
-struct Color {
-    float r;
-    float g;
-    float b;
+struct PointsRelated1 {
+    byte data[16];
 };
 
-struct KeyVec2fLinear_Z {
-    float time;
-    ChangeColor(1);
-    Vec2f value;
+struct PointsRelated2 {
+    byte data[4];
 };
 
-struct KeyframerVec2fLinear_Z {
-    uint16 flag;
-    ChangeColor(1);
-    uint32 keyCount;
-    KeyVec2fLinear_Z keys[keyCount] <optimize=false>;
+struct MorpherRelated {
+    byte data[16];
 };
 
-struct KeyVec3fLinear_Z {
-    float time;
-    ChangeColor(1);
-    Vec3f value;
+struct MorphTargetDescRelated {
+    byte data[16];
 };
 
-struct KeyframerVec3fLinear_Z {
-    uint16 flag;
-    ChangeColor(1);
-    uint32 keyCount;
-    KeyVec3fLinear_Z keys[keyCount] <optimize=false>;
+struct MorphTargetDesc_Z {
+    uint32 name;
+    uint32 MorphTargetDescRelatedCount;
+    MorphTargetDescRelated MorphTargetDescRelateds[MorphTargetDescRelatedCount];
 };
 
-struct KeyVec4fLinear_Z {
-    float time;
-    ChangeColor(1);
-    Vec4f value;
+struct Morpher_Z {
+    uint32 MorpherRelatedCount;
+    MorpherRelated MorpherRelateds[MorpherRelatedCount];
+    uint32 morphTargetDescCount;
+    MorphTargetDesc_Z morphTargetDescs[morphTargetDescCount];
 };
 
-struct KeyframerVec4fLinear_Z {
-    uint16 flag;
-    ChangeColor(1);
-    uint32 keyCount;
-    KeyVec4fLinear_Z keys[keyCount] <optimize=false>;
-};
-
-struct KeyFloatLinearComp_Z {
-    float time;
-    ChangeColor(1);
-    int16 value;
-    ChangeColor(1);
-    int16 tangentIn;
-    ChangeColor(1);
-    int16 tangentOut;
-    ChangeColor(1);
-    int16 padding;
-};
-
-struct KeyframerFloatLinearComp_Z
-{
-    uint16 flag;
-    ChangeColor(1);
-    uint32 keyCount;
-    KeyFloatLinearComp_Z keys[keyCount] <optimize=false>;
-};
-
-struct KeyFlag_Z {
-    float time;
-    ChangeColor(1);
-    uint32 flag;
-};
-
-struct KeyframerFlag_Z
-{
-    uint32 keyCount;
-    KeyFlag_Z keys[keyCount] <optimize=false>;
-};
-
-struct KeyHdl_Z {
-    float time;
-    ChangeColor(1);
-    uint32 handle;
-};
-
-struct KeyframerHdl_Z
-{
-    uint32 keyCount;
-    KeyHdl_Z keys[keyCount] <optimize=false>;
-};
-
-struct MaterialAnim_Z {
-    ChangeColor(1);
+struct Points_Z {
     ObjectHeader header;
     ChangeColor(1);
-    byte flags;
+    uint32 vertexCount;
+    Vec3f vertices[vertexCount];
+    uint32 PointsRelated1Count;
+    PointsRelated1 PointsRelateds1[PointsRelated1Count];
+    uint32 PointsRelated2Count;
+    PointsRelated2 PointsRelateds2[PointsRelated2Count];
+};
+
+struct RotShape_Z {
     ChangeColor(1);
-    float duration;
+    Points_Z points;
     ChangeColor(1);
-    KeyframerHdl_Z keyframerTexHdl;
+    uint32 materialIndexCount;
+    uint32 materialIndices[materialIndexCount] <optimize=false>;
     ChangeColor(1);
-    KeyframerVec2fLinear_Z keyframerTranslation;
+    uint32 localVertexCount;
+    Vec3f localVertices[localVertexCount] <optimize=false>;
     ChangeColor(1);
-    KeyframerVec2fLinear_Z keyframerScale;
+    uint32 localUVCount;
+    Vec2f localUVs[localUVCount] <optimize=false>;
     ChangeColor(1);
-    KeyframerFloatLinearComp_Z keyframerRotation;
+    uint32 materialAnimCrc32Count;
+    uint32 materialAnimCrc32s[materialAnimCrc32Count];
     ChangeColor(1);
-    KeyframerVec3fLinear_Z keyframerDiffuse;
+    float scale;
     ChangeColor(1);
-    KeyframerVec3fLinear_Z keyframerEmissive;
-    ChangeColor(1);
-    KeyframerFloatLinearComp_Z keyframerDiffuseAlpha;
-    ChangeColor(1);
-    KeyframerVec4fLinear_Z keyframerSpecular;
-    ChangeColor(1);
-    KeyframerVec4fLinear_Z keyframerParams;
-    ChangeColor(1);
-    KeyframerFlag_Z keyframerCollisionFlag;
-    ChangeColor(1);
-    KeyframerFlag_Z keyframerRenderFlag;
-    ChangeColor(1);
-    KeyframerFlag_Z keyframerObjectFlag;
-    ChangeColor(1);
-    uint32 materialCrc32;
-} materialAnim;
+    uint16 rotShapeType;
+} rotshape;

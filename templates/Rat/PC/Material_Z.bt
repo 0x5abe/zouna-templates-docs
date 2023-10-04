@@ -207,8 +207,9 @@ struct Material_Z {
     ChangeColor(1);
     Mat3x4 uvTransformationMatrix; // doesn't get updated normally
     ChangeColor(1);
-    Vec4f unkVec4f; // unknown, 0 in some 0.9 in some
-    Vec4f params; // used by envmap (maybe each one relates to a type)
+    Vec3f specular;
+    float specularPow;
+    Vec4f params; // used by water, idk what else
     ChangeColor(1);
     float rotation; 
     ChangeColor(1);

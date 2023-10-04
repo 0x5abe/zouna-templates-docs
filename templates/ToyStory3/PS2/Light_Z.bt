@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio Omni_Z v1.06.63.0X
+//--- Asobo Studio Light_Z v1.634.78.10
 //------------------------------------------------
 
 LittleEndian();
@@ -88,8 +88,6 @@ struct Box_Z {
 
 struct LinkInfo {
     uint32 linkCrc32;
-    uint32 linkCount;
-    uint32 linkedCrc32[linkCount];
     uint32 dataCrc32;
     Sphere_Z bSphereLocal;
     Box_Z bBox;
@@ -120,30 +118,45 @@ struct Quat {
     float w;
 };
 
-struct Omni_Z
+struct Light_Z
 {
     ChangeColor(1);
     ObjectHeader objHeader;
     ChangeColor(1);
-    Mat4x4 unkMat; // seems unused
+    Quat rotation;
     ChangeColor(1);
-    Vec3f color;
+    Vec3f direction;
     ChangeColor(1);
-    float attn;
+    Color color;
     ChangeColor(1);
-    Vec3f attnColor;
+    Vec3f Ambient;
     ChangeColor(1);
-    float unkAngle; // debug pc to check
-    ChangeColor(1);
-    float cutoffAngle; //Spotlight related (GX_InitLightSpot) debug pc to check
-    ChangeColor(1);
-    float cutoffRelatedDistance1; // defines attenuation with distance
-    ChangeColor(1);
-    float cutoffRelatedDistance2; // defines attenuation with distance
-    ChangeColor(1);
-    float falloffStart; // range at which the light begins to fall off, 0-radius for normal. if > radius the light gets inverted
-    ChangeColor(1);
-    float radius; // useless, overriden by bSphere radius
-    ChangeColor(1);
-    uint32 materialAnimCrc32; // unused
-} omni;
+    Vec3f pos;
+} light;
+
+string floatToByte(float& value )
+{
+    local string str = "";
+    local float colorFloatToByte = ((value*255.0));
+    SPrintf(str, "%i",colorFloatToByte);
+    return str;
+}
+
+string Mat4x4ToString( Mat4x4& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, 
+             "[%.6f, %.6f, %.6f, %.6f]\n[%.6f, %.6f, %.6f, %.6f]\n[%.6f, %.6f, %.6f, %.6f]\n[%.6f, %.6f, %.6f, %.6f]", 
+             value.rows[0].X, value.rows[0].Y, value.rows[0].Z, value.rows[0].W,
+             value.rows[1].X, value.rows[1].Y, value.rows[1].Z, value.rows[1].W,
+             value.rows[2].X, value.rows[2].Y, value.rows[2].Z, value.rows[2].W,
+             value.rows[3].X, value.rows[3].Y, value.rows[3].Z, value.rows[3].W
+           );
+    return buffer;
+}
+
+// doesnt work
+local int byteToFloat(float, string str) { 
+    local int f = (Atof(str)/255.0);
+    return (local int)f;
+}
