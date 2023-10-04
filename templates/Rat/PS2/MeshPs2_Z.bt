@@ -345,7 +345,7 @@ struct SubMesh_Z {
     Qword dmaPacket[qwordCount] <optimize=false>;
 };
 
-struct MeshPC_Z {
+struct MeshPs2_Z {
     ChangeColor(1);
     Mesh_Z mesh;
     ChangeColor(1);
