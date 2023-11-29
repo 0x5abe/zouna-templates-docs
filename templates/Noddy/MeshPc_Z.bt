@@ -1,0 +1,243 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//--- Black Sheep Studio MeshPc_Z v1.76 (NODDY)
+//------------------------------------------------
+
+LittleEndian();
+
+//------------------------------------------------
+//--- Color Implementation taken from JPG.bt
+
+local int colorSelect = 0;
+local int colorId = 0;
+local DWORD clr = 0;
+local DWORD jetMap[6*3] = {
+	0x0000cc,0x0000ff,0x0033ff,0x0066ff,0x0099ff,0x00ccff,
+	0x00cccc,0x33ffcc,0x66ff99,0x99ff66,0xccff33,0xffff00,
+	0xffcc00,0xff9900,0xff6600,0xff3300,0xff0000,0xcc0000
+};
+
+void ChangeColor(byte bChangeColor) {
+	if(bChangeColor == 1) {colorSelect++; colorId = 0;}
+	clr = jetMap[(colorSelect%3)*6+(colorId%6)];
+	SetBackColor(clr);
+	colorId++;
+}
+
+//------------------------------------------------
+
+//------------------------------------------------
+//--- Vector struct taken from tge
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+    float W;
+} Vec4f <read=Vec4fToString>;
+
+string Vec4fToString( Vec4f& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f, %.6f]", value.X, value.Y, value.Z, value.W );
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+} Vec3f <read=Vec3fToString>;
+
+string Vec3fToString( Vec3f& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+} Vec2f <read=Vec2fToString>;
+
+string Vec2fToString( Vec2f& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f]", value.X, value.Y );
+
+    return buffer;
+}
+
+//------------------------------------------------
+
+struct Mat4x4 {
+    Vec4f rows[4];
+};
+
+struct Mat3x3 {
+    Vec3f rows[3];
+};
+
+struct Mat3x4 {
+    Vec4f rows[3];
+};
+
+struct Rect {
+    uint16 x1;
+    uint16 y1;
+    uint16 x2;
+    uint16 y2;
+};
+
+struct Sphere_Z {
+    Vec3f Center;
+    float radius;
+};
+
+struct Box_Z {
+    Mat4x4 mat;
+    Vec4f scale;
+};
+
+struct Quat {
+    Vec3f v;
+    float w;
+};
+
+struct SphereCol_Z {
+    Sphere_Z sphere;
+};
+
+struct BoxCol_Z {
+    Box_Z box;
+};
+
+struct CylindreCol_Z {
+    byte data[32];
+};
+
+string floatToByte(float& value )
+{
+    local string str = "";
+    local float colorFloatToByte = ((value*255.0));
+    SPrintf(str, "%i",colorFloatToByte);
+    return str;
+}
+
+struct Color {
+    float R<read=floatToByte>;
+    float G<read=floatToByte>;
+    float B<read=floatToByte>;
+    float A<read=floatToByte>;
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 className;
+    uint32 resourceName;
+};
+
+struct BaseObject_Z {
+    ObjectHeader super;
+    uint linkName;
+};
+
+struct ResourceObject_Z {
+    BaseObject_Z super;
+};
+
+struct Object_Z {
+    ResourceObject_Z objectHeader;
+    ChangeColor(1);
+    Sphere_Z bSphere;
+    ChangeColor(1);
+    Mat4x4 bBox;
+    ChangeColor(1);
+    float unkFloat_maybeFadeout;
+    float unkFloat_2;
+    float unkFloat_3;
+    float unkFloat_4;
+    ChangeColor(1);
+    short type;
+    ChangeColor(1);
+    short flag;
+};
+
+struct Points_Z {
+    Object_Z super;
+    ChangeColor(1);
+    uint vertexCount;
+    Vec3f vertices[vertexCount];
+};
+
+struct Strip_Z {
+    ChangeColor(1);
+    uint vertexReferenceCount;
+    short vertexReferences[vertexReferenceCount];
+    uint flag;
+    byte matId;
+};
+
+struct StripExt_Z {
+    ChangeColor(1);
+    uint vertexGroupMaybe;
+};
+
+struct ElementData {
+    ChangeColor(1);
+    short uvId;
+    short normalId;
+};
+
+struct StripData {
+    ChangeColor(1);
+    uint elementDataCount;
+    ElementData elementDatas[elementDataCount];
+};
+
+struct Mesh_Z {
+    Points_Z super;
+    ChangeColor(1);
+    uint uvCount;
+    Vec2f uvs[uvCount];
+    ChangeColor(1);
+    uint normalCount;
+    Vec3f normals[normalCount];
+    ChangeColor(1);
+    uint stripCount;
+    Strip_Z strips[stripCount] <optimize=false>;
+    ChangeColor(1);
+    if (super.super.flag & 4) {
+        StripExt_Z stripExts[stripCount] <optimize=false>;
+    }
+    ChangeColor(1);
+    uint stripDataCount;
+    StripData stripDatas[stripDataCount] <optimize=false>;
+    ChangeColor(1);
+    uint materialCrc32Count;
+    uint materialCrc32[materialCrc32Count];
+    ChangeColor(1);
+    uint sphereColCount;
+    SphereCol_Z sphereCols[sphereColCount];
+    ChangeColor(1);
+    uint boxColCount;
+    BoxCol_Z boxCols[boxColCount];
+    ChangeColor(1);
+    uint cylindreColCount;
+    CylindreCol_Z cylindreCols[cylindreColCount];
+};
+
+struct MeshPc_Z {
+    ChangeColor(1);
+    Mesh_Z super;
+    ChangeColor(1);
+    uint stripColorCount;
+    Color stripColors[stripColorCount];
+    ChangeColor(1);
+    uint stripIndexCount;
+    uint stripIndices[stripIndexCount];
+} meshPc;
