@@ -1,0 +1,14 @@
+MainMenu:
+  Left, Left, Right: Level Select
+  Left, Up, Right, Down: SetAutoCompletion
+  Down, Right, Up, Left: DisplayFPS
+
+Shop Menus: 
+  Up, Down, Left, Right: Unlock all
+
+PauseMenu:
+  Left, Left, Right: Level Select
+  Right, Right, Right, Right: Level Select
+  Left, Up, Right, Down: Mission Select
+  Right, Right, Left: WinCurrentMission
+  Up, Up, Down: PersoSpeed
