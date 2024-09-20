@@ -156,19 +156,22 @@ struct Triangle {
 
 struct SphereCol_Z {
     Sphere_Z sphere;
-    uint32 flag;
-    uint32 nameCrc32;
+    byte unk[12];
+    int64 name;
 };
 
 struct BoxCol_Z {
     Box_Z box;
     uint32 flag;
-    uint32 nameCrc32;
+    byte unk[12];
+    int64 name;
 };
 
 struct CylindreCol_Z {
-    byte data[40];
-    uint32 nameCrc32;
+    byte cylinder[36];
+    uint32 flag;
+    byte unk[12];
+    int64 name;
 };
 
 struct AABBColTreeNode {
