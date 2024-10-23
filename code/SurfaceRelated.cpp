@@ -68,13 +68,33 @@ struct Edge
     uint16_t T[2];
 };
 
+template <class T>
+class DynArray_Z {
+    private:
+
+    uint32_t    ReservedSize:14,Size:18;
+    T*  ArrayPtr;
+
+    public:
+
+    T   &operator[](int Id)
+	{
+		return 	ArrayPtr[Id];
+	}
+	const T	&operator[](int Id) const
+	{
+		return 	ArrayPtr[Id];
+	}
+};
+
+
 class Surface_Z
 {
     void Surface_Z::GetQuadPatchCtrlPoint(Patch& i_Patch, QuadCtrlPoint_Z& o_QuadCtrlPoint);
 
     struct
     {
-        std::vector<Vec3f> Vertices;
+        DynArray_Z<Vec3f> Vertices;
     } Points;
     Edge EdgeDA[];
 };

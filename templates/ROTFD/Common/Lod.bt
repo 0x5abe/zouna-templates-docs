@@ -1,9 +1,9 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio Lod_Z v1.06.63.0X
+//--- TotemTech Lod v1.73
 //------------------------------------------------
 
-LittleEndian();
+BigEndian();
 
 //------------------------------------------------
 //--- Color Implementation taken from JPG.bt
@@ -88,24 +88,22 @@ struct Sphere_Z {
 
 struct LinkInfo {
     uint32 linkCrc32;
-    uint32 linkCount;
-    uint32 linkedCrc32[linkCount];
-    uint32 lodDataCrc32;
-    Sphere_Z bSphereLocal;
-    Box_Z bBox;
-    float fadeOutDistance;
-    uint32 flags;
-    uint16 type;
 };
 
-struct ObjectHeader {
-    uint32 dataSize;
-    uint32 linkSize;
-    uint32 decompressedSize;
-    uint32 compressedSize;
+struct ResourceHeader {
+    uint32 size;
     uint32 classCrc32;
     uint32 nameCrc32;
     LinkInfo linkInfo;
+};
+
+struct ObjectHeader {
+    ResourceHeader resHeader;
+    Sphere_Z bSphereLocal;
+    Box_Z bBox;
+    byte junk[16];
+    uint16 type;
+    uint16 flags;
 };
 
 struct ClassRes {
@@ -131,7 +129,8 @@ struct BoxCol_Z {
 };
 
 struct CylindreCol_Z {
-    byte data[40];
+    byte data[36];
+    uint32 flag;
     uint32 nameCrc32;
 };
 
@@ -139,10 +138,10 @@ struct Lod_Z {
     ChangeColor(1);
     ObjectHeader objectHeader;
     ChangeColor(1);
-    uint32 bSphereColNode;
+    byte bUnk1;
     ChangeColor(1);
-    if (bSphereColNode != 0) {
-        SphereColNode sphereColNode;
+    if (bUnk1 != 0) {
+        float unk1[4];
     }
     ChangeColor(1);
     uint32 sphereColCount;
@@ -163,13 +162,13 @@ struct Lod_Z {
     ChangeColor(1);
     uint32 shadowCrc32;
     ChangeColor(1);
+    uint32 animCount;
+    ClassRes anims[animCount];
     if (objectHeader.linkInfo.flags & 1048576) {
-        uint32 animCount;
-        ClassRes anims[animCount];
         ChangeColor(1);
+        uint32 soundCount;
+        ClassRes sounds[soundCount];
     }
-    uint32 soundCount;
-    ClassRes sounds[soundCount];
     ChangeColor(1);
     uint32 userDefineCrc32;
 } lod;

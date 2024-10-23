@@ -164,7 +164,7 @@ struct AnimationMesh_Z {
 };
 
 struct AnimationMorph_Z {
-    KeyframerFloatComp_Z keyframerUnk;
+    KeyframerFloatComp_Z keyframerWeight;
 };
 
 struct AnimationNodeModifier_Z {

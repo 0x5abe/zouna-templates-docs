@@ -158,7 +158,7 @@ struct Node_Z
     ChangeColor(1);
     uint32 nextNodeCrc32;
     ChangeColor(1);
-    uint32 objectCrc32;
+    int32 objectCrc32;
     ChangeColor(1);
     uint32 userDefineCrc32;
     ChangeColor(1);

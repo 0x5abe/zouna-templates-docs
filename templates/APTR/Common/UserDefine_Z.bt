@@ -1,0 +1,57 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//--- Asobo Studio UserDefine_Z v2.128.52.19
+//------------------------------------------------
+
+//------------------------------------------------
+//--- Color Implementation taken from JPG.bt
+LittleEndian();
+
+local int colorSelect = 0;
+local int colorId = 0;
+local DWORD clr = 0;
+local DWORD jetMap[6*3] = {
+	0x0000cc,0x0000ff,0x0033ff,0x0066ff,0x0099ff,0x00ccff,
+	0x00cccc,0x33ffcc,0x66ff99,0x99ff66,0xccff33,0xffff00,
+	0xffcc00,0xff9900,0xff6600,0xff3300,0xff0000,0xcc0000
+};
+
+void ChangeColor(byte bChangeColor) {
+	if(bChangeColor == 1) {colorSelect++; colorId = 0;}
+	clr = jetMap[(colorSelect%3)*6+(colorId%6)];
+	SetBackColor(clr);
+	colorId++;
+}
+
+//------------------------------------------------
+
+struct BaseObject_Z {
+    int64 className;
+    int64 fileName;
+    int64 name;
+    uint32 size;
+    uint32 linkHeaderSize;
+    uint32 bodySize;
+    byte pad[9];
+};
+
+struct ResourceObject_Z {
+    BaseObject_Z baseObj;
+    int64 linkName;
+};
+
+struct UserDefine_Z {
+    ResourceObject_Z resObj;
+    uint32 length;
+    ChangeColor(1);
+    char characters[length];
+    uint32 userDefineScriptNameCount;
+    int64 userDefineScriptNames[userDefineScriptNameCount];
+    PrintInfo();
+} userDefine;
+
+void PrintInfo() {
+    if (userDefine.userDefineScriptNameCount != 0) {
+        Printf("UserDefine_Z %Ld has %d userDefineScripts\n", userDefine.resObj.baseObj.fileName, userDefine.userDefineScriptNameCount);
+    }
+}

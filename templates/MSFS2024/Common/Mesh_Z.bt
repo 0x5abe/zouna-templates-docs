@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio Mesh_Z v2.128.52.19
+//--- Asobo Studio Mesh_Z v2.256.49.19
 //------------------------------------------------
 
 //------------------------------------------------
@@ -132,7 +132,7 @@ struct BaseObject_Z {
 
 struct ResourceObject_Z {
     BaseObject_Z baseObj;
-    int64 friendlyName;
+    int64 linkName;
 };
 
 struct Object_Z {
@@ -140,8 +140,9 @@ struct Object_Z {
     int64 dataFileName;
     Sphere_Z bSphere;
     Box_Z bBox;
-    byte unkBytes[24];
+    byte unkBytes[48];
     uint32 flags;
+    uint32 unkZero;
     uint16 type;
 };
 
@@ -319,13 +320,17 @@ struct Mesh_Z {
     CylindreCol_Z cylindreCols[cylindreColCount];
     ChangeColor(1);
     AABBCol_Z aabbCol;
-    uint32 materialCount;
-    int64 materialNames[materialCount];
     uint32 unkCount2;
     uint32 unkCount3;
     uint32 unkCount4;
     uint32 unkCount5;
+    uint32 materialCount;
+    int64 materialNames[materialCount];
     uint32 unkCount6;
+    uint32 unkCount7;
+    uint32 unkCount8;
+    uint32 unkCount9;
+    uint32 unkCount10;
     MeshBuffers_Z meshBuffers;
     //PrintInfo();
 } mesh;

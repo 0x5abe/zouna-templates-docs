@@ -1,0 +1,321 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//--- TotemTech World v1.73
+//------------------------------------------------
+
+BigEndian();
+
+//------------------------------------------------
+//--- Color Implementation taken from JPG.bt
+
+local int colorSelect = 0;
+local int colorId = 0;
+local DWORD clr = 0;
+local DWORD jetMap[6*3] = {
+	0x0000cc,0x0000ff,0x0033ff,0x0066ff,0x0099ff,0x00ccff,
+	0x00cccc,0x33ffcc,0x66ff99,0x99ff66,0xccff33,0xffff00,
+	0xffcc00,0xff9900,0xff6600,0xff3300,0xff0000,0xcc0000
+};
+
+void ChangeColor(byte bChangeColor) {
+	if(bChangeColor == 1) {colorSelect++; colorId = 0;}
+	clr = jetMap[(colorSelect%3)*6+(colorId%6)];
+	SetBackColor(clr);
+	colorId++;
+}
+
+//------------------------------------------------
+
+struct LinkInfo {
+    uint32 linkCrc32;
+};
+
+struct ResourceHeader {
+    uint32 size;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    LinkInfo linkInfo;
+};
+
+struct SeadEntry_Z {
+    uint32 NextObjectOfThisEntry;
+    ChangeColor(1);
+	uint32 PrevObjectOfThisEntry;        
+    ChangeColor(1);
+    uint32 NextEntryOfThisObject;
+    ChangeColor(1);
+    uint32 GridId;
+    ChangeColor(1);
+    uint32 nodeCrc32;
+    ChangeColor(1);
+};
+
+struct unkStruct1 {
+    byte data[8];
+};
+
+struct Vec2f {
+    float x;
+    float y;
+};
+
+struct Vec3f {
+    float x;
+    float y;
+    float z;
+};
+
+struct Vec3i16 {
+    int16 x;
+    int16 y;
+    int16 z;
+};
+
+struct Quati16 {
+    int16 x <read=int16ToFloat,optimize=false>;
+    int16 y <read=int16ToFloat,optimize=false>;
+    int16 z <read=int16ToFloat,optimize=false>;
+    int16 w <read=int16ToFloat,optimize=false>;
+};
+
+struct KeyRot_Z {
+    uint16 frame;
+    Quati16 quat;
+    uint16 junk;
+    float omega;
+    float sinom;
+};
+
+struct KeyframerRot_Z {
+    uint16 flag;
+    uint32 keyCount;
+    KeyRot_Z keys[keyCount];
+};
+
+struct KeyVec3fLinear_Z {
+    uint16 frame;
+    uint16 pad;
+    ChangeColor(1);
+    Vec3f value;
+};
+
+struct KeyframerVec3fLinear_Z {
+    uint16 flag;
+    ChangeColor(1);
+    uint32 keyCount;
+    KeyVec3fLinear_Z keys[keyCount] <optimize=false>;
+};
+
+struct KeyVec3fComp_Z {
+    uint16 frame;
+    Vec3i16 value;
+    Vec3i16 tangentIn;
+    Vec3i16 tangentOut;
+};
+
+struct KeyframerVec3fComp_Z {
+    uint16 flag;
+    uint32 keyCount;
+    KeyVec3fComp_Z keys[keyCount];
+};
+
+// Message Ids
+// 4 unk
+// 5 sends message to obj
+// 12 used for loop start
+// 13 used for loop end
+// 14 disable bone flag 0x40
+// 15 enable bone flag 0x40
+// 16 material color
+// 19-20 hide/unhide ?
+// 33,34 plays sound
+// 182-185 related to attack fx
+// 228 starts mission
+
+struct Message_Z {
+    uint32 id;
+    uint32 param;
+    if (id == 0x11 || id == 0x12 || id == 0x13) {
+        uint32 strlen;
+        char data[strlen] <optimize=false>;
+    }
+    uint32 name;
+};
+
+struct KeyMessage_Z {
+    uint16 flag;
+    uint32 messageCount;
+    Message_Z messages[messageCount] <optimize=false>;
+};
+
+struct KeyframerMessage_Z {
+    uint16 flag;
+    uint32 keyCount;
+    KeyMessage_Z keys[keyCount] <optimize=false>;
+};
+
+struct KeyFloat_Z {
+    uint16 frame;
+    uint16 pad;
+    float value;
+    float tangentIn;
+    float tangentOut;
+};
+
+struct KeyframerFloat_Z
+{
+    uint16 flag;
+    uint32 keyCount;
+    KeyFloat_Z keys[keyCount] <optimize=false>;
+};
+
+
+struct KeyFollow_Z {
+    uint32 nodeCrc32;
+    Vec3f axis;
+    byte orient;
+    byte pad[3];
+    float avance;
+};
+
+struct KeyframerFollow_Z
+{
+    uint32 keyCount;
+    KeyFollow_Z keys[keyCount] <optimize=false>;
+};
+
+struct StartStop_Z {
+    uint32 animFrameCrc32;
+    uint32 startOrStop;
+};
+
+struct KeyStartStop_Z {
+    uint startStopCount;
+    uint16 frame;
+    StartStop_Z startStops[startStopCount] <optimize=false>;
+};
+
+struct KeyframerStartStop_Z
+{
+    uint32 keyCount;
+    KeyStartStop_Z keys[keyCount] <optimize=false>;
+};
+
+struct SeadHandle_Z {
+    Vec2f PMin;
+    ChangeColor(1);
+    Vec2f PMax;
+    ChangeColor(1);
+    Vec2f InvDiag;
+    ChangeColor(1);
+    uint32 sizeX;
+    ChangeColor(1);
+    uint32 sizeY;
+    ChangeColor(1);
+    uint32 firstFree;
+    ChangeColor(1);
+    uint32 freeCount;
+    ChangeColor(1);
+    uint32 grid[sizeX*sizeY];
+    ChangeColor(1);
+    uint32 seadEntryCount;
+    ChangeColor(1);
+    SeadEntry_Z seadEntries[seadEntryCount] <optimize=false>;
+};
+
+struct AnimFrameContainer {
+    int32 class;
+    if (class != 0) {
+        int32 name1;
+        int32 name2;
+        int32 nodeFileName;
+        float maxTime;
+        ChangeColor(1);
+        KeyframerVec3fComp_Z keyframerTranslation <optimize=false>;
+        ChangeColor(1);
+        KeyframerRot_Z keyframerRot <optimize=false>;
+        ChangeColor(1);
+        KeyframerVec3fComp_Z keyframerScale <optimize=false>;
+        ChangeColor(1);
+        KeyframerFloat_Z keyframerTime <optimize=false>;
+        ChangeColor(1);
+        KeyframerVec3fLinear_Z keyframerColor <optimize=false>;
+        ChangeColor(1);
+        KeyframerVec3fLinear_Z keyframerAmbient <optimize=false>;
+        ChangeColor(1);
+        KeyframerMessage_Z keyframerMessage <optimize=false>;
+        ChangeColor(1);
+        KeyframerFollow_Z keyframerFollow <optimize=false>;
+        ChangeColor(1);
+        KeyframerStartStop_Z keyframerStartStop <optimize=false>;
+        ChangeColor(1);
+        uint16 playFlag;
+        ChangeColor(1);
+        uint16 pad;
+        float curTime;
+        ChangeColor(1);
+        float startTime;
+        ChangeColor(1);
+        float prevTime;
+        ChangeColor(1);
+    }
+};
+
+local uint32 freeCountCheck0;
+local uint32 freeCountCheck1;
+struct World_Z {
+    //
+    Printf("-------------------------------------------\n");
+    ChangeColor(1);
+    ResourceHeader resHeader;
+    ChangeColor(1);
+    uint32 collectableStackDAReservedSize;
+    ChangeColor(1);
+    uint32 nodeCount;
+    ChangeColor(1);
+    int32 nodes[nodeCount];
+    ChangeColor(1);
+    uint32 noSeadNodeCount;
+    ChangeColor(1);
+    int32 noSeadNodes[noSeadNodeCount];
+    ChangeColor(1);
+    uint32 omniNodeCount;
+    ChangeColor(1);
+    int32 omniNodes[omniNodeCount];
+    ChangeColor(1);
+    int32 rootNodeCrc32;
+    ChangeColor(1);
+    SeadHandle_Z displaySeadsHandle;
+    ChangeColor(1);
+    SeadHandle_Z collideSeadsHandle;
+    ChangeColor(1);
+    SeadHandle_Z nonOccludableSeadsHandle;
+    ChangeColor(1);
+    uint32 animFrameContainerCount;
+    ChangeColor(1);
+    AnimFrameContainer animFrameContainers[animFrameContainerCount] <optimize=false>;;
+    ChangeColor(1);
+    uint32 cameraZoneCrc32Count;
+    ChangeColor(1);
+    int32 cameraZoneCrc32s[cameraZoneCrc32Count];
+    ChangeColor(1);
+    uint32 unusedCrc32Count;
+    ChangeColor(1);
+    int32 unusedCrc32s[unusedCrc32Count];
+    ChangeColor(1);
+    uint32 occluderCrc32Count;
+    ChangeColor(1);
+    int32 occluderCrc32s[occluderCrc32Count];
+    ChangeColor(1);
+    int32 warpCrc32;
+    int32 gameObjCrc32;
+} world;
+
+string int16ToFloat(int16& value )
+{
+    local string str = "";
+    local float int16ToFloat = (float)value*0.0005;
+    SPrintf(str, "%f",int16ToFloat);
+
+    return str;
+}

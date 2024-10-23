@@ -30,6 +30,7 @@ def noepyCheckType(data):
 # this stuff is important to get the mesh but its not for the actual mesh
 
 def load_model(data, mdlList):
+    normalPrintCount = 0
     vertexBuffers = []
     indexBuffers = []
     materials = []
@@ -106,15 +107,61 @@ def load_model(data, mdlList):
     print("VBUF" + str(vertexBufferCount))
     for i in range(vertexBufferCount):
         vertBuff = []
+        normBuff = []
+        uvBuff = []
         vertexcount = bs.readUInt()
         vertexsize = bs.readUInt()
         flags = bs.readUInt()
         #print(vertexcount)
         for j in range(vertexcount):
-            vert = NoeVec3.fromBytes(bs.readBytes(0x0c))
-            vertBuff.append(vert)
-            bs.seek(vertexsize - 0xc,NOESEEK_REL)
+            if vertexsize == 48:
+                vert = NoeVec3.fromBytes(bs.readBytes(0x0c))
+                vertBuff.append(vert)
+                tgt = bs.readFloat()
+                bnx = bs.readByte()
+                bny = bs.readByte()
+                bnz = bs.readByte()
+                nx=(bnx/127)
+                ny=(bny/127)
+                nz=(bnz/127)
+                normBuff.append(nx)
+                normBuff.append(ny)
+                normBuff.append(nz)
+                if normalPrintCount < 24:
+                    normalPrintCount += 1
+                    print("normals vtx{" + str(j) + "}: " + str(nx) + " " + str(ny) + " " + str(nz) + " \n")
+                padding = bs.readByte()
+                uvX = bs.readUShort()
+                uvY = bs.readUShort()
+                uvBuff.append(uvX)
+                uvBuff.append(uvY)
+                bs.seek(vertexsize - 0x18,NOESEEK_REL)
+            elif vertexsize == 36:
+                vert = NoeVec3.fromBytes(bs.readBytes(0x0c))
+                vertBuff.append(vert)
+                tgt = bs.readFloat()
+                bnx = bs.readByte()
+                bny = bs.readByte()
+                bnz = bs.readByte()
+                nx=(bnx/127)
+                ny=(bny/127)
+                nz=(bnz/127)
+                normBuff.append(nx)
+                normBuff.append(ny)
+                normBuff.append(nz)
+                if normalPrintCount < 24:
+                    normalPrintCount += 1
+                    print("normals vtx{" + str(j) + "}: " + str(nx) + " " + str(ny) + " " + str(nz) + " \n")
+                padding = bs.readByte()
+                bs.seek(vertexsize - 0x14,NOESEEK_REL)
+            else:
+                vert = NoeVec3.fromBytes(bs.readBytes(0x0c))
+                vertBuff.append(vert)
+                bs.seek(vertexsize - 0xc,NOESEEK_REL)
         vertexBuffers.append(vertBuff)
+        vertexBuffers.append(normBuff)
+        vertexBuffers.append(uvBuff)
+        vertexBuffers.append(vertexsize)
 
     indexBufferCount = bs.readUInt()
     for i in range(indexBufferCount):
@@ -132,6 +179,7 @@ def load_model(data, mdlList):
     vertexGroupCount = bs.readUInt()
     #print("vertexGroupCount: " + str(vertexGroupCount))
     for i in range(vertexGroupCount):
+        vertexsize = vertexBuffers[3]
         bs.seek(8,NOESEEK_REL)
         vertexCount = bs.readUInt()
         idxOffset = bs.readUInt()
@@ -141,6 +189,8 @@ def load_model(data, mdlList):
         vertSize = bs.readUShort()
         materialId = bs.readUShort()
         vBuff = bytes()
+        nBuff = bytes()
+        uBuff = bytes()
         iBuff = bytes()
         #print("vGroup " + str(i) + " vertOffset " + str(vertOffset))
         #print("vGroup " + str(i) + " vertOffset+vertexCount " + str(vertOffset+vertexCount))
@@ -149,8 +199,20 @@ def load_model(data, mdlList):
         #print("len vertexBuffers[0]: " + str(len(vertexBuffers[0])))
         for j in range(vertOffset, vertOffset+vertexCount):
             vBuff += vertexBuffers[0][j].toBytes()
-        #print("sizeOf VBuff " + str(sys.getsizeof(vBuff)))
         rapi.rpgBindPositionBuffer(vBuff, noesis.RPGEODATA_FLOAT, 12)
+        if vertexsize == 48:
+            for j in range(vertOffset*3, vertOffset*3+vertexCount*3):
+                nBuff += struct.pack("<f", vertexBuffers[1][j])
+            rapi.rpgBindNormalBuffer(nBuff, noesis.RPGEODATA_FLOAT, 12)
+            for j in range(vertOffset*2, vertOffset*2+vertexCount*2):
+                uBuff += struct.pack("<H", vertexBuffers[2][j])
+            rapi.rpgBindUV1Buffer(uBuff, noesis.RPGEODATA_HALFFLOAT, 4)
+        elif vertexsize == 36:
+            for j in range(vertOffset*3, vertOffset*3+vertexCount*3):
+                nBuff += struct.pack("<f", vertexBuffers[1][j])
+            rapi.rpgBindNormalBuffer(nBuff, noesis.RPGEODATA_FLOAT, 12)
+        #print("sizeOf VBuff " + str(sys.getsizeof(vBuff)))
+        
         for j in range(idxOffset, idxOffset+faceCount*3):
             iBuff += struct.pack("<H", indexBuffers[0][j])
         rapi.rpgCommitTriangles(iBuff, noesis.RPGEODATA_USHORT, faceCount*3, noesis.RPGEO_TRIANGLE,3)

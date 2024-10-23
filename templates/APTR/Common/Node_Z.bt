@@ -1,12 +1,11 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio Lod_Z v1.06.63.0X
+//--- Asobo Studio Node_Z v2.128.52.19
 //------------------------------------------------
-
-LittleEndian();
 
 //------------------------------------------------
 //--- Color Implementation taken from JPG.bt
+LittleEndian();
 
 local int colorSelect = 0;
 local int colorId = 0;
@@ -55,16 +54,51 @@ string Vec3fToString( Vec3f& value )
 {
     local char buffer[255];
     SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
+
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+} Vec2f <read=Vec2fToString>;
+
+string Vec2fToString( Vec2f& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f]", value.X, value.Y );
+
+    return buffer;
+}
+
+typedef struct
+{
+    byte X<read=byteToFloat,optimize=false>;
+    byte Y<read=byteToFloat,optimize=false>;
+    byte Z<read=byteToFloat,optimize=false>;
+} Vec3fByte <read=Vec3fByteToString>;
+
+string Vec3fByteToString( Vec3fByte& value )
+{
+    local char buffer[255];
+    local float normalByteToFloatX = value.X/127.0;
+    local float normalByteToFloatY = value.Y/127.0;
+    local float normalByteToFloatZ = value.Z/127.0;
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", normalByteToFloatX, normalByteToFloatY, normalByteToFloatZ );
+
     return buffer;
 }
 
 //------------------------------------------------
 
 struct Quat {
-    float x;
-    float y;
-    float z;
+    Vec3f v;
     float w;
+};
+
+struct Mat3x3 {
+    Vec3f rows[3];
 };
 
 struct Mat4x4 {
@@ -86,91 +120,51 @@ struct Sphere_Z {
     float radius;
 };
 
-struct LinkInfo {
-    uint32 linkCrc32;
-    uint32 linkCount;
-    uint32 linkedCrc32[linkCount];
-    uint32 lodDataCrc32;
-    Sphere_Z bSphereLocal;
-    Box_Z bBox;
-    float fadeOutDistance;
-    uint32 flags;
-    uint16 type;
+struct BaseObject_Z {
+    int64 className;
+    int64 fileName;
+    int64 name;
+    uint32 size;
+    uint32 linkHeaderSize;
+    uint32 bodySize;
+    byte pad[9];
 };
 
-struct ObjectHeader {
-    uint32 dataSize;
-    uint32 linkSize;
-    uint32 decompressedSize;
-    uint32 compressedSize;
-    uint32 classCrc32;
-    uint32 nameCrc32;
-    LinkInfo linkInfo;
+struct ResourceObject_Z {
+    BaseObject_Z baseObj;
+    int64 friendlyName;
 };
 
-struct ClassRes {
+struct Node_Z {
     ChangeColor(1);
-    uint32 id;
-    uint32 crc32;
-};
-
-struct SphereColNode {
-    byte data[28];
-};
-
-struct SphereCol_Z {
-    Sphere_Z sphere;
-    uint32 flag;
-    uint32 nameCrc32;
-};
-
-struct BoxCol_Z {
-    Box_Z box;
-    uint32 flag;
-    uint32 nameCrc32;
-};
-
-struct CylindreCol_Z {
-    byte data[40];
-    uint32 nameCrc32;
-};
-
-struct Lod_Z {
+    ResourceObject_Z resObj;
     ChangeColor(1);
-    ObjectHeader objectHeader;
+    int64 headChildFileName;
     ChangeColor(1);
-    uint32 bSphereColNode;
+    int64 nextFileName;
     ChangeColor(1);
-    if (bSphereColNode != 0) {
-        SphereColNode sphereColNode;
-    }
+    int64 objectFileName;
     ChangeColor(1);
-    uint32 sphereColCount;
-    SphereCol_Z spheresCols[sphereColCount];
+    int64 objectDataFileName;
     ChangeColor(1);
-    uint32 boxColCount;
-    BoxCol_Z boxCols[boxColCount];
+    int64 unkFileName;
     ChangeColor(1);
-    uint32 cylindreColCount;
-    CylindreCol_Z cylindreCols[cylindreColCount];
+    int64 userDefineFileName;
     ChangeColor(1);
-    float closeX;
-    float closeY;
-    float closeZ;
+    int64 unkFileName;
     ChangeColor(1);
-    uint32 componentCrc32Count;
-    uint32 componentCrc32s[componentCrc32Count];
+    float unkFloats[16];
     ChangeColor(1);
-    uint32 shadowCrc32;
+    uint64 flags;
     ChangeColor(1);
-    if (objectHeader.linkInfo.flags & 1048576) {
-        uint32 animCount;
-        ClassRes anims[animCount];
-        ChangeColor(1);
-    }
-    uint32 soundCount;
-    ClassRes sounds[soundCount];
+    float unkFloats2[6];
     ChangeColor(1);
-    uint32 userDefineCrc32;
-} lod;
-
+    Vec4f translationMaybeOrBsphere;
+    ChangeColor(1);
+    uint32 unkUint;
+    ChangeColor(1);
+    float unkFloats3[19];
+    ChangeColor(1);
+    Vec3f translationMaybeOrBsphere;
+    float one;
+} node;

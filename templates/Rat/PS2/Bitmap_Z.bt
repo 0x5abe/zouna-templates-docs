@@ -1,0 +1,95 @@
+//------------------------------------------------
+//--- 010 Editor v13.0 Binary Template
+//
+//      File: Ratatouille Bitmap_Z
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: *.Bitmap_Z
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+LittleEndian();
+
+enum<ubyte> BmFormat_Z
+{
+    BM_4            = 0x01        ,             // 4 Bits Indexed RGB
+    BM_8            = 0x02        ,             // 8 Bits Indexed RGB
+    BM_5551         = 0x07        ,             // 16 RGBA
+    BM_565          = 0x08        ,             // 16 RGB
+    BM_4444         = 0x0A        ,             // 16 RGBA
+    BM_1555         = 0x0B        ,             //.TGA compatibility    
+    BM_8888         = 0x0C        ,             // 32 RGBA
+    BM_888          = 0x0D        ,             // 24 RGB
+    BM_CMPR         = 0x0E        ,             // S3TC
+    BM_I4A4         = 0x0F        ,             // I4A4
+    BM_I8A8         = 0x10        ,             // I4A4
+};
+enum<ubyte> PalFormat_Z
+{
+    PAL_3444        = 0x01        ,             // 16 ARGB
+    PAL_565         = 0x02        ,             // 16 RGB
+    PAL_8888        = 0x03        ,             // 32 RGBA
+    PAL_LUM         = 0x04        ,             // Luminance
+    PAL_ALPHA       = 0x05        ,             // Alpha
+    PAL_DXT1        = 0x11        ,             // DXT1 (OPAQUE)
+    PAL_DXT3        = 0x12        ,             // DXT3 (ALPHA)
+    PAL_DXT5        = 0x13        ,             // DXT5 (ALPHA)
+};
+enum<ubyte> BmTransp
+{
+    BM_NO_TRANSP    = 0,
+    BM_TRANSP_ONE   = 1,
+    BM_TRANSP       = 2
+};
+struct LinkInfo {
+    uint32 linkCrc32;
+    uint32 linkCount;
+    uint32 linkedCrc32[linkCount];
+    ubyte links[header.linkSize - (linkCount * 4) - 8];
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 linkSize;
+    uint32 decompressedSize;
+    uint32 compressedSize;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    LinkInfo linkInfo;
+};
+
+struct Bitmap_z {
+    ObjectHeader header;
+    uint32 width;
+    uint32 height;
+    uint32 precalculatedSize;
+    BmFormat_Z format;
+    BmFormat_Z formatCopy;
+    PalFormat_Z paletteFormat;
+    BmTransp transpFormat;
+    byte mipCount;
+    byte unkSetTo4;
+    uint16 flag;
+    if(precalculatedSize != 0){
+        byte dds[precalculatedSize];
+    }
+    else if(format == BM_8888){
+        byte tex[width*height*4];
+    }
+    else if(format == BM_8){
+        byte tex[width*height];
+        byte palData[0x100*4];
+    }
+    else if(format == BM_5551){
+        byte tex[width*height*2];
+    }
+    else if(format == BM_4){
+        byte tex[width*height/2];
+        byte palData[0x10*4];
+    }
+    else{
+        byte tex[width*height*3];
+    };
+} bitmap;
