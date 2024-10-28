@@ -1,0 +1,216 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//--- Asobo Studio Node_Z v1.634.78.10
+//------------------------------------------------
+
+LittleEndian();
+
+//------------------------------------------------
+//--- Color Implementation taken from JPG.bt
+
+local int colorSelect = 0;
+local int colorId = 0;
+local DWORD clr = 0;
+local DWORD jetMap[6*3] = {
+	0x0000cc,0x0000ff,0x0033ff,0x0066ff,0x0099ff,0x00ccff,
+	0x00cccc,0x33ffcc,0x66ff99,0x99ff66,0xccff33,0xffff00,
+	0xffcc00,0xff9900,0xff6600,0xff3300,0xff0000,0xcc0000
+};
+
+void ChangeColor(byte bChangeColor) {
+	if(bChangeColor == 1) {colorSelect++; colorId = 0;}
+	clr = jetMap[(colorSelect%3)*6+(colorId%6)];
+	SetBackColor(clr);
+	colorId++;
+}
+
+//------------------------------------------------
+
+//------------------------------------------------
+//--- Vector struct taken from tge
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+    float W;
+} Vec4f <read=Vec4fToString>;
+
+string Vec4fToString( Vec4f& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f, %.6f]", value.X, value.Y, value.Z, value.W );
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+} Vec3f <read=Vec3fToString>;
+
+string Vec3fToString( Vec3f& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
+    return buffer;
+}
+
+//------------------------------------------------
+
+struct LinkInfo {
+    uint32 linkCrc32;
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 linkSize;
+    uint32 decompressedSize;
+    uint32 compressedSize;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    LinkInfo linkInfo;
+};
+
+struct color {
+    float R<read=floatToByte>;
+    float G<read=floatToByte>;
+    float B<read=floatToByte>;
+    float A<read=floatToByte>;
+};
+
+struct Mat4x4 {
+    Vec4f rows[4];
+};
+
+struct Rect {
+    uint16 x1;
+    uint16 y1;
+    uint16 x2;
+    uint16 y2;
+};
+
+struct Sphere_Z {
+    Vec3f Center;
+    float radius;
+};
+
+struct Quat {
+    Vec3f v;
+    float w;
+};
+
+struct Node_Z
+{
+    ChangeColor(1);
+    ObjectHeader objHeader;
+    ChangeColor(1);
+    uint32 parentCRC32;
+    ChangeColor(1);
+    uint32 headChildCrc32;
+    ChangeColor(1);
+    uint32 prevNodeCrc32;
+    ChangeColor(1);
+    uint32 nextNodeCrc32;
+    ChangeColor(1);
+    uint32 objectCrc32;
+    ChangeColor(1);
+    uint32 userDefineCrc32;
+    ChangeColor(1);
+    uint32 lightDataCrc32; 
+    ChangeColor(1);
+    uint32 bitmapCrc32;
+    ChangeColor(1);
+    uint32 unkCrc32;
+    ChangeColor(1);
+    Mat4x4 inverseWorldTransform; // (row major)
+    Vec3f unkVec3f;
+    ChangeColor(1);
+    uint32 collideSeadsId1;
+    ChangeColor(1);
+    Vec3f unkVec3f2;
+    ChangeColor(1);
+    uint32 placeholderWorldMatrixPtr;
+    ChangeColor(1);
+    Vec3f unkVec3f3;
+    ChangeColor(1);
+    uint32 displaySeadsId1;
+    ChangeColor(1);
+    Mat4x4 unkMat;
+    ChangeColor(1);
+    Vec3f translation;
+    ChangeColor(1);
+    uint32 flags;
+    ChangeColor(1);
+    Quat rotation;
+    float scale;
+    float otherScale;
+    float oneOverScale;
+    float unkFloat1;
+    ChangeColor(1);
+    color colors<optimize=false>;
+    ChangeColor(1);
+    Sphere_Z bSphere;
+    ChangeColor(1);
+    Rect displaySeadsRect;
+    ChangeColor(1);
+    Rect collideSeadsRect;
+    ChangeColor(1);
+    Mat4x4 worldTransform; // (row major)
+    ChangeColor(1);
+    uint32 collideSeadsId2;
+    ChangeColor(1);
+    uint32 displaySeadsId2;
+    ChangeColor(1);
+    uint16 unknown4;
+    ChangeColor(1);
+    uint32 unknown5;
+    ChangeColor(1);
+    uint32 unknown6;
+    PrintInfo();
+} node;
+
+void PrintInfo() {
+    //Printf("-- Info -- World Transform: \n%s\n", Mat4x4ToString(worldTransform));
+    if (node.bitmapCrc32 != 0)
+    {
+        Printf("-- Info -- HAS BTIMAP CRC\n");
+    }
+    if (node.unkCrc32 != 0)
+    {
+        Printf("-- Info -- HAS UNK CRC\n");
+    }
+    if (!(node.lightDataCrc32 != 0 || node.unkCrc32 != 0))
+    {
+        //
+    }
+}
+
+string floatToByte(float& value )
+{
+    local string str = "";
+    local float colorFloatToByte = ((value*255.0));
+    SPrintf(str, "%i",colorFloatToByte);
+    return str;
+}
+
+string Mat4x4ToString( Mat4x4& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, 
+             "[%.6f, %.6f, %.6f, %.6f]\n[%.6f, %.6f, %.6f, %.6f]\n[%.6f, %.6f, %.6f, %.6f]\n[%.6f, %.6f, %.6f, %.6f]", 
+             value.rows[0].X, value.rows[0].Y, value.rows[0].Z, value.rows[0].W,
+             value.rows[1].X, value.rows[1].Y, value.rows[1].Z, value.rows[1].W,
+             value.rows[2].X, value.rows[2].Y, value.rows[2].Z, value.rows[2].W,
+             value.rows[3].X, value.rows[3].Y, value.rows[3].Z, value.rows[3].W
+           );
+    return buffer;
+}
+
+// doesnt work
+local int byteToFloat(float, string str) { 
+    local int f = (Atof(str)/255.0);
+    return (local int)f;
+}

@@ -1,0 +1,138 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//--- Asobo Studio CollisionVol_Z v1.634.78.10
+//------------------------------------------------
+
+LittleEndian();
+
+//------------------------------------------------
+//--- Color Implementation taken from JPG.bt
+
+local int colorSelect = 0;
+local int colorId = 0;
+local DWORD clr = 0;
+local DWORD jetMap[6*3] = {
+	0x0000cc,0x0000ff,0x0033ff,0x0066ff,0x0099ff,0x00ccff,
+	0x00cccc,0x33ffcc,0x66ff99,0x99ff66,0xccff33,0xffff00,
+	0xffcc00,0xff9900,0xff6600,0xff3300,0xff0000,0xcc0000
+};
+
+void ChangeColor(byte bChangeColor) {
+	if(bChangeColor == 1) {colorSelect++; colorId = 0;}
+	clr = jetMap[(colorSelect%3)*6+(colorId%6)];
+	SetBackColor(clr);
+	colorId++;
+}
+
+//------------------------------------------------
+
+//------------------------------------------------
+//--- Vector struct taken from tge
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+    float W;
+} Vec4f <read=Vec4fToString>;
+
+string Vec4fToString( Vec4f& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f, %.6f]", value.X, value.Y, value.Z, value.W );
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+} Vec3f <read=Vec3fToString>;
+
+string Vec3fToString( Vec3f& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
+    return buffer;
+}
+
+//------------------------------------------------
+
+struct Quat {
+    float x;
+    float y;
+    float z;
+    float w;
+};
+
+struct Mat4x4 {
+    Vec4f rows[4];
+};
+
+struct Sphere_Z {
+    Vec3f Center;
+    float radius;
+};
+
+struct Mat3x4 {
+    Vec4f rows[3];
+};
+
+struct Box_Z {
+    Mat3x4 mat;
+    Vec3f vec;
+    float maybeScale; // not really used it seems
+};
+
+struct LinkInfo {
+    uint32 linkCrc32;
+    uint32 dataCrc32;
+    Sphere_Z bSphereLocal;
+    Box_Z bBox;
+    float fadeOutDistance;
+    uint32 flags;
+    uint16 type;
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 linkSize;
+    uint32 decompressedSize;
+    uint32 compressedSize;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    LinkInfo linkInfo;
+};
+
+struct CollisionVolInfo {
+    Mat4x4 localTransform;
+    Mat4x4 invLocalTransform;
+};
+
+struct CollisionVol_Z {
+    ChangeColor(1);
+    ObjectHeader objHeader;
+    ChangeColor(1);
+    uint32 collisionVolInfoCount;
+    CollisionVolInfo collisionVolInfos[collisionVolInfoCount] <optimize=false>;
+    ChangeColor(1);
+    uint32 inMessageID; // message sent when entering
+    ChangeColor(1);
+    uint32 outMessageID; // message sent when exiting
+    ChangeColor(1);
+    uint32 nodeParamCrc32s[12];
+    ChangeColor(1);
+    float floatParamCrc32s[12];
+    ChangeColor(1);
+    uint32 animFrameCrc32Count;
+    uint32 animFrameCrc32s[animFrameCrc32Count];
+    ChangeColor(1);
+    uint32 materialAnimCrc32Count;
+    uint32 materialAnimCrc32s[materialAnimCrc32Count];
+    ChangeColor(1);
+    uint32 collisionVolAgentCrc32;
+    ChangeColor(1);
+    float animStartTime; // apparently delay between when StartNodeAnims is called and the animFrames actually start playing
+} colVol;

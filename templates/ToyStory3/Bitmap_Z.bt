@@ -1,0 +1,70 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//--- Asobo Studio Bitmap_Z v1.634.78.10
+//------------------------------------------------
+
+LittleEndian();
+
+//------------------------------------------------
+//--- Color Implementation taken from JPG.bt
+
+local int colorSelect = 0;
+local int colorId = 0;
+local DWORD clr = 0;
+local DWORD jetMap[6*3] = {
+	0x0000cc,0x0000ff,0x0033ff,0x0066ff,0x0099ff,0x00ccff,
+	0x00cccc,0x33ffcc,0x66ff99,0x99ff66,0xccff33,0xffff00,
+	0xffcc00,0xff9900,0xff6600,0xff3300,0xff0000,0xcc0000
+};
+
+void ChangeColor(byte bChangeColor) {
+	if(bChangeColor == 1) {colorSelect++; colorId = 0;}
+	clr = jetMap[(colorSelect%3)*6+(colorId%6)];
+	SetBackColor(clr);
+	colorId++;
+}
+
+//------------------------------------------------
+
+struct LinkInfo {
+    uint32 linkCrc32;
+    ubyte links[header.linkSize - (linkCount * 4) - 8];
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 linkSize;
+    uint32 decompressedSize;
+    uint32 compressedSize;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    LinkInfo linkInfo;
+};
+
+struct bitmap_z {
+    ChangeColor(1);
+    ObjectHeader header;
+    ChangeColor(1);
+    uint32 width;
+    uint32 height;
+    ChangeColor(1);
+    uint32 precalculatedSize;
+    ChangeColor(1);
+    uint16 flag;
+    ChangeColor(1);
+    byte format;
+    ChangeColor(1);
+    byte mipCount;
+    ChangeColor(1);
+    byte unkSetTo4;
+    ChangeColor(1);
+    if(precalculatedSize != 0){
+        byte dds[precalculatedSize];
+    }
+    else if(format == 12){
+        byte tex[width*height*4];
+    }
+    else{
+        byte tex[width*height*3];
+    };
+}Bitmap_Z;

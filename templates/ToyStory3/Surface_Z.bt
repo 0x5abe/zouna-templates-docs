@@ -1,0 +1,311 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//--- Asobo Studio Surface_Z v1.634.78.10
+//------------------------------------------------
+
+LittleEndian();
+BitfieldLeftToRight();
+BitfieldDisablePadding();
+
+//------------------------------------------------
+//--- Color Implementation taken from JPG.bt
+
+local int colorSelect = 0;
+local int colorId = 0;
+local DWORD clr = 0;
+local DWORD jetMap[6*3] = {
+	0x0000cc,0x0000ff,0x0033ff,0x0066ff,0x0099ff,0x00ccff,
+	0x00cccc,0x33ffcc,0x66ff99,0x99ff66,0xccff33,0xffff00,
+	0xffcc00,0xff9900,0xff6600,0xff3300,0xff0000,0xcc0000
+};
+
+void ChangeColor(byte bChangeColor) {
+	if(bChangeColor == 1) {colorSelect++; colorId = 0;}
+	clr = jetMap[(colorSelect%3)*6+(colorId%6)];
+	SetBackColor(clr);
+	colorId++;
+}
+
+//------------------------------------------------
+
+//------------------------------------------------
+//--- Vector struct taken from tge
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+    float W;
+} Vec4f <read=Vec4fToString>;
+
+string Vec4fToString( Vec4f& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f, %.6f]", value.X, value.Y, value.Z, value.W );
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+} Vec3f <read=Vec3fToString>;
+
+string Vec3fToString( Vec3f& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
+
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+} Vec2f <read=Vec2fToString>;
+
+string Vec2fToString( Vec2f& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f]", value.X, value.Y );
+
+    return buffer;
+}
+
+typedef struct
+{
+    ubyte X<read=byteToFloat,optimize=false>;
+    ubyte Y<read=byteToFloat,optimize=false>;
+    ubyte Z<read=byteToFloat,optimize=false>;
+} Vec3fByte <read=Vec3fByteToString>;
+
+string Vec3fByteToString( Vec3fByte& value )
+{
+    local char buffer[255];
+    local float normalByteToD3DColorComponentX = ((value.X/255.0));
+    local float normalByteToFloatX = ((normalByteToD3DColorComponentX * 2) - 1);
+    local float normalByteToD3DColorComponentY = ((value.Y/255.0));
+    local float normalByteToFloatY = ((normalByteToD3DColorComponentY * 2) - 1);
+    local float normalByteToD3DColorComponentZ = ((value.Z/255.0));
+    local float normalByteToFloatZ = ((normalByteToD3DColorComponentZ * 2) - 1);
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", normalByteToFloatX, normalByteToFloatY, normalByteToFloatZ );
+
+    return buffer;
+}
+
+//------------------------------------------------
+
+struct Quat {
+    Vec3f v;
+    float w;
+};
+
+struct Mat4x4 {
+    Vec4f rows[4];
+};
+
+struct Mat3x4 {
+    Vec4f rows[3];
+};
+
+struct Box_Z {
+    Mat3x4 mat;
+    Vec3f vec;
+    float maybeScale; // not really used it seems
+};
+
+struct LinkInfo {
+    uint32 linkCrc32;
+    uint32 surfaceDataCrc32;
+    Sphere_Z bSphereLocal;
+    Box_Z bBox;
+    float fadeOutDistance;
+    uint32 flags;
+    uint16 type;
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 linkSize;
+    uint32 decompressedSize;
+    uint32 compressedSize;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    LinkInfo linkInfo;
+};
+
+struct PointsRelated0 {
+    ChangeColor(1);
+    Vec3f vec3;
+};
+
+struct PointsRelated1 {
+    ChangeColor(1);
+    Vec4f vec4;
+};
+
+struct MorpherRelated {
+    byte data[4];
+};
+
+struct MorphTargetDescRelated {
+    byte data[16];
+};
+
+struct Morpher_Z {
+    uint32 MorpherRelatedCount;
+    MorpherRelated MorpherRelateds[MorpherRelatedCount];
+};
+
+struct Points_Z {
+    ObjectHeader header;
+    ChangeColor(1);
+    uint32 PointsRelated0Count; //pos?
+    PointsRelated0 PointsRelateds0[PointsRelated0Count]<optimize=false>;
+    ChangeColor(1);
+    uint32 PointsRelated1Count; //normals?
+    PointsRelated1 PointsRelateds1[PointsRelated1Count]<optimize=false>;
+    ChangeColor(1);
+    Morpher_Z morpher;
+};
+
+struct PatchCol {
+    Sphere_Z sphere;
+    uint32 flag;
+    uint16 edgeColId;
+    uint16 nextPatchColId; //not an id into the stored array, instead an id into an array at runtime during the loop
+    uint32 cdcdcdcd[2];
+}; // research looping better Surface_Z::GetCollisionLines
+
+struct EdgeCol {
+    ChangeColor(1);
+    Sphere_Z sphere;
+    uint flag; //unused
+    uint unk;
+    uint unk2; //unused
+    uint edgeId;
+};
+
+struct ClingLineRelated {
+    ChangeColor(1);
+    Sphere_Z sphere;
+    uint flag;
+    uint edgeId;
+    uint unkUints[2]; // unk
+    float unkFloat; //unk
+}; // UNK
+
+struct CullCone {
+    byte data[32];
+};
+
+struct Patch_Z {
+    ChangeColor(1);
+    uint16 flag;
+    uint16 shouldDrawRelatedStartIndex;
+    uint16 edgeIndices[4];
+    uint32 materialAnimIndex; //gets replaced
+    Sphere_Z someSphere;
+    CullCone cullCone;
+    Box_Z BBox;
+    uint16 unkIndices[4];
+    uint16 colorIndices[4];
+    uint16 normalIndices[4];
+    uint16 displacementIndices[8];
+    uint16 colCacheIndex;
+    uint16 unk;
+    uint materialAnimCrc32;
+};
+
+struct Edge_Z {
+    ChangeColor(1);
+    uint16 P[2];
+    uint16 T[2];
+};
+
+struct SeadVoxel_Z {
+    uint16 elementEntry;
+    uint16 elementCount;
+};
+
+struct SeadIndex_Z {
+    ChangeColor(1);
+    uint seadVoxelCount;
+    SeadVoxel_Z seadVoxels[seadVoxelCount];
+    ChangeColor(1);
+    uint patchIndexCount;
+    uint16 patchIndices[patchIndexCount];
+    ChangeColor(1);
+    Vec4f unkVec4_1;
+    Vec4f unkVec4_2;
+    Vec4f unkVec4_3;
+    ChangeColor(1);
+    Vec3f Axes_1;
+    uint32 unkPtr1;
+    Vec3f Axes_2;
+    uint32 unkPtr2;
+    Vec3f Axes_3;
+    uint32 unkPtr3;
+    ChangeColor(1);
+    Vec4f unkVec4_4;
+    Vec4f size;
+    Vec3f step;
+    uint32 unkPtr4;
+    ChangeColor(1);
+    Vec4f center;
+    Vec4f unkVec4_7;
+    Vec3f fSize;
+    uint32 unkPtr5;
+    ChangeColor(1);
+    uint unkUsedInVoxelTrace;
+    Vec3f iSize;
+    uint hitPatchCount;
+};
+
+struct shouldDrawBitfield {
+    byte indexInDrawInfoArray : 3;
+    byte shiftAmountForBit : 5;
+    byte other;
+};
+
+struct Surface_Z {
+    ChangeColor(1);
+    Points_Z points;
+    ChangeColor(1);
+    uint edgeColCount;
+    EdgeCol edgeCols[edgeColCount] <optimize=false>;
+    ChangeColor(1);
+    uint clingLineRelatedCount;
+    ClingLineRelated clingLineRelateds[clingLineRelatedCount] <optimize=false>;
+    ChangeColor(1);
+    uint patchCount;
+    Patch_Z patches[patchCount] <optimize=false>;
+    ChangeColor(1);
+    uint edgeCount;
+    Edge_Z edges[edgeCount] <optimize=false>;
+    ChangeColor(1);
+    uint normalCount;
+    Vec3f normals[normalCount];
+    ChangeColor(1);
+    uint colorCount;
+    Vec3f colors[colorCount]; // changing doesnt seem to take effect
+    ChangeColor(1);
+    uint displacementRelatedCount;
+    Vec2f displacementRelateds[displacementRelatedCount]; // used for water in rat
+    ChangeColor(1);
+    //Occlusion related, maybe backFaceCulling
+    uint shouldDrawRelatedCount; //Related to should draw
+    shouldDrawBitfield shouldDrawRelateds[shouldDrawRelatedCount];
+    ChangeColor(1);
+    uint patchColCount;
+    PatchCol patchCols[patchColCount] <optimize=false>;
+    ChangeColor(1);
+    byte isSead;
+    if (isSead) {
+        ChangeColor(1);
+        SeadIndex_Z seadIndex;
+    }
+} surface;

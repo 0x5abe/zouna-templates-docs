@@ -216,8 +216,9 @@ def load_model(data, mdlList):
         for j in range(idxOffset, idxOffset+faceCount*3):
             iBuff += struct.pack("<H", indexBuffers[0][j])
         rapi.rpgCommitTriangles(iBuff, noesis.RPGEODATA_USHORT, faceCount*3, noesis.RPGEO_TRIANGLE,3)
-        mdl = rapi.rpgConstructModel()
-        mdlList.append(mdl)
+    
+    mdl = rapi.rpgConstructModel()
+    mdlList.append(mdl)
     unkCount6 = bs.readUInt()
     for i in range(vertexGroupCount):
         unkCount7 = bs.readUInt()

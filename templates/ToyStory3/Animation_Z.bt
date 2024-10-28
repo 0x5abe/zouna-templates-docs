@@ -1,0 +1,234 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//--- Asobo Studio Animation_Z v1.634.78.10
+//------------------------------------------------
+
+LittleEndian();
+
+//------------------------------------------------
+//--- Color Implementation taken from JPG.bt
+
+local int colorSelect = 0;
+local int colorId = 0;
+local DWORD clr = 0;
+local DWORD jetMap[6*3] = {
+	0x0000cc,0x0000ff,0x0033ff,0x0066ff,0x0099ff,0x00ccff,
+	0x00cccc,0x33ffcc,0x66ff99,0x99ff66,0xccff33,0xffff00,
+	0xffcc00,0xff9900,0xff6600,0xff3300,0xff0000,0xcc0000
+};
+
+void ChangeColor(byte bChangeColor) {
+	if(bChangeColor == 1) {colorSelect++; colorId = 0;}
+	clr = jetMap[(colorSelect%3)*6+(colorId%6)];
+	SetBackColor(clr);
+	colorId++;
+}
+
+//------------------------------------------------
+
+struct LinkInfo {
+    uint32 linkCrc32;
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 linkSize;
+    uint32 decompressedSize;
+    uint32 compressedSize;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    LinkInfo linkInfo;
+};
+
+struct RotFrame {
+    float time;
+    int16 x <read=int16ToFloat,optimize=false>;
+    int16 y <read=int16ToFloat,optimize=false>;
+    int16 z <read=int16ToFloat,optimize=false>;
+    int16 w <read=int16ToFloat,optimize=false>;
+};
+
+struct KeyframerRot_Z {
+    uint32 rotFrameCount;
+    RotFrame rotFrames[rotFrameCount];
+};
+
+struct BezierRotFrame {
+    float time;
+    byte data[36];
+};
+
+struct KeyframerBezierRot_Z {
+    uint32 bezierRotFrameCount;
+    BezierRotFrame rotFrames[bezierRotFrameCount];
+};
+
+struct Vec3fCompFrame {
+    float time;
+    int16 a;
+    int16 b;
+    int16 c;
+    int16 d;
+    int16 e;
+    int16 f;
+    int16 g;
+    int16 h;
+    int16 i;
+    int16 j;
+};
+
+struct KeyframerVec3fComp_Z {
+    uint16 unkShort;
+    uint32 vec3fCompFrameCount;
+    Vec3fCompFrame vec3fCompFrames[vec3fCompFrameCount];
+};
+
+struct Message_Z {
+    uint32 unk1;
+    uint32 unk2;
+    uint32 unk3;
+    float unk4;
+    uint32 crc32;
+};
+
+struct KeyMessage_Z {
+    float time;
+    uint32 messageCount;
+    Message_Z messages[messageCount] <optimize=false>;
+};
+
+struct KeyframerMessage_Z {
+    uint32 keyMessageCount;
+    KeyMessage_Z keyMessages[keyMessageCount] <optimize=false>;
+};
+
+struct FloatCompFrame {
+    float time;
+    int16 a;
+    int16 b;
+    int16 c;
+    int16 d;
+};
+
+struct KeyframerFloatComp_Z
+{
+    uint16 flag;
+    uint32 floatCompFrameCount;
+    FloatCompFrame floatCompFrames[floatCompFrameCount];
+};
+
+struct AnimationNode_Z {
+    uint16 unkShort1;
+    KeyframerRot_Z keyframerRot;
+    KeyframerBezierRot_Z keyframerBezierRot;
+    KeyframerVec3fComp_Z keyframerScale;
+    KeyframerVec3fComp_Z keyframerTranslation;
+    KeyframerMessage_Z keyframerMessage;
+};
+
+struct AnimationMaterial_Z {
+    KeyframerFloatComp_Z keyframerFloatComp0;
+    KeyframerFloatComp_Z keyframerFloatComp1;
+    KeyframerVec3fComp_Z keyframerVec3fComp0;
+    KeyframerVec3fComp_Z keyframerVec3fComp1;
+    KeyframerFloatComp_Z keyframerFloatComp2;
+};
+
+struct AnimationMesh_Z {
+    KeyframerFloatComp_Z keyframerFloatComp;
+};
+
+struct AnimationMorph_Z {
+    KeyframerFloatComp_Z keyframerFloatComp;
+};
+
+struct AnimationNodeModifier_Z {
+    uint32 boneNameCrc32;
+    uint16 boneId;
+    uint16 flag;
+    uint16 translationStartFrame;
+    uint16 translationFrameCount;
+    uint16 rotStartFrame;
+    uint16 rotFrameCount;
+    uint16 bezierRotStartFrame;
+    uint16 bezierRotFrameCount;
+    uint16 scaleStartFrame;
+    uint16 scaleFrameCount;
+    uint16 messageStartFrame;
+    uint16 messageFrameCount;
+};
+
+struct AnimationMaterialModifier_Z {
+    uint32 materialLinkCrc32;
+    uint16 matId;
+    uint16 flag;
+    uint16 keyframerFloatComp0StartFrame;
+    uint16 keyframerFloatComp0FrameCount;
+    uint16 keyframerFloatComp1StartFrame;
+    uint16 keyframerFloatComp1FrameCount;
+    uint16 keyframerVec3fComp0StartFrame;
+    uint16 keyframerVec3fComp0FrameCount;
+    uint16 keyframerVec3fComp1StartFrame;
+    uint16 keyframerVec3fComp1FrameCount;
+    uint16 keyframerFloatComp2StartFrame;
+    uint16 keyframerFloatComp2FrameCount;
+};
+
+struct AnimationMeshModifier_Z {
+    uint32 meshLinkCrc32;
+    uint16 meshId;
+    uint16 flag;
+    uint16 keyframerFloatCompStartFrame;
+    uint16 keyframerFloatCompFrameCount;
+};
+
+struct AnimationMorphModifier_Z {
+    uint32 meshLinkCrc32;
+    uint16 meshId;
+    uint16 flag;
+    uint16 keyframerFloatCompStartFrame;
+    uint16 keyframerFloatCompFrameCount;
+};
+
+struct Animation_Z {
+    ChangeColor(1);
+    ObjectHeader objHeader;
+    ChangeColor(1);
+    float duration;
+    ChangeColor(1);
+    float unkSecondField;
+    ChangeColor(1);
+    uint16 unkShortSecondField;
+    ChangeColor(1);
+    AnimationNode_Z animNode;
+    AnimationMaterial_Z animMat;
+    AnimationMesh_Z animMesh;
+    AnimationMorph_Z animMorph;
+    uint32 animationNodeModifierCount;
+    AnimationNodeModifier_Z animationNodeModifiers[animationNodeModifierCount];
+    uint32 animationMaterialModifierCount;
+    AnimationMaterialModifier_Z animationMaterialModifiers[animationMaterialModifierCount];
+    uint32 animationMeshModifierCount;
+    AnimationMeshModifier_Z animationMeshModifiers[animationMeshModifierCount];
+    uint32 animationMorphModifierCount;
+    AnimationMorphModifier_Z animationMorphModifiers[animationMorphModifierCount];
+    PrintInfo();
+} animation;
+
+void PrintInfo() {
+    local uint i = 0;
+    for (i = 0; i < animation.animationNodeModifierCount; i++) {
+        if (animation.animationNodeModifiers[i].messageFrameCount != 0) {  
+            Printf("-- Info -- animNodeModifier #%d has message(s) -- index: %d | count: %d \n", i, animation.animationNodeModifiers[i].messageStartFrame, animation.animationNodeModifiers[i].messageFrameCount);
+        }
+    }
+}
+
+string int16ToFloat(int16& value )
+{
+    local string str = "";
+    local float int16ToFloat = (float)value*0.0005;
+    SPrintf(str, "%f",int16ToFloat);
+
+    return str;
+}

@@ -219,7 +219,7 @@ struct Mesh_Z {
     StripData stripDatas[stripDataCount] <optimize=false>;
     ChangeColor(1);
     uint materialCrc32Count;
-    uint materialCrc32[materialCrc32Count];
+    int materialCrc32[materialCrc32Count];
     ChangeColor(1);
     uint sphereColCount;
     SphereCol_Z sphereCols[sphereColCount];
@@ -235,6 +235,7 @@ struct MeshPc_Z {
     ChangeColor(1);
     Mesh_Z super;
     ChangeColor(1);
+    // might not actually be colors, maybe tangents
     uint stripColorCount;
     Color stripColors[stripColorCount];
     ChangeColor(1);
