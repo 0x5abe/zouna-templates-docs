@@ -72,8 +72,7 @@ def getBitmapLinkAndColorFromMaterial(matName):
             mbs.seek(0x75)
             bitmapName = mbs.readInt()
             return (bitmapName, matLinkName, diffuseColor)
-        except Exception as error:
-            noesis.messagePrompt("ERROR: " + str(error.message))
+        except:
             noesis.messagePrompt("Failed to open material: " + path)
             colorM = bytearray()
             for _ in range(4):
