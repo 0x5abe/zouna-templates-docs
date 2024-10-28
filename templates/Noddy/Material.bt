@@ -1,0 +1,127 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//--- Black Sheep Studio Material v1.76 (NODDY)
+//------------------------------------------------
+
+LittleEndian();
+
+//------------------------------------------------
+//--- Color Implementation taken from JPG.bt
+
+local int colorSelect = 0;
+local int colorId = 0;
+local DWORD clr = 0;
+local DWORD jetMap[6*3] = {
+	0x0000cc,0x0000ff,0x0033ff,0x0066ff,0x0099ff,0x00ccff,
+	0x00cccc,0x33ffcc,0x66ff99,0x99ff66,0xccff33,0xffff00,
+	0xffcc00,0xff9900,0xff6600,0xff3300,0xff0000,0xcc0000
+};
+
+void ChangeColor(byte bChangeColor) {
+	if(bChangeColor == 1) {colorSelect++; colorId = 0;}
+	clr = jetMap[(colorSelect%3)*6+(colorId%6)];
+	SetBackColor(clr);
+	colorId++;
+}
+
+//------------------------------------------------
+
+//------------------------------------------------
+//--- Vector struct taken from tge
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+    float W;
+} Vec4f <read=Vec4fToString>;
+
+string Vec4fToString( Vec4f& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f, %.6f]", value.X, value.Y, value.Z, value.W );
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+} Vec3f <read=Vec3fToString>;
+
+string Vec3fToString( Vec3f& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+} Vec2f <read=Vec2fToString>;
+
+string Vec2fToString( Vec2f& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f]", value.X, value.Y );
+
+    return buffer;
+}
+
+//------------------------------------------------
+
+struct Mat3x3 {
+    Vec3f rows[3];
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 className;
+    uint32 resourceName;
+};
+
+struct BaseObject_Z {
+    ObjectHeader super;
+    uint linkName;
+};
+
+struct ResourceObject_Z {
+    BaseObject_Z super;
+};
+
+struct Material {
+    ChangeColor(1);
+    ResourceObject_Z objectheader;
+    ChangeColor(1);
+    Vec3f diffuseCol;
+    ChangeColor(1);
+    float opacity;
+    ChangeColor(1);
+    Vec3f emissiveCol;
+    ChangeColor(1);
+    float reflectionUnk;
+    ChangeColor(1);
+    Mat3x3 transformation;
+    ChangeColor(1);
+    float rotation;
+    ChangeColor(1);
+    Vec2f translation;
+    ChangeColor(1);
+    Vec2f scale;
+    ChangeColor(1);
+    uint32 collisionFlag;
+    ChangeColor(1);
+    uint32 renderFlag;
+    ChangeColor(1);
+    uint32 objectFlag;
+    ChangeColor(1);
+    byte flag;
+    ChangeColor(1);
+    int32 diffuseCrc32;
+    ChangeColor(1);
+    int32 envMapCrc32;
+} material;

@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Black Sheep Studio MeshPc_Z v1.76 (NODDY)
+//--- Black Sheep Studio Mesh v1.76 (NODDY)
 //------------------------------------------------
 
 LittleEndian();
@@ -199,7 +199,7 @@ struct StripData {
     ElementData elementDatas[elementDataCount];
 };
 
-struct Mesh_Z {
+struct Mesh {
     Points_Z super;
     ChangeColor(1);
     uint uvCount;
@@ -231,9 +231,9 @@ struct Mesh_Z {
     CylindreCol_Z cylindreCols[cylindreColCount];
 };
 
-struct MeshPc_Z {
+struct Mesh {
     ChangeColor(1);
-    Mesh_Z super;
+    Mesh super;
     ChangeColor(1);
     // might not actually be colors, maybe tangents
     uint stripColorCount;
@@ -241,4 +241,4 @@ struct MeshPc_Z {
     ChangeColor(1);
     uint stripIndexCount;
     uint stripIndices[stripIndexCount];
-} meshPc;
+} mesh;

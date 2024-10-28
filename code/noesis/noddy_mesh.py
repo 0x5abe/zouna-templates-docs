@@ -1,4 +1,4 @@
-# Authors: Violet, Sabe
+
 from inc_noesis import *
 from collections import Counter
 
@@ -63,13 +63,17 @@ def getTex(texName,data,texList):
 def getBitmapAndLinkFromMaterial(matName):
     path = findMulRelativeToFile(rapi.getLastCheckedName(),str(matName)+".MATERIAL")
     if path != None:
-        matData = rapi.loadIntoByteArray(path)
-        mbs = NoeBitStream(matData,NOE_LITTLEENDIAN)
-        mbs.seek(0xc)
-        matLinkName = mbs.readInt()
-        mbs.seek(0x75)
-        bitmapName = mbs.readInt()
-        return (bitmapName, matLinkName)
+        try:
+            matData = rapi.loadIntoByteArray(path)
+            mbs = NoeBitStream(matData,NOE_LITTLEENDIAN)
+            mbs.seek(0xc)
+            matLinkName = mbs.readInt()
+            mbs.seek(0x75)
+            bitmapName = mbs.readInt()
+            return (bitmapName, matLinkName)
+        except:
+            noesis.messagePrompt("Failed to open material: " + path)
+            return (0,0)
     return None
 
 def findMulRelativeToFile(fileName, mulName):
@@ -79,15 +83,20 @@ def findMulRelativeToFile(fileName, mulName):
         return testPath + mulName
     return None
 
-def getMaterialAndTextureLists(name, matList, texList):
+def getMaterialAndTextureLists(name, matList, texList, materialNameForBmap):
     path = None
     materName = "whiteMat"
     texName = "whiteTex"
     if name != 0:
         path = findMulRelativeToFile(rapi.getLastCheckedName(),str(name)+".BITMAP")
-        getTex(path, rapi.loadIntoByteArray(path), texList)
-        materName = path
-        texName = path
+        try:
+            texData = rapi.loadIntoByteArray(path)
+            getTex(path, rapi.loadIntoByteArray(path), texList)
+            materName = path
+            texName = path
+        except:
+            noesis.messagePrompt("Failed to open bitmap: " + path + " of material: " + str(materialNameForBmap))
+            texList.append(NoeTexture(texName,4,4,whiteTex,noesis.NOESISTEX_RGBA32))
     else:
         texList.append(NoeTexture(texName,4,4,whiteTex,noesis.NOESISTEX_RGBA32))
     material = NoeMaterial(materName,"")
@@ -292,13 +301,19 @@ def bcLoadModel(data, mdlList):
     #print("len faceIndices: " + str(len(faceIndices)))
     for vg in range(len(vertexGroups)):
         vgName = vertexGroups[vg]
-        indexOfVg = materialLinkCrc32s.index(vgName)
+        try:
+            indexOfVg = materialLinkCrc32s.index(vgName)
+            bitmapName = bitmapCrc32s[indexOfVg]
+            materialName = materialCRC32s[indexOfVg]
+        except:
+            indexOfVg = -1
+            bitmapName = 0
+            materialName = 0
         #print("indexOfVg: " + str(indexOfVg))
-        bitmapName = bitmapCrc32s[indexOfVg]
         #print("bitmapName: " + str(bitmapName))
         matList = []
         texList = []
-        getMaterialAndTextureLists(bitmapName, matList, texList)
+        getMaterialAndTextureLists(bitmapName, matList, texList, materialName)
         rapi.rpgSetMaterial(matList[0].name)
         rapi.rpgBindPositionBuffer(face_vert_buffers[vg], noesis.RPGEODATA_FLOAT, 12)
         rapi.rpgBindNormalBuffer(face_normals_buffers[vg], noesis.RPGEODATA_FLOAT, 12)

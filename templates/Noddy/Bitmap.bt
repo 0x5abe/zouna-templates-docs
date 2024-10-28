@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Black Sheep Studio Bitmap_Z v1.76 (NODDY)
+//--- Black Sheep Studio Bitmap v1.76 (NODDY)
 //------------------------------------------------
 
 LittleEndian();
@@ -89,7 +89,7 @@ struct ResourceObject_Z {
     BaseObject_Z super;
 };
 
-struct Bitmap_Z {
+struct Bitmap {
     ChangeColor(1);
     ResourceObject_Z objectheader;
     ChangeColor(1);
