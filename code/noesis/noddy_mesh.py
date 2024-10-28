@@ -7,7 +7,7 @@ for _ in range(256):
     whiteTex.append(0xff)
 
 def registerNoesisTypes():
-    handle = noesis.register("noddy test",".MESH")
+    handle = noesis.register("Noddy Taxi/En Taxi Avec Oui-Oui Mesh",".MESH")
     noesis.setHandlerTypeCheck(handle, bcCheckType)
     noesis.setHandlerLoadModel(handle, bcLoadModel)
     return 1
@@ -60,7 +60,7 @@ def getTex(texName,data,texList):
             data = rapi.imageDecodeRaw(texData, texWidth, texHeight, "B4G4R4A4")
             texList.append(NoeTexture(texName,texWidth,texHeight,data,noesis.NOESISTEX_RGBA32))
 
-def getBitmapAndLinkFromMaterial(matName):
+def getBitmapLinkAndColorFromMaterial(matName):
     path = findMulRelativeToFile(rapi.getLastCheckedName(),str(matName)+".MATERIAL")
     if path != None:
         try:
@@ -68,12 +68,20 @@ def getBitmapAndLinkFromMaterial(matName):
             mbs = NoeBitStream(matData,NOE_LITTLEENDIAN)
             mbs.seek(0xc)
             matLinkName = mbs.readInt()
+            diffuseColor = NoeVec4.fromBytes(mbs.readBytes(0x10))
             mbs.seek(0x75)
             bitmapName = mbs.readInt()
-            return (bitmapName, matLinkName)
-        except:
+            return (bitmapName, matLinkName, diffuseColor)
+        except Exception as error:
+            noesis.messagePrompt("ERROR: " + str(error.message))
             noesis.messagePrompt("Failed to open material: " + path)
-            return (0,0)
+            colorM = bytearray()
+            for _ in range(4):
+                colorM.append(0x00)
+                colorM.append(0x00)
+                colorM.append(0x80)
+                colorM.append(0x3f)
+            return (0,0,NoeVec4.fromBytes(colorM))
     return None
 
 def findMulRelativeToFile(fileName, mulName):
@@ -191,12 +199,14 @@ def bcLoadModel(data, mdlList):
     materialCRC32s = []
     bitmapCrc32s = []
     materialLinkCrc32s = []
+    materialColors = []
     for _ in range(materialCrc32Count):
         matName = bs.readInt()
         materialCRC32s.append(matName)
-        bitmapAndLink = getBitmapAndLinkFromMaterial(matName)
-        bitmapCrc32s.append(bitmapAndLink[0])
-        materialLinkCrc32s.append(bitmapAndLink[1])
+        bitmapLinkAndColor = getBitmapLinkAndColorFromMaterial(matName)
+        bitmapCrc32s.append(bitmapLinkAndColor[0])
+        materialLinkCrc32s.append(bitmapLinkAndColor[1])
+        materialColors.append(bitmapLinkAndColor[2])
     if not (objFlag & 4) and len(materialLinkCrc32s) > 0:
         curMatId = -1
         for i in range(len(strips)):
@@ -252,6 +262,19 @@ def bcLoadModel(data, mdlList):
         face_colors = bytes()
         faceIndices = bytes()
         faceIdx = 0
+
+        vertGrpName = vertexGroups[vg]
+        try:
+            indexOfVertGrp = materialLinkCrc32s.index(vertGrpName)
+            materialColorF = materialColors[indexOfVertGrp].toBytes()
+        except:
+            materialColorF = bytearray()
+            for _ in range(4):
+                materialColorF.append(0x00)
+                materialColorF.append(0x00)
+                materialColorF.append(0x80)
+                materialColorF.append(0x3f)
+        
         start = vertexGroupsStartIndices[vg]
         end = vertexGroupsEndIndices[vg]
         #print("vertexGroup [" + str(vg) + "] start: " + str(start) + ", end: " + str(end))
@@ -281,9 +304,12 @@ def bcLoadModel(data, mdlList):
                 face_normals += normalBuff[stripData[indices[1]][1]].toBytes()
                 face_normals += normalBuff[stripData[indices[2]][1]].toBytes()
 
-                face_colors += stripColors[stripColorIndex].toBytes()
-                face_colors += stripColors[stripColorIndex].toBytes()
-                face_colors += stripColors[stripColorIndex].toBytes()
+                # face_colors += stripColors[stripColorIndex].toBytes()
+                # face_colors += stripColors[stripColorIndex].toBytes()
+                # face_colors += stripColors[stripColorIndex].toBytes()
+                face_colors += materialColorF
+                face_colors += materialColorF
+                face_colors += materialColorF
 
                 faceIndices += struct.pack("<H", faceIdx)
                 faceIndices += struct.pack("<H", faceIdx+1)
@@ -319,7 +345,7 @@ def bcLoadModel(data, mdlList):
         rapi.rpgBindNormalBuffer(face_normals_buffers[vg], noesis.RPGEODATA_FLOAT, 12)
         rapi.rpgBindUV1Buffer(face_uv_buffers[vg], noesis.RPGEODATA_FLOAT, 8)
         #dont think these are really colors
-        #rapi.rpgBindColorBuffer(face_color_buffers[vg], noesis.RPGEODATA_FLOAT, 16, 4)
+        rapi.rpgBindColorBuffer(face_color_buffers[vg], noesis.RPGEODATA_FLOAT, 16, 4)
         rapi.rpgCommitTriangles(face_indices_buffers[vg], noesis.RPGEODATA_USHORT, (len(face_indices_buffers[vg])//2), noesis.RPGEO_TRIANGLE, 3)
 
     try:
