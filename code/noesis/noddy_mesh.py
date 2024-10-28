@@ -1,4 +1,4 @@
-
+# Authors: Violet, Sabe
 from inc_noesis import *
 from collections import Counter
 
