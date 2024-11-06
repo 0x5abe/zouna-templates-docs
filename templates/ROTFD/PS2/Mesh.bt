@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Black Sheep Studio Mesh v1.76 (NODDY)
+//--- Black Sheep Studio Mesh v1.73
 //------------------------------------------------
 
 LittleEndian();
@@ -179,7 +179,7 @@ struct Strip_Z {
     uint vertexReferenceCount;
     short vertexReferences[vertexReferenceCount];
     uint flag;
-    byte matId;
+    uint matId;
 };
 
 struct StripExt_Z {
@@ -231,14 +231,35 @@ struct Mesh {
     CylindreCol_Z cylindreCols[cylindreColCount];
 };
 
-struct MeshPc {
+struct Qword {
+    uint32 a;
+    uint32 b;
+    uint32 c;
+    uint32 d;
+};
+
+struct SubMesh_Z {
+    byte materialId;
+    uint32 qwordCount;
+    Qword dmaPacket[qwordCount] <optimize=false>;
+};
+
+struct MeshPs2 {
     ChangeColor(1);
     Mesh super;
     ChangeColor(1);
-    // might not actually be colors, maybe tangents
-    uint stripColorCount;
-    Color stripColors[stripColorCount];
-    ChangeColor(1);
-    uint stripIndexCount;
-    uint stripIndices[stripIndexCount];
+    uint32 subMeshCount;
+    SubMesh_Z subMeshes[subMeshCount] <optimize=false>;
+    PrintInfo();
 } mesh;
+
+void PrintInfo() {
+    local int i = 0;
+    local int maxVtxRef = 0;
+    for (i = 0; i < mesh.super.stripCount; i++) {
+        if (mesh.super.strips[i].vertexReferenceCount > maxVtxRef) {
+            maxVtxRef = mesh.super.strips[i].vertexReferenceCount;
+        }
+    }
+    Printf("maxVtxRef: %d", maxVtxRef);
+}

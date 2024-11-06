@@ -7,7 +7,7 @@ import rapi
 import os
 
 def registerNoesisTypes():
-    handle = noesis.register("Toy Story 3 Ps2 Test Converted Mesh", ".VERT")
+    handle = noesis.register("BigSky Ps2 Test Converted Mesh", ".BSKYMSH")
     noesis.setHandlerTypeCheck(handle, noepyCheckType)
     noesis.setHandlerLoadModel(handle, noepyLoadModel)
     noesis.logPopup()
@@ -19,35 +19,43 @@ def noepyCheckType(data):
 
 def getTex(texName,data,texList):
     bs = NoeBitStream(data,NOE_LITTLEENDIAN)
-    bs.seek(4)
-    check = bs.readInt()
-    bs.seek(0x1e)
+    bs.seek(0x10)
     texWidth = bs.readUInt()
     texHeight = bs.readUInt()
-    bs.readUInt()
-    flags = bs.readUInt()
-    bs.seek(6,1)
-    type = list(bs.readBytes(4))
-    print(hex(bs.tell()))
-    bs.seek(0x38)
-    print(texHeight,texWidth)
-    if check == 1056:
-        palData = bs.readBytes(0x400)
-        texData = bs.readBytes(texWidth*texHeight)
-        untwiddle = rapi.imageUntwiddlePS2(texData, texWidth, texHeight, 8)
-    elif check == 96:
-        palData = bs.readBytes(0x40)
-        texData = bs.readBytes(texWidth*texHeight//2)
-        untwiddle = rapi.imageUntwiddlePS2(texData, texWidth, texHeight, 4)
-    if flags & 0x450:
-        texData = untwiddle
-        
-    
-    if check == 1056:
-        Data = rapi.imageDecodeRawPal(texData,palData,texWidth,texHeight,8,"R8G8B8A8",noesis.DECODEFLAG_PS2SHIFT)
-    elif check == 96:
-        Data = rapi.imageDecodeRawPal(texData,palData,texWidth,texHeight,4,"R8G8B8A8")
-    texList.append(NoeTexture(texName,texWidth,texHeight,Data,noesis.NOESISTEX_RGBA32))
+    ddscheckrat = bs.readUInt()
+    dataFormat = bs.readUByte()
+    swizzled = dataFormat & 0x40 != 0
+    print("Swizzled: ",swizzled)
+    if ddscheckrat == 0:
+        versionnum = bs.readByte()
+        print(versionnum)
+        bs.seek(0x22)
+        if versionnum == 1:
+            texData = bs.readBytes(texWidth * texHeight // 2)
+            palData = bs.readBytes(0x40)
+            if (swizzled):
+                texData = rapi.imageUntwiddlePS2(texData, texWidth, texHeight, 4)
+            data = rapi.imageDecodeRawPal(texData, palData, texWidth, texHeight, 4, "r8g8b8a8")
+            texList.append(NoeTexture(texName,texWidth,texHeight,data,noesis.NOESISTEX_RGBA32))
+        elif versionnum == 2:
+            texData = bs.readBytes(texWidth * texHeight)
+            palData = bs.readBytes(0x400)
+            if (swizzled):
+                texData = rapi.imageUntwiddlePS2(texData, texWidth, texHeight, 8)
+            Data = rapi.imageDecodeRawPal(texData,palData,texWidth,texHeight,8,"r8g8b8a8", noesis.DECODEFLAG_PS2SHIFT)
+            texList.append(NoeTexture(texName,texWidth,texHeight,Data,noesis.NOESISTEX_RGBA32))
+        elif versionnum == 7:
+            texData = bs.readBytes(texWidth * texHeight)
+            data = rapi.imageDecodeRaw(texData, texWidth, texHeight, "R5G5B5A1")
+            texList.append(NoeTexture(texName,texWidth,texHeight,data,noesis.NOESISTEX_RGBA32))
+        elif versionnum == 12:
+            texData = bs.readBytes(texWidth * texHeight * 4)
+            data = rapi.imageDecodeRaw(texData, texWidth, texHeight, "B8G8R8A8")
+            texList.append(NoeTexture(texName,texWidth,texHeight,data,noesis.NOESISTEX_RGBA32))
+        elif versionnum == 14:
+            texData = bs.readBytes(texWidth * texHeight * 3)
+            data = rapi.imageDecodeRaw(texData, texWidth, texHeight, "B8G8R8")
+            texList.append(NoeTexture(texName,texWidth,texHeight,data,noesis.NOESISTEX_RGBA32))
 
 # def getTex(name,data,texList):
 #     bs = NoeBitStream(data,NOE_LITTLEENDIAN)
@@ -234,7 +242,7 @@ def findMulRelativeToFile(fileName, mulName):
 
 def getMaterialAndTextureLists(name, matList, texList):
     print(rapi.getLastCheckedName())
-    path = findMulRelativeToFile(rapi.getLastCheckedName(),name+".Bitmap_Z")
+    path = findMulRelativeToFile(rapi.getLastCheckedName(),name+".BITMAP")
     print(path)
     getTex(path, rapi.loadIntoByteArray(path), texList)
 
@@ -251,19 +259,15 @@ def load_submesh(bs, bitmapname, matList, texList, iter):
     vertBuff = bytes()
     normalBuff = bytes()
     uvBuff = bytes()
-    colorBuff = bytes()
     for i in range(vertexcount):
         vert = NoeVec3.fromBytes(bs.readBytes(0x0c))
         normal = NoeVec3.fromBytes(bs.readBytes(0x0c))
         uvBuff += bs.readBytes(8)
-        color = NoeVec4.fromBytes(bs.readBytes(16))
         vertBuff += vert.toBytes()
         normalBuff += normal.toBytes()
-        colorBuff += color.toBytes()
         rapi.rpgBindNormalBuffer(normalBuff, noesis.RPGEODATA_FLOAT, 12)
         rapi.rpgBindPositionBuffer(vertBuff, noesis.RPGEODATA_FLOAT, 12)
         rapi.rpgBindUV1Buffer(uvBuff, noesis.RPGEODATA_FLOAT, 8)
-        rapi.rpgBindColorBuffer(colorBuff, noesis.RPGEODATA_FLOAT, 16, 4)
     triangleShortCount = bs.readUInt()
     faceCount = triangleShortCount / 3
     FaceBuff = bs.readBytes(triangleShortCount*2)
