@@ -61,37 +61,36 @@ string Vec3fToString( Vec3f& value )
 //------------------------------------------------
 
 //Node flags:
-
-//0x1 -> RECURSE (NODE IN BRANCH NEEDS UPDATE)
+//0x1 -> RECURSE (NODE IN BRANCH NEEDS UPDATE). UBI SRC: FL_NODE_SCAN
 //0x2 -> UNK
 //0x4 -> UNK
 //0x8 -> UNK
-//0x10 -> MATRIX NEEDS UPDATE (OVERRIDES 0x1, 0x40)
-//0x20 -> LIGHTING NEEDS UPDATE
-//0x40 -> OBJECT NEEDS UPDATE (OVERRIDES 0x1, IT'S TRS UPDATE)
-//0x80 -> INVERSE MATRIX NEEDS UPDATE (ONLY USED BY OBJECT, OR WHEN CALLING GETINVERSEWORLDMATRIX)
-//0x100 -> MATRIX CHANGED (USED BY OBJECT)
-//0x200 -> RELATED TO CARRYING (LINKED TO ANOTHER NODE?)
-//0x400 -> RELATED TO OMNI (BAKED LIGHTING?)
-//0x800 -> RELATED TO CLIPPING (OCCLUSION)
-//0x1000 -> USE AGENT (NO AGENT CREATED IF 0)
-//0x2000 -> USE ANIMATED AGENT (LODAGENT_Z IF 0, ANIMATEDAGENT_Z IF 1. ONLY USED BY NODES WITH LOD_Z AS OBJECT)
+//0x10 -> MATRIX NEEDS UPDATE (OVERRIDES 0x1, 0x40). UBI SRC: FL_NODE_UPDATE
+//0x20 -> LIGHTING NEEDS UPDATE. UBI SRC: FL_NODE_UPDATE_LIGHTING
+//0x40 -> OBJECT NEEDS UPDATE (OVERRIDES 0x1, IT'S TRS UPDATE). UBI SRC: FL_NODE_UPDATE_OBJECT
+//0x80 -> INVERSE MATRIX NEEDS UPDATE (ONLY USED BY OBJECT, OR WHEN CALLING GETINVERSEWORLDMATRIX). UBI SRC: FL_NODE_INVALIDMAT
+//0x100 -> MATRIX CHANGED (USED BY OBJECT).
+//0x200 -> RELATED TO CARRYING (LINKED TO ANOTHER NODE?).
+//0x400 -> RELATED TO OMNI (BEING LIT BY OMNI?).
+//0x800 -> RELATED TO CLIPPING (OCCLUSION).
+//0x1000 -> DONT USE AGENT (NO AGENT CREATED IF 1).
+//0x2000 -> USE LOD AGENT (ANIMATEDAGENT_Z IF 0, LODAGENT_Z IF 1. ONLY USED BY NODES WITH LOD_Z AS OBJECT). UBI SRC: FL_NODE_SEQUENCED
 //0x4000 -> UNK
 //0x8000 -> UNK
-//0x10000 -> NO COLLISION SEAD (NON COLLIDABLE?)
-//0x20000 -> NO DISPLAY SEAD (NOT VISIBLE?)
-//0x40000 -> HIDDEN
+//0x10000 -> NO COLLISION SEAD (NON COLLIDABLE?). UBI SRC: FL_NODE_NO_SEADCOLLIDE
+//0x20000 -> NO DISPLAY SEAD (NOT VISIBLE?). UBI SRC (If it still were there): FL_NODE_NO_SEADDISPLAY
+//0x40000 -> HIDDEN. UBI SRC: FL_NODE_HIDE
 //0x80000 -> UNK
 //0x100000 -> UNK
 //0x200000 -> UNK
 //0x400000 -> UNK
 //0x800000 -> UNK
-//0x1000000 -> SHARED DATA (USES OBJECTDATA_Z IF 0, DOESNT IF 1)
-//0x2000000 -> RENDERER RELATED
-//0x4000000 -> DO COLLISION
-//0x8000000 -> DO SHADOW UPDATE (ONLY USED BY NODES WITH LOD_Z AS OBJECT)
-//0x10000000 -> HAS ANIMFRAME
-//0x20000000 -> AFFECTED BY SPECIAL VISSION (RAT SPECIFIC?)
+//0x1000000 -> NO SHARED DATA (USES OBJECTDATA_Z IF 0, DOESNT IF 1).
+//0x2000000 -> RENDERER RELATED.
+//0x4000000 -> DO COLLISION. UBI SRC: FL_NODE_COLLIDE
+//0x8000000 -> HAS SHADOW (DOES SHADOW UPDATE, ONLY USED BY NODES WITH LOD_Z AS OBJECT). UBI SRC: FL_NODE_SHADOW
+//0x10000000 -> ABORT ANIMFRAME SEQUENCE. UBI SRC: FL_NODE_SEQUENCED_ABORT
+//0x20000000 -> AFFECTED BY SPECIAL VISION (RAT SPECIFIC?).
 
 struct LinkInfo {
     uint32 linkCrc32;
@@ -121,10 +120,6 @@ struct Mat4x4 {
 };
 
 struct Mat3x3 {
-    Vec3f rows[3];
-};
-
-struct Mat3x4 {
     Vec4f rows[3];
 };
 
@@ -167,19 +162,9 @@ struct Node_Z
     uint32 otherBitmapCrc32; // other shadow map (never used aside from a weird empty surface in KN)
     ChangeColor(1);
     Mat4x4 inverseWorldTransform; // (row major)
-    Vec3f unkVec3f;
+    Mat3x3 rotInWorldMatrix; // has 3 hidden values (cause it's 3x4) mat[0][3] = collideSeadsId1, mat[1][3] = placeholderWorldMatrixPtr, mat[2][3] = displaySeadsId1
     ChangeColor(1);
-    uint32 collideSeadsId1;
-    ChangeColor(1);
-    Vec3f unkVec3f2;
-    ChangeColor(1);
-    uint32 placeholderWorldMatrixPtr;
-    ChangeColor(1);
-    Vec3f nodeNormalOrSmth; // used to determine Omni_Z direction and some other stuff
-    ChangeColor(1);
-    uint32 displaySeadsId1;
-    ChangeColor(1);
-    Mat3x4 unkMat;
+    Mat3x3 inverseRotInWorldMatrix; // has 3 hidden values (cause it's 3x4) mat[0][3] = unknown5, mat[1][3] = unknown6 and mat[2][3] is 2 uint16's (worldId and worldMatrixId)
     ChangeColor(1);
     Quat rotInWorld;
     Vec3f translation;
@@ -206,7 +191,7 @@ struct Node_Z
     ChangeColor(1);
     uint32 displaySeadsId2;
     ChangeColor(1);
-    uint16 unknown4;
+    uint16 worldId;
     ChangeColor(1);
     uint32 unknown5;
     ChangeColor(1);

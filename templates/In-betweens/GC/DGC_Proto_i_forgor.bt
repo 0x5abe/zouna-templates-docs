@@ -1,0 +1,41 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//------------------------------------------------
+BigEndian(); 
+
+// Some version of DGC idk
+
+struct DGCHeader {    
+    char versionString[256];
+    uint32 blockSize;
+    byte padding[1788];
+};
+
+struct ObjectHeader {
+    uint32 size;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    uint32 linkCrc32;
+};
+
+struct Object {
+    ObjectHeader objHeader;
+    char data[objHeader.size-16]; // The data
+};
+
+struct Block(uint size) {
+    local uint32 start = FTell();
+    uint32 objectCount;
+    Object objects[objectCount] <optimize=false>; // The files contained within the chunk.
+    local uint32 end = FTell();
+    if (end-start < size) {
+        byte pad[size-(end-start)];
+    }
+};
+
+struct DGC {
+    DGCHeader header;
+    while (FTell() != FileSize()) {
+        Block block(header.blockSize);
+    }
+} file;
