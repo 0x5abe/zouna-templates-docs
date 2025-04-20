@@ -162,13 +162,13 @@ struct ObjectHeader {
     LinkInfo linkInfo;
 };
 
-struct unkStruct1 {
+struct Flare {
     Color color;
     float scale;
     float offsetFromCenter;
     float unkFloats[8];
     ChangeColor(1);
-	int32 unkCrc32;
+    int32 materialAnimCrc32;
 };
 
 struct Flare_Z {
@@ -177,9 +177,9 @@ struct Flare_Z {
     ChangeColor(1);
     byte unkBool;
     ChangeColor(1);
-    uint32 unkStruct1Count;
+    uint32 flareCount;
     ChangeColor(1);
-    unkStruct1 unkStructs1[unkStruct1Count] <optimize=false>;
+    Flare flares[flareCount] <optimize=false>;
 } flare;
 
 string floatToByte(float& value )
