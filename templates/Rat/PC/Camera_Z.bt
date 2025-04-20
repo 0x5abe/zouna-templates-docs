@@ -1,6 +1,6 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
-//--- Asobo Studio Material_Z v1.06.63.0X
+//--- Asobo Studio Camera_Z v1.06.63.0X
 //------------------------------------------------
 
 LittleEndian();
@@ -23,8 +23,6 @@ void ChangeColor(byte bChangeColor) {
 	SetBackColor(clr);
 	colorId++;
 }
-
-//------------------------------------------------
 
 //------------------------------------------------
 
@@ -98,141 +96,63 @@ string Vec3fByteToString( Vec3fByte& value )
 
 //------------------------------------------------
 
-//Material collision flags:
-
-//0x1 -> UNK
-//0x2 -> COLLIDABLE
-//0x4 -> UNK
-//0x8 -> UNK
-//0x10 -> UNK
-//0x20 -> UNK
-//0x40 -> UNK
-//0x80 -> UNK
-//0x100 -> UNK
-//0x200 -> UNK
-//0x400 -> UNK
-//0x800 -> UNK
-//0x1000 -> UNK
-//0x2000 -> UNK
-//0x4000 -> UNK
-//0x8000 -> UNK
-//0x10000 -> UNK
-//0x20000 -> UNK
-//0x40000 -> Sound related - combined with 80000,100000,200000 changes
-//0x80000 -> Sound related - combined with 40000,100000,200000 changes
-//0x100000 -> Sound related - combined with 40000,80000,200000 changes
-//0x200000 -> Sound related - combined with 40000,80000,100000 changes with 80000 particles change
-//0x400000 -> Slide surface 1 -> when used in combination with sticky surface you get slippery surface
-//0x800000 -> Slide surface 2
-//0x1000000 -> Sticky surface -> when used in combination with Slide surface 1 you get slippery surface
-//0x2000000 -> UNK
-//0x4000000 -> UNK
-//0x8000000 -> UNK
-//0x10000000 -> UNK
-//0x20000000 -> UNK
-
-//Material render flags:
-
-//0x1 -> UNK
-//0x2 -> UNK
-//0x4 -> UNK
-//0x8 -> UNK
-//0x10 -> UNK
-//0x20 -> UNK
-//0x40 -> UNK
-//0x80 -> UNK
-//0x100 -> UNK
-//0x200 -> UNK
-//0x400 -> UNK
-//0x800 -> UNK
-//0x1000 -> UNK
-//0x2000 -> UNK
-//0x4000 -> UNK
-//0x8000 -> UNK
-//0x10000 -> UNK
-//0x20000 -> Disable backface culling
-//0x40000 -> UNK
-//0x80000 -> UNK
-//0x100000 -> UNK
-//0x200000 -> UNK
-//0x400000 -> UNK
-//0x800000 -> UNK
-//0x1000000 -> UNK
-//0x2000000 -> UNK
-//0x4000000 -> UNK
-//0x8000000 -> UNK
-//0x10000000 -> UNK
-//0x20000000 -> UNK
-
-struct BffHeader {
-    uint32 magic;
-    byte platform;
-    byte version_format;
-    uint32 version_asobo[4];
-    byte alignment[2];
+struct Quat {
+    Vec3f v;
+    float w;
 };
 
 struct Mat3x3 {
     Vec3f rows[3];
 };
 
+struct Mat4x4 {
+    Vec4f rows[4];
+};
+
 struct Mat3x4 {
     Vec4f rows[3];
 };
 
+struct Box_Z {
+    Mat3x4 mat;
+    Vec3f vec;
+    float maybeScale; // not really used it seems
+};
+
+struct Sphere_Z {
+    Vec3f Center;
+    float radius;
+};
+
 struct LinkInfo {
-    int32 linkCrc32;
+    uint32 linkCrc32;
     uint32 linkCount;
-    int32 linkedCrc32[linkCount];
-    ubyte links[header.linkSize - (linkCount * 4) - 8];
+    uint32 linkedCrc32[linkCount];
+    uint32 dataCrc32;
+    Sphere_Z bSphereLocal;
+    Box_Z bBox;
+    float fadeOutDistance;
+    uint32 flags;
+    uint16 type;
 };
 
 struct ObjectHeader {
-    BffHeader bffHeader;
     uint32 dataSize;
     uint32 linkSize;
     uint32 decompressedSize;
     uint32 compressedSize;
-    int32 classCrc32;
-    int32 nameCrc32;
+    uint32 classCrc32;
+    uint32 nameCrc32;
     LinkInfo linkInfo;
 };
 
-struct Color {
-    float r;
-    float g;
-    float b;
-};
-
-struct Material_Z {
+struct Camera_Z {
     ChangeColor(1);
     ObjectHeader header;
     ChangeColor(1);
-    Color diffuseColor;
-    float diffuseOpacity;
+    float fov;
     ChangeColor(1);
-    Color emissiveColor;
-    uint32 cdcdcdcd;
+    float roll;
     ChangeColor(1);
-    Mat3x4 uvTransformationMatrix; // doesn't get updated normally
-    ChangeColor(1);
-    Vec3f specular;
-    float specularPow;
-    Vec4f params; // used by water, idk what else
-    ChangeColor(1);
-    float rotation; 
-    ChangeColor(1);
-    Vec2f translation;
-    ChangeColor(1);
-    Vec2f scale;
-    ChangeColor(1);
-    uint32 collisionFlag;
-    ChangeColor(1);
-    uint32 renderFlag;
-    ChangeColor(1);
-    uint32 objectFlag;
-    ChangeColor(1);
-    ubyte generalFlag; // 0x1 for diffuse, 0x2 for envmap, 0x4 for normal, 0x8 for specular
-    ChangeColor(1);
-    int32 tex[4];
-} material;
+    uint32 targetNodeCrc32;
+} camera;
