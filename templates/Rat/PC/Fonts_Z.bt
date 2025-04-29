@@ -1,0 +1,45 @@
+//------------------------------------------------
+//--- 010 Editor v13.0.1 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+LittleEndian();
+struct LinkInfo {
+    uint32 linkCrc32;
+    uint32 linkCount;
+    uint32 linkedCrc32[linkCount];
+};
+
+struct ObjectHeader {
+    uint32 dataSize;
+    uint32 linkSize;
+    uint32 decompressedSize;
+    uint32 compressedSize;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    LinkInfo linkInfo;
+};
+struct font {
+    char ID[4];
+    uint32 materialIndex;
+    float descent;
+    float topLeftCornerXY[2];
+    float bottomRightCornerXY[2];
+};
+struct materials {
+    uint32 materialCount;
+    uint32 materialCrc32s[materialCount];
+};
+struct fonts_z {
+    ObjectHeader objectHeader<optimize=false>;
+    uint32 characterCount;
+    font Font[characterCount]<optimize=false,name=ID>;
+    materials Materials;
+}Fonts_Z;
