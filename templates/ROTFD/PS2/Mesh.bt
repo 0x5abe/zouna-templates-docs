@@ -117,7 +117,7 @@ struct BoxCol_Z {
 };
 
 struct CylindreCol_Z {
-    byte data[32];
+    byte data[36];
 };
 
 string floatToByte(float& value )

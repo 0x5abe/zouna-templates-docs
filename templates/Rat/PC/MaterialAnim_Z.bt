@@ -104,6 +104,9 @@ struct LinkInfo {
 };
 
 struct ObjectHeader {
+    byte BFF[4];
+    uint16 bytesToSkip;
+    byte restOfBFFHeader[bytesToSkip];
     uint32 dataSize;
     uint32 linkSize;
     uint32 decompressedSize;

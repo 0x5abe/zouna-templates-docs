@@ -3,7 +3,7 @@
 //--- TotemTech Lod v1.73
 //------------------------------------------------
 
-BigEndian();
+LittleEndian();
 
 //------------------------------------------------
 //--- Color Implementation taken from JPG.bt
@@ -76,14 +76,16 @@ struct Mat3x4 {
 };
 
 struct Box_Z {
-    Mat3x4 mat;
-    Vec3f vec;
-    float maybeScale; // not really used it seems
+    Mat4x4 mat;
 };
 
 struct Sphere_Z {
     Vec3f Center;
     float radius;
+};
+
+struct Cylindre_Z {
+    byte data[36];
 };
 
 struct LinkInfo {
@@ -109,7 +111,7 @@ struct ObjectHeader {
 struct ClassRes {
     ChangeColor(1);
     uint32 id;
-    uint32 crc32;
+    int32 crc32;
 };
 
 struct SphereColNode {
@@ -119,7 +121,9 @@ struct SphereColNode {
 struct SphereCol_Z {
     Sphere_Z sphere;
     uint32 flag;
-    uint32 nameCrc32;
+    uint32 unk1;
+    uint32 unk2;
+    uint32 unk3;
 };
 
 struct BoxCol_Z {
@@ -138,38 +142,120 @@ struct Lod_Z {
     ChangeColor(1);
     ObjectHeader objectHeader;
     ChangeColor(1);
-    byte bUnk1;
+    byte bColSphere;
     ChangeColor(1);
-    if (bUnk1 != 0) {
-        float unk1[4];
+    if (bColSphere != 0) {
+        Sphere_Z colSphere;
     }
     ChangeColor(1);
-    uint32 sphereColCount;
-    SphereCol_Z spheresCols[sphereColCount];
+    byte bColAddSphere;
     ChangeColor(1);
-    uint32 boxColCount;
-    BoxCol_Z boxCols[boxColCount];
+    if (bColAddSphere != 0) {
+        Sphere_Z colAddSphere;
+    }
     ChangeColor(1);
-    uint32 cylindreColCount;
-    CylindreCol_Z cylindreCols[cylindreColCount];
+    byte bColCylindre;
     ChangeColor(1);
-    float closeX;
-    float closeY;
-    float closeZ;
+    if (bColCylindre != 0) {
+        Cylindre_Z colCylindre;
+    }
     ChangeColor(1);
+    byte bColBox;
+    ChangeColor(1);
+    if (bColBox != 0) {
+        Box_Z colBox;
+    }
+    ChangeColor(1);
+    byte bCollectableSphere;
+    ChangeColor(1);
+    if (bCollectableSphere != 0) {
+        Sphere_Z collectableSphere;
+    }
+    ChangeColor(1);
+    byte bCollectableCylinder;
+    ChangeColor(1);
+    if (bCollectableCylinder != 0) {
+        Cylindre_Z collectableCylinder;
+    }
+    ChangeColor(1);
+    byte bCollectableBox;
+    ChangeColor(1);
+    if (bCollectableBox != 0) {
+        Box_Z collectableBox;
+    }
+    ChangeColor(1);
+    byte bCollectSphere;
+    ChangeColor(1);
+    if (bCollectSphere != 0) {
+        Sphere_Z collectSphere;
+    }
+    ChangeColor(1);
+    byte bCollectCylinder;
+    ChangeColor(1);
+    if (bCollectCylinder != 0) {
+        Cylindre_Z collectCylinder;
+    }
+    ChangeColor(1);
+    byte bCollectBox;
+    ChangeColor(1);
+    if (bCollectBox != 0) {
+        Box_Z collectBox;
+    }
+    ChangeColor(1);
+    byte bDynSphere;
+    ChangeColor(1);
+    if (bDynSphere != 0) {
+        Sphere_Z dynSphere;
+    }
+    ChangeColor(1);
+    byte bDynCylinder;
+    ChangeColor(1);
+    if (bDynCylinder != 0) {
+        Cylindre_Z dynCylinder;
+    }
+    ChangeColor(1);
+    byte bDynBox;
+    ChangeColor(1);
+    if (bDynBox != 0) {
+        Box_Z dynBox;
+    }
+    ChangeColor(1);
+    byte bStrengthSphere;
+    ChangeColor(1);
+    if (bStrengthSphere != 0) {
+        Sphere_Z strengthSphere;
+    }
+    ChangeColor(1);
+    byte bUnkSphereCol;
+    ChangeColor(1);
+    if (bUnkSphereCol != 0) {
+        SphereCol_Z unkSphereCol;
+    }
+    ChangeColor(1);
+    byte bShadowSphere;
+    ChangeColor(1);
+    if (bShadowSphere != 0) {
+        Sphere_Z shadowSphere;
+    }
+    ChangeColor(1);
+    byte bUnkSphere;
+    ChangeColor(1);
+    if (bUnkSphere != 0) {
+        Sphere_Z unkSphere;
+    }
+    ChangeColor(1);
+    float unkFloat1;
+    float unkFloat2;
+    short unkShort;
     uint32 componentCrc32Count;
-    uint32 componentCrc32s[componentCrc32Count];
-    ChangeColor(1);
-    uint32 shadowCrc32;
+    int32 componentCrc32s[componentCrc32Count];
     ChangeColor(1);
     uint32 animCount;
     ClassRes anims[animCount];
-    if (objectHeader.linkInfo.flags & 1048576) {
+    if (objectHeader.flags & 2) {
         ChangeColor(1);
         uint32 soundCount;
         ClassRes sounds[soundCount];
     }
-    ChangeColor(1);
-    uint32 userDefineCrc32;
 } lod;
 

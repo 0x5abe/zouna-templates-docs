@@ -1,0 +1,262 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//--- TotemTech Lod v1.73
+//------------------------------------------------
+
+BigEndian();
+
+//------------------------------------------------
+//--- Color Implementation taken from JPG.bt
+
+local int colorSelect = 0;
+local int colorId = 0;
+local DWORD clr = 0;
+local DWORD jetMap[6*3] = {
+	0x0000cc,0x0000ff,0x0033ff,0x0066ff,0x0099ff,0x00ccff,
+	0x00cccc,0x33ffcc,0x66ff99,0x99ff66,0xccff33,0xffff00,
+	0xffcc00,0xff9900,0xff6600,0xff3300,0xff0000,0xcc0000
+};
+
+void ChangeColor(byte bChangeColor) {
+	if(bChangeColor == 1) {colorSelect++; colorId = 0;}
+	clr = jetMap[(colorSelect%3)*6+(colorId%6)];
+	SetBackColor(clr);
+	colorId++;
+}
+
+//------------------------------------------------
+
+//------------------------------------------------
+//--- Vector struct taken from tge
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+    float W;
+} Vec4f <read=Vec4fToString>;
+
+string Vec4fToString( Vec4f& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f, %.6f]", value.X, value.Y, value.Z, value.W );
+    return buffer;
+}
+
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+} Vec3f <read=Vec3fToString>;
+
+string Vec3fToString( Vec3f& value )
+{
+    local char buffer[255];
+    SPrintf( buffer, "[%.6f, %.6f, %.6f]", value.X, value.Y, value.Z );
+    return buffer;
+}
+
+//------------------------------------------------
+
+struct Quat {
+    float x;
+    float y;
+    float z;
+    float w;
+};
+
+struct Mat4x4 {
+    Vec4f rows[4];
+};
+
+struct Mat3x4 {
+    Vec4f rows[3];
+};
+
+struct Box_Z {
+    Mat4x4 mat;
+};
+
+struct Sphere_Z {
+    Vec3f Center;
+    float radius;
+};
+
+struct Cylindre_Z {
+    byte data[36];
+};
+
+struct LinkInfo {
+    uint32 linkCrc32;
+};
+
+struct ResourceHeader {
+    uint32 size;
+    uint32 classCrc32;
+    uint32 nameCrc32;
+    LinkInfo linkInfo;
+};
+
+struct ObjectHeader {
+    ResourceHeader resHeader;
+    Sphere_Z bSphereLocal;
+    Box_Z bBox;
+    byte junk[16];
+    uint16 type;
+    uint16 flags;
+};
+
+struct ClassRes {
+    ChangeColor(1);
+    uint32 id;
+    uint32 crc32;
+};
+
+struct SphereColNode {
+    byte data[28];
+};
+
+struct SphereCol_Z {
+    Sphere_Z sphere;
+    uint32 nameCrc32;
+};
+
+struct BoxCol_Z {
+    Box_Z box;
+    uint32 flag;
+    uint32 nameCrc32;
+};
+
+struct CylindreCol_Z {
+    byte data[36];
+    uint32 flag;
+    uint32 nameCrc32;
+};
+
+struct Lod_Z {
+    ChangeColor(1);
+    ObjectHeader objectHeader;
+    ChangeColor(1);
+    byte bColSphere;
+    ChangeColor(1);
+    if (bColSphere != 0) {
+        Sphere_Z colSphere;
+    }
+    ChangeColor(1);
+    byte bColAddSphere;
+    ChangeColor(1);
+    if (bColAddSphere != 0) {
+        Sphere_Z colAddSphere;
+    }
+    ChangeColor(1);
+    byte bColCylindre;
+    ChangeColor(1);
+    if (bColCylindre != 0) {
+        Cylindre_Z colCylindre;
+    }
+    ChangeColor(1);
+    byte bColBox;
+    ChangeColor(1);
+    if (bColBox != 0) {
+        Box_Z colBox;
+    }
+    ChangeColor(1);
+    byte bCollectableSphere;
+    ChangeColor(1);
+    if (bCollectableSphere != 0) {
+        Sphere_Z collectableSphere;
+    }
+    ChangeColor(1);
+    byte bCollectableCylinder;
+    ChangeColor(1);
+    if (bCollectableCylinder != 0) {
+        Cylindre_Z collectableCylinder;
+    }
+    ChangeColor(1);
+    byte bCollectableBox;
+    ChangeColor(1);
+    if (bCollectableBox != 0) {
+        Box_Z collectableBox;
+    }
+    ChangeColor(1);
+    byte bCollectSphere;
+    ChangeColor(1);
+    if (bCollectSphere != 0) {
+        Sphere_Z collectSphere;
+    }
+    ChangeColor(1);
+    byte bCollectCylinder;
+    ChangeColor(1);
+    if (bCollectCylinder != 0) {
+        Cylindre_Z collectCylinder;
+    }
+    ChangeColor(1);
+    byte bCollectBox;
+    ChangeColor(1);
+    if (bCollectBox != 0) {
+        Box_Z collectBox;
+    }
+    ChangeColor(1);
+    byte bDynSphere;
+    ChangeColor(1);
+    if (bDynSphere != 0) {
+        Sphere_Z dynSphere;
+    }
+    ChangeColor(1);
+    byte bDynCylinder;
+    ChangeColor(1);
+    if (bDynCylinder != 0) {
+        Cylindre_Z dynCylinder;
+    }
+    ChangeColor(1);
+    byte bDynBox;
+    ChangeColor(1);
+    if (bDynBox != 0) {
+        Box_Z dynBox;
+    }
+    ChangeColor(1);
+    byte bStrengthSphere;
+    ChangeColor(1);
+    if (bStrengthSphere != 0) {
+        Sphere_Z strengthSphere;
+    }
+    ChangeColor(1);
+    byte bUnkSphereCol;
+    ChangeColor(1);
+    if (bUnkSphereCol != 0) {
+        SphereCol_Z unkSphereCol;
+    }
+    ChangeColor(1);
+    byte bShadowSphere;
+    ChangeColor(1);
+    if (bShadowSphere != 0) {
+        Sphere_Z shadowSphere;
+    }
+    ChangeColor(1);
+    byte bUnkSphere;
+    ChangeColor(1);
+    if (bUnkSphere != 0) {
+        Sphere_Z unkSphere;
+    }
+    ChangeColor(1);
+    float unkFloat1;
+    float unkFloat2;
+    short unkShort;
+    uint32 componentCrc32Count;
+    uint32 componentCrc32s[componentCrc32Count];
+    ChangeColor(1);
+    uint32 shadowCrc32;
+    ChangeColor(1);
+    uint32 animCount;
+    ClassRes anims[animCount];
+    if (objectHeader.linkInfo.flags & 1048576) {
+        ChangeColor(1);
+        uint32 soundCount;
+        ClassRes sounds[soundCount];
+    }
+    ChangeColor(1);
+    uint32 userDefineCrc32;
+} lod;
+
